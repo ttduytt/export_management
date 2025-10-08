@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Homepage - Mẫu</title>
+  <!-- Tailwind CDN for quick prototyping -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="description" content="Mẫu giao diện homepage responsive bằng HTML + Tailwind CSS" />
+</head>
+<body class="antialiased bg-gray-50 text-gray-800">
+  <!-- Header -->
+  <header class="bg-white shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <a href="#" class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-gradient-to-tr from-indigo-500 to-pink-500 rounded-lg flex items-center justify-center text-white font-bold">M</div>
+          <span class="font-semibold text-lg">MySite</span>
+        </a>
+
+        <nav class="hidden md:flex items-center gap-6 text-sm">
+          <a href="#features" class="hover:text-indigo-600">Tính năng</a>
+          <a href="#pricing" class="hover:text-indigo-600">Giá</a>
+          <a href="#about" class="hover:text-indigo-600">Về chúng tôi</a>
+          <a href="#contact" class="hover:text-indigo-600">Liên hệ</a>
+          <a href="#" class="ml-4 px-4 py-2 bg-indigo-600 text-white rounded-md shadow-sm hover:bg-indigo-500">Đăng nhập</a>
+        </nav>
+
+        <!-- Mobile menu button -->
+        <button id="mobileBtn" class="md:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-300">
+          <svg id="menuOpen" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <svg id="menuClose" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile menu -->
+    <div id="mobileMenu" class="md:hidden hidden border-t border-gray-100">
+      <div class="px-4 pb-4 pt-2 space-y-2">
+        <a href="#features" class="block">Tính năng</a>
+        <a href="#pricing" class="block">Giá</a>
+        <a href="#about" class="block">Về chúng tôi</a>
+        <a href="#contact" class="block">Liên hệ</a>
+        <a href="#" class="block mt-2 px-4 py-2 bg-indigo-600 text-white rounded-md text-center">Đăng nhập</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <main>
+    <section class="bg-gradient-to-br from-white to-indigo-50">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+          <div>
+            <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight">Tạo trải nghiệm trực tuyến nổi bật</h1>
+            <p class="mt-4 text-lg text-gray-600">Mẫu homepage sạch, responsive, và tối ưu để bắt đầu dự án của bạn. Có sẵn các section: hero, features, pricing, testimonials, contact.</p>
+
+            <div class="mt-6 flex flex-wrap gap-3">
+              <a href="#features" class="px-5 py-3 bg-indigo-600 text-white rounded-md shadow hover:bg-indigo-500">Tìm hiểu thêm</a>
+              <a href="#contact" class="px-5 py-3 border border-gray-200 rounded-md hover:bg-gray-100">Liên hệ tư vấn</a>
+            </div>
+
+            <div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 text-sm text-gray-600">
+              <div class="space-y-1">
+                <div class="font-semibold">99.9%</div>
+                <div class="text-xs">Thời gian hoạt động</div>
+              </div>
+              <div class="space-y-1">
+                <div class="font-semibold">50k+</div>
+                <div class="text-xs">Người dùng</div>
+              </div>
+              <div class="space-y-1">
+                <div class="font-semibold">24/7</div>
+                <div class="text-xs">Hỗ trợ</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="relative">
+            <div class="w-full rounded-2xl shadow-lg overflow-hidden bg-white">
+              <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1600&auto=format&fit=crop&ixlib=rb-4.0.3&s=abc" alt="Hero image" class="w-full h-64 object-cover sm:h-80 lg:h-96">
+              <div class="p-6">
+                <h3 class="font-semibold text-lg">Dashboard mẫu</h3>
+                <p class="mt-2 text-sm text-gray-600">Giao diện demo hiển thị số liệu và các mô-đun, dễ dàng tích hợp vào dự án của bạn.</p>
+                <div class="mt-4 flex items-center gap-3">
+                  <div class="text-xs px-3 py-1 bg-gray-100 rounded-full">Demo</div>
+                  <div class="text-xs px-3 py-1 bg-gray-100 rounded-full">Responsive</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Decorative card -->
+            <div class="hidden lg:block absolute -left-8 -bottom-6 w-56 bg-white rounded-2xl shadow p-4">
+              <div class="text-xs text-gray-500">Mẹo</div>
+              <div class="mt-2 text-sm">Bạn có thể đổi màu, logo và nội dung rất nhanh chỉ bằng vài dòng CSS/HTML.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <h2 class="text-2xl font-semibold">Tính năng nổi bật</h2>
+      <p class="mt-2 text-gray-600">Một số điểm mạnh mà trang web của bạn sẽ có.</p>
+
+      <div class="mt-8 grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="p-6 bg-white rounded-lg shadow-sm">
+          <h3 class="font-semibold">Thiết kế responsive</h3>
+          <p class="mt-2 text-sm text-gray-600">Hoạt động mượt mà trên mọi thiết bị — điện thoại, máy tính bảng, máy tính để bàn.</p>
+        </div>
+        <div class="p-6 bg-white rounded-lg shadow-sm">
+          <h3 class="font-semibold">Tốc độ tải nhanh</h3>
+          <p class="mt-2 text-sm text-gray-600">Tối ưu hình ảnh và mã để giảm thời gian tải trang.</p>
+        </div>
+        <div class="p-6 bg-white rounded-lg shadow-sm">
+          <h3 class="font-semibold">Dễ tùy biến</h3>
+          <p class="mt-2 text-sm text-gray-600">Cấu trúc HTML rõ ràng, dễ chỉnh sửa và mở rộng.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing" class="bg-gray-50 py-12">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-semibold">Gói dịch vụ</h2>
+        <p class="mt-2 text-gray-600">Chọn gói phù hợp với nhu cầu của bạn.</p>
+
+        <div class="mt-8 grid gap-6 grid-cols-1 md:grid-cols-3">
+          <div class="p-6 bg-white rounded-lg shadow">
+            <div class="text-xl font-semibold">Cơ bản</div>
+            <div class="mt-4 text-3xl font-extrabold">Free</div>
+            <ul class="mt-4 text-sm text-gray-600 space-y-2">
+              <li>✅ Tùy chỉnh cơ bản</li>
+              <li>✅ Hỗ trợ qua email</li>
+            </ul>
+            <a href="#contact" class="mt-6 inline-block px-4 py-2 bg-indigo-600 text-white rounded-md">Chọn ngay</a>
+          </div>
+
+          <div class="p-6 bg-white rounded-lg shadow border-2 border-indigo-100">
+            <div class="text-xl font-semibold">Pro</div>
+            <div class="mt-4 text-3xl font-extrabold">$19<span class="text-sm font-medium">/tháng</span></div>
+            <ul class="mt-4 text-sm text-gray-600 space-y-2">
+              <li>✅ Tùy chỉnh nâng cao</li>
+              <li>✅ Hỗ trợ 24/7</li>
+              <li>✅ Cập nhật thường xuyên</li>
+            </ul>
+            <a href="#contact" class="mt-6 inline-block px-4 py-2 bg-indigo-600 text-white rounded-md">Chọn ngay</a>
+          </div>
+
+          <div class="p-6 bg-white rounded-lg shadow">
+            <div class="text-xl font-semibold">Enterprise</div>
+            <div class="mt-4 text-3xl font-extrabold">Liên hệ</div>
+            <ul class="mt-4 text-sm text-gray-600 space-y-2">
+              <li>✅ Tùy biến theo yêu cầu</li>
+              <li>✅ SLA & Onsite</li>
+            </ul>
+            <a href="#contact" class="mt-6 inline-block px-4 py-2 bg-indigo-600 text-white rounded-md">Liên hệ</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <h2 class="text-2xl font-semibold">Liên hệ</h2>
+      <p class="mt-2 text-gray-600">Gửi cho chúng tôi câu hỏi, đề nghị hoặc yêu cầu báo giá.</p>
+
+      <form class="mt-6 grid gap-4 grid-cols-1 md:grid-cols-2">
+        <input class="col-span-1 md:col-span-2 p-3 border rounded-md" type="text" placeholder="Họ tên" required />
+        <input class="p-3 border rounded-md" type="email" placeholder="Email" required />
+        <input class="p-3 border rounded-md" type="text" placeholder="Chủ đề" />
+        <textarea class="col-span-1 md:col-span-2 p-3 border rounded-md" rows="4" placeholder="Nội dung"></textarea>
+        <div class="col-span-1 md:col-span-2">
+          <button type="submit" class="px-5 py-3 bg-indigo-600 text-white rounded-md">Gửi</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t mt-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="text-sm text-gray-600">© <span id="year"></span> MySite. Bản quyền thuộc về MySite.</div>
+      <div class="flex items-center gap-4">
+        <a href="#" class="text-sm hover:text-indigo-600">Chính sách</a>
+        <a href="#" class="text-sm hover:text-indigo-600">Điều khoản</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu toggle
+    const btn = document.getElementById('mobileBtn');
+    const menu = document.getElementById('mobileMenu');
+    const openIcon = document.getElementById('menuOpen');
+    const closeIcon = document.getElementById('menuClose');
+
+    btn.addEventListener('click', () => {
+      menu.classList.toggle('hidden');
+      openIcon.classList.toggle('hidden');
+      closeIcon.classList.toggle('hidden');
+    });
+
+    // Set current year in footer
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Simple form submit handler (demo only)
+    document.querySelector('form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('Cảm ơn! Chúng tôi đã nhận được thông tin của bạn.');
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>
