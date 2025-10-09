@@ -10,13 +10,4 @@ const pool = mariadb.createPool({
   connectionLimit: 5
 });
 
-pool.getConnection()
-  .then(conn => {
-    console.log('✅ Đã kết nối thành công tới MariaDB');
-    conn.release();
-  })
-  .catch(err => {
-    console.error('❌ Lỗi kết nối MariaDB:', err.message);
-  });
-
 module.exports = pool;
