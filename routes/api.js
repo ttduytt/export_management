@@ -194,10 +194,12 @@ router.post("/delivery/history/:factory", async (req, res) => {
     if (conn) conn.release();
   }
 });
+
+// login
 router.post("/api/login", async (req, res) => {
   const { username, password } = req.body;
   try {
-    const rows = await db.query(
+    const rows = await pool.query(
       "SELECT * FROM user WHERE user_name = ? AND password = ?",
       [username, password]
     );
