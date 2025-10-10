@@ -376,12 +376,25 @@
         <div class="nav-container">
             <div class="logo" ><span><img style="width: 80px;" src="/images/logo.png" alt=""></span>MANAGERMENT DELIVERY</div>
             <ul class="nav-menu" id="navMenu">
-                <li><a href="#" class="active">Home</a></li>
+                <li class="home"><a href="#">Home</a></li>
                 <li class="delivery"><a href="#delivery">Delivery</a></li>
                 <li class="history"><a href="#history">History</a></li>
                 <li class="admin"><a href="#admin">Admin</a></li>
-                <li class="logout"><a><span><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out-icon lucide-log-out"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg></span></a></li>
-            </ul>
+                <li class="logout">
+                    <a href="#">
+                    <span>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="lucide lucide-log-out-icon lucide-log-out">
+                        <path d="m16 17 5-5-5-5"/>
+                        <path d="M21 12H9"/>
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        </svg>
+                    </span>
+                    </a>
+                </li>
+              </ul>
         </div>
     </nav>
     <div class="container">
@@ -423,37 +436,62 @@
         }
         scrollLoop();
         
-        //navigation
-        const logoutLink = document.querySelector('.logout a');
-        const deliveryLink = document.querySelector('.delivery a');
-        const historyLink = document.querySelector('.history a');
-        logoutLink.addEventListener('click', function(event) {
-          event.preventDefault();
-          if (confirm('Are you sure you want to logout?')) {
-            sessionStorage.clear();
-            localStorage.clear(); 
-            window.location.href = '/'; // Chuyển hướng nếu người dùng xác nhận
+        const navLinks = document.querySelectorAll('.nav-menu a');
+
+      // Khôi phục menu active
+      const savedMenu = sessionStorage.getItem('activeMenu');
+      if (savedMenu) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        const target = document.querySelector(`.${savedMenu} a`);
+        if (target) target.classList.add('active');
+      }
+      // Lắng nghe click cho toàn bộ menu
+      navLinks.forEach(link => {
+        link.addEventListener('click', e => {
+          e.preventDefault();
+          const parentClass = link.parentElement.classList[0]; 
+          navLinks.forEach(l => l.classList.remove('active'));
+          link.classList.add('active');
+          sessionStorage.setItem('activeMenu', parentClass);
+
+          // Xử lý hành động theo từng menu
+          switch (parentClass) {
+            case 'home':
+              window.location.href = '/home';
+              break;
+
+            case 'logout':
+              if (confirm('Are you sure you want to logout?')) {
+                sessionStorage.clear();
+                localStorage.clear();
+                window.location.href = '/';
+              }
+              break;
+
+            case 'delivery':
+              window.location.href = '/delivery';
+              break;
+
+            case 'history':
+              window.location.href = '/history';
+              break;
+
+            case 'admin':
+              const userRole = sessionStorage.getItem('role');
+              if (userRole === 'MANAGER') {
+                window.location.href = '/admin';
+              } else {
+                alert('Access denied. Admins only.');
+              }
+              break;
+            default:
+              console.log('Unknown menu item:', parentClass);
+              break;
           }
         });
-        deliveryLink.addEventListener('click', function(event) {
-          event.preventDefault();
-          window.location.href = '/delivery'; 
         });
-        historyLink.addEventListener('click', function(event) {
-          event.preventDefault();
-          window.location.href = '/history'; 
-        });
-        //admin
-        const adminLink = document.querySelector('.admin a');
-        adminLink.addEventListener('click', function(event) {
-          event.preventDefault();
-          const userRole = sessionStorage.getItem('role');
-          if (userRole === 'MANAGER') {
-            window.location.href = '/admin'; 
-          } else {
-            alert('Access denied. Admins only.');
-          }
-        });
+
+         
     </script>
 </body>
 </html>
