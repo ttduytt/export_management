@@ -7,10 +7,11 @@ require('dotenv').config();
 var router = require('./routes/index');
 
 const app = express();
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json()); 
 
 // api
-app.use('/exportmanagemnt', apiRouter);
-
+app.use('/exportmanagement', apiRouter);
 // router
 app.use('/', router);
 

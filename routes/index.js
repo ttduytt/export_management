@@ -1,14 +1,14 @@
 var express = require('express');
 var router = express.Router();
-var path = require('path'); 
+var path = require('path');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  res.sendFile(path.join(__dirname, '../views/Home.html'));
+  res.sendFile(path.join(__dirname, '../views/Login.html'));
 });
 
-router.get('/user', function (req, res, next) {
-  res.sendFile(path.join(__dirname, '../views/User.html'));
+router.get('/home', function (req, res, next) {
+  res.sendFile(path.join(__dirname, '../views/Home.html'));
 });
 
 router.get('/modelinfo', function (req, res, next) {
