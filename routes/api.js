@@ -194,5 +194,29 @@ router.post("/delivery/history/:factory", async (req, res) => {
     if (conn) conn.release();
   }
 });
+router.post("/api/login", async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const rows = await db.query(
+      "SELECT * FROM user WHERE user_name = ? AND password = ?",
+      [username, password]
+    );
+    if (rows.length > 0) {
+      const user = rows[0];
+      res.json({
+        success: true,
+        message: "Login successful",
+        username: user.user_name,
+        password: user.password,
+        role: user.role,
+      });
+    } else {
+      res.status(401).json({ success: false, message: "Invalid credentials" });
+    }
+  } catch (err) {
+    console.error("DB error:", err);
+    res.status(500).json({ error: "Database error" });
+  }
+});
 
 module.exports = router;
