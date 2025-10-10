@@ -357,8 +357,6 @@
           left: auto;
           width: 100%;
         }
-
-
         /* Responsive */
         @media (max-width: 768px) {
             .hamburger {
@@ -389,10 +387,211 @@
             }
           
         }
-      
+        .container {
+          display: flex;
+          height: calc(100vh - 140px); /* Chiều cao toàn màn hình trừ header/footer nếu có */
+          color: white;
+        }
+        /* Cột bên trái */
+        .content-left {
+          flex: 1;
+          display: flex;
+          justify-content: center; /* căn giữa ngang */
+          align-items: center;     /* căn giữa dọc */
+          text-align: center;
+          padding: 40px;
+        }
 
+        .text-wrapper h1 {
+          font-size: 40px;
+          margin-bottom: 20px;
+          text-transform: uppercase;
+          font-weight: 700;
+        }
 
-    
+        .text-wrapper p {
+          font-size: 18px;
+          color: #ccc;
+        }
+        .text-wrapper {
+          text-align: center;
+          color: white;
+          margin: 50px auto;
+        }
+
+        .typing-text {
+          overflow: hidden;
+          border-right: 3px solid #fff;
+          white-space: nowrap;
+          margin: 0 auto;
+          letter-spacing: 2px;
+          width: 0;
+          animation: typing 5s steps(40, end) forwards, blink 1s step-end infinite;
+        }
+
+        /* Dòng chứa các slogan */
+        .slogan-row {
+          display: flex;
+          justify-content: center;
+          gap: 20px;           
+          flex-wrap: wrap;
+        }
+          .typing-sub.show {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        .typing-sub {
+          background: rgba(255, 255, 255, 0.25);
+          border-radius: 12px;
+          padding: 15px 20px;
+          font-size: 16px;
+          width: 250px;
+          color: white;
+          text-align: center;
+          opacity: 0; /* ẩn ban đầu */
+          transform: translateY(30px);
+          transition: all 0.5s ease;
+          animation: fadeInUp 1s ease forwards;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+        }
+
+        .typing-sub span {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+        .logout span{
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .typing-sub svg {
+          color: #4ade80;
+          flex-shrink: 0;
+        }
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .typing-sub:nth-child(1) {
+          animation-delay: 5s;
+        }
+
+        .typing-sub:nth-child(2) {
+          animation-delay: 5.5s;
+        }
+
+        .typing-sub:nth-child(3) {
+          animation-delay: 6s; 
+        }
+
+        .typing-sub:hover {
+          transform: translateY(-10px);
+          background: rgba(102, 126, 234, 0.2);
+        }
+        @keyframes typing {
+          from { width: 0 }
+          to { width: 100% }
+        }
+        @keyframes blink {
+          50% { border-color: transparent }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0 }
+          to { opacity: 1 }
+        }
+        /* Cột bên phải */
+        .content-right {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: center; 
+          align-items: center;    
+          gap: 20px;
+        }
+        .content-right img {
+          width: 80%;
+          max-width: 400px;
+          max-height: 350px;
+          border-radius: 12px;
+          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+          transition: transform 0.3s ease;
+        }
+
+        .content-right img:hover {
+          transform: scale(1.05);
+        }
+
+        /* Responsive: khi màn nhỏ, xếp dọc */
+        @media (max-width: 900px) {
+          .container {
+            flex-direction: column;
+            height: auto;
+          }
+
+          .content-left, .content-right {
+            width: 100%;
+          }
+
+          .content-right {
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 10px;
+          }
+
+          .content-right img {
+            width: 45%;
+            max-width: 200px;
+          }
+        }
+        @media (max-width: 1600px) {
+          .text-wrapper h1 {
+            font-size: 28px;
+          }
+
+          .text-wrapper p {
+            font-size: 14px;
+          }
+
+          .typing-sub {
+            width: 100%;
+            font-size: 14px;
+          }
+          .content-right img {
+            width: 90%;
+            max-width: 300px;
+          }
+        }
+        .vertical-slider {
+          overflow: hidden;
+          position: relative;
+          width: 100%;
+          display: flex;
+          justify-content: center;
+        }
+        .slide-track {
+          display: flex;
+          will-change: transform;
+          flex-direction: column;
+          align-items: center;
+        }
+        .slide-track img {
+          width: 80%;
+          max-width: 600px;
+          margin: 20px 0;
+          border-radius: 10px;
+          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -402,11 +601,11 @@
         <div class="nav-container">
             <div class="logo" ><span><img style="width: 80px;" src="/images/logo.png" alt=""></span>MANAGERMENT DELIVERY</div>
             <ul class="nav-menu" id="navMenu">
-                <li><a href="#" class="active">Home</a></li>
+                 <li class="home"><a href="#">Home</a></li>
                 <li class="delivery"><a href="#delivery">Delivery</a></li>
                 <li class="history"><a href="#history">History</a></li>
                 <li class="admin"><a href="#admin">Admin</a></li>
-                <li class="logout"><a><span><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out-icon lucide-log-out"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg></span></a></li>
+                <li class="logout">
             </ul>
         </div>
     </nav>
@@ -458,7 +657,6 @@
     <footer>
         <p>&copy; 2025 Copyright for Partron VN</p>
     </footer>
-
     <script>
         //animation images
         const track = document.getElementById("slideTrack");
@@ -472,38 +670,60 @@
         }
         scrollLoop();
         
-        //navigation
-        const logoutLink = document.querySelector('.logout a');
-        const deliveryLink = document.querySelector('.delivery a');
-        const historyLink = document.querySelector('.history a');
-        logoutLink.addEventListener('click', function(event) {
-          event.preventDefault();
-          if (confirm('Are you sure you want to logout?')) {
-            sessionStorage.clear();
-            localStorage.clear(); 
-            window.location.href = '/'; // Chuyển hướng nếu người dùng xác nhận
+        const navLinks = document.querySelectorAll('.nav-menu a');
+
+      // Khôi phục menu active
+      const savedMenu = sessionStorage.getItem('activeMenu');
+      if (savedMenu) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        const target = document.querySelector(`.${savedMenu} a`);
+        if (target) target.classList.add('active');
+      }
+      // Lắng nghe click cho toàn bộ menu
+      navLinks.forEach(link => {
+        link.addEventListener('click', e => {
+          e.preventDefault();
+          const parentClass = link.parentElement.classList[0]; 
+          navLinks.forEach(l => l.classList.remove('active'));
+          link.classList.add('active');
+          sessionStorage.setItem('activeMenu', parentClass);
+
+          // Xử lý hành động theo từng menu
+          switch (parentClass) {
+            case 'home':
+              window.location.href = '/home';
+              break;
+
+            case 'logout':
+              if (confirm('Are you sure you want to logout?')) {
+                sessionStorage.clear();
+                localStorage.clear();
+                window.location.href = '/';
+              }
+              break;
+
+            case 'delivery':
+              window.location.href = '/delivery';
+              break;
+
+            case 'history':
+              window.location.href = '/deliveryHistory';
+              break;
+
+            case 'admin':
+              const user = JSON.parse(localStorage.getItem('user'));
+              if (user.role === 'MANAGER') {
+                window.location.href = '/admin';
+              } else {
+                alert('Access denied. Admins only.');
+              }
+              break;
+            default:
+              console.log('Unknown menu item:', parentClass);
+              break;
           }
         });
-        deliveryLink.addEventListener('click', function(event) {
-          event.preventDefault();
-          window.location.href = '/delivery'; 
-        });
-        historyLink.addEventListener('click', function(event) {
-          event.preventDefault();
-          window.location.href = '/history'; 
-        });
-        //admin
-        const adminLink = document.querySelector('.admin a');
-        adminLink.addEventListener('click', function(event) {
-          event.preventDefault();
-          const userRole = sessionStorage.getItem('role');
-          if (userRole === 'MANAGER') {
-            window.location.href = '/admin'; 
-          } else {
-            alert('Access denied. Admins only.');
-          }
-        });
+        });         
     </script>
-    <script src="/js/delivery.js"></script>
 </body>
 </html>

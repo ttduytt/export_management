@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/js/highcharts.js"></script>
+    <title>Managerment Delivery - Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #040818;
+            background-image:
+              linear-gradient(to right, rgba(75, 85, 99, 0.4) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(75, 85, 99, 0.4) 1px, transparent 1px);
+            background-size: 40px 40px, 40px 40px, 100% 100%;
+        }
+        /* Navigation */
+        nav {
+            background: rgba(6, 12, 34, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+        }
+
+        .logo {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            padding: 20px 0;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #f4f4f4 0%, #e7d3fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo img {
+            transition: transform 0.3s ease;
+        }
+
+        .logo img:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .nav-menu li a {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            padding: 12px 28px;
+            display: block;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            font-weight: 500;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            border-radius: 8px;
+        }
+
+        .nav-menu li a::before {
+            content: '';
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%) scaleX(0);
+            width: 60%;
+            height: 2px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-menu li a:hover {
+            background: rgba(102, 126, 234, 0.15);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-menu li a:hover::before {
+            transform: translateX(-50%) scaleX(1);
+        }
+
+        .nav-menu li a.active {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-menu li a.active::before {
+            transform: translateX(-50%) scaleX(1);
+        }
+        /* Footer */
+        footer {
+          background: #040818b7;
+          color: white;
+          font-size: 12px;
+          text-align: center;
+          padding: 20px 20px;
+          position: fixed;
+          bottom: 0;
+          right: 0;
+          text-align: right;
+          left: auto;
+          width: 100%;
+        }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+            .nav-menu {
+                position: fixed;
+                left: -100%;
+                top: 60px;
+                flex-direction: column;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                width: 100%;
+                text-align: center;
+                transition: 0.3s;
+                box-shadow: 0 10px 27px rgba(0,0,0,0.05);
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .nav-menu li {
+                margin: 0;
+            }
+
+            .nav-menu li a {
+                padding: 20px;
+            }
+          
+        }
+        .container {
+          display: flex;
+          height: calc(100vh - 140px);
+          color: white;
+        }
+        .logout span{
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .typing-sub svg {
+          color: #4ade80;
+          flex-shrink: 0;
+        }
+        .top-row{
+          gap: 20px;
+          width: 40%;
+          height: 100%;
+          flex: 1;
+          color: white;
+          flex-wrap: wrap;
+          margin: 0 0 0 20px;
+          /* background-color: #2d2a2a; */
+        }
+        .bottom-row{
+          display: flex;
+          gap: 20px;
+          width: 40%;
+          flex: 1;
+          color: white;
+          flex-wrap: wrap;
+          margin: 0 20px 0 0;
+          background-color: #8d8d8d;
+        }
+        .welcome-card {
+          width: 100%;
+          display: flex;
+          height: 200px;
+          justify-content: space-between;
+          align-items: center;
+          background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+          border-radius: 8px;
+          padding: 30px 20px;
+          border: 1px solid #e5e7eb;
+        }
+        .welcome-left {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+        }
+        .welcome-text h2 {
+          font-size: 20px;
+          color: #fff;
+          margin-bottom: 20px;
+        }
+
+        .stats {
+          display: flex;
+          align-items: center;
+          gap: 30px;
+        }
+
+        .stats div {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .stats strong {
+          font-size: 26px;
+          font-weight: 600;
+          color: #fff;
+        }
+
+        .stats span {
+          color: #fff;
+          font-size: 14px;
+        }
+
+        .divider {
+          width: 1px;
+          height: 30px;
+          background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+        }
+        .welcome-right img {
+          width: 340px;
+          height: auto;
+        }
+        .chart-row {
+          display: flex;
+          gap: 20px;
+          width: 100%;
+          margin: 10px 0;
+        }
+
+        .chart-card {
+          flex: 1;
+          background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+          border-radius: 12px;
+          padding: 24px;
+          color: #ffff;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+          border: 1px solid #e5e7eb;
+        }
+
+        .chart-header h3 {
+          font-size: 18px;
+          font-weight: 600;
+          color: #fff;
+          margin: 0 0 8px 0;
+        }
+
+        .chart-header p {
+          font-size: 14px;
+          color: #6b7280;
+          margin: 0 0 20px 0;
+        }
+
+        .chart-container {
+          width: 100%;
+          height: 300px;
+          position: relative;
+        }
+
+        .chart-container div {
+          width: 100% !important;
+          height: 100% !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="all">
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo" ><span><img style="width: 80px;" src="/images/logo.png" alt=""></span>MANAGERMENT DELIVERY</div>
+            <ul class="nav-menu" id="navMenu">
+                <li class="home"><a href="#">Home</a></li>
+                <li class="delivery"><a href="#delivery">Delivery</a></li>
+                <li class="history"><a href="#history">History</a></li>
+                <li class="admin"><a href="#admin">Admin</a></li>
+                <li class="logout">
+                    <a href="#">
+                    <span>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="lucide lucide-log-out-icon lucide-log-out">
+                        <path d="m16 17 5-5-5-5"/>
+                        <path d="M21 12H9"/>
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        </svg>
+                    </span>
+                    </a>
+                </li>
+              </ul>
+        </div>
+    </nav>
+    <div class="container">
+      <div class="top-row">
+        <div class="welcome-card">
+          <div class="welcome-left">
+            <div class="welcome-text">
+              <h2>Welcome back, Admin!</h2>
+              <div class="stats">
+                <div><strong id="totalInDay">10</strong><span>Total in day</span></div>
+                <div class="divider"></div>
+                <div><strong id="performance">35%</strong><span>Performance</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="welcome-right">
+            <img src="/images/admin.svg" alt="user" />
+          </div>
+        </div>
+        <div class="chart-row">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Monthly Performance</h3>
+              <p>Overview of monthly metrics</p>
+            </div>
+            <div class="chart-container">
+              <div id="monthlyChart"></div>
+            </div>
+          </div>
+          
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Shipment Status</h3>
+              <p>Delivery status breakdown</p>
+            </div>
+            <div class="chart-container">
+              <div id="orderChart"></div>
+            </div>
+          </div>
+        </div>
+        </div>
+      <!-- Hàng 2: Biểu đồ -->
+      <div class="bottom-row">
+        <div class="card large">
+          <h3>Revenue Updates</h3>
+          <p>Overview of Profit</p>
+          <div id="chart-revenue"></div>
+        </div>
+
+        <div class="card large">
+          <h3>Sales Overview</h3>
+          <p>Every month</p>
+          <div id="chart-sales"></div>
+        </div>
+
+        <div class="card medium">
+          <h3>Monthly Earnings</h3>
+          <p>$6,820 <span class="up">+9%</span></p>
+          <div id="chart-earnings"></div>
+        </div>
+      </div>
+    </div>
+        <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Copyright for Partron VN</p>
+    </footer>
+    <script>
+      const navLinks = document.querySelectorAll('.nav-menu a');
+      const savedMenu = sessionStorage.getItem('activeMenu');
+      if (savedMenu) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        const target = document.querySelector(`.${savedMenu} a`);
+        if (target) target.classList.add('active');
+      }
+      // Lắng nghe click cho toàn bộ menu
+      navLinks.forEach(link => {
+        link.addEventListener('click', e => {
+          e.preventDefault();
+          const parentClass = link.parentElement.classList[0]; 
+          navLinks.forEach(l => l.classList.remove('active'));
+          link.classList.add('active');
+          sessionStorage.setItem('activeMenu', parentClass);
+
+          // Xử lý hành động theo từng menu
+          switch (parentClass) {
+            case 'home':
+              window.location.href = '/home';
+              break;
+
+            case 'logout':
+              if (confirm('Are you sure you want to logout?')) {
+                sessionStorage.clear();
+                localStorage.clear();
+                window.location.href = '/';
+              }
+              break;
+
+            case 'delivery':
+              window.location.href = '/delivery';
+              break;
+
+            case 'history':
+              window.location.href = '/deliveryHistory';
+              break;
+
+            case 'admin':
+              const user = JSON.parse(localStorage.getItem('user'));
+              if (user.role === 'MANAGER') {
+                window.location.href = '/admin';
+              } else {
+                alert('Access denied. Admins only.');
+              }
+              break;
+            default:
+              console.log('Unknown menu item:', parentClass);
+              break;
+          }
+        });
+        });
+
+      document.addEventListener('DOMContentLoaded', async function () {
+        const totalInDayElem = document.getElementById('totalInDay');
+        const performanceElem = document.getElementById('performance');
+        
+        try {
+          // Fetch overview data
+          const overviewResponse = await fetch("/exportmanagement/api/getoverview", {
+            method: "GET",
+            headers: { "Content-Type": "application/json" }
+          });
+          const overviewData = await overviewResponse.json();
+          console.log("Overview data:", overviewData);
+          
+          totalInDayElem.textContent = overviewData.totalExport || '0';
+          performanceElem.textContent = (overviewData.performanceInDay ? Math.round(overviewData.performanceInDay) + '%' : '0%');
+
+          // Fetch monthly performance data
+          const monthlyResponse = await fetch("/exportmanagement/api/getmonthlyperformance", {
+            method: "GET",
+            headers: { "Content-Type": "application/json" }
+          });
+          const monthlyData = await monthlyResponse.json();
+          console.log("Monthly performance data:", monthlyData);
+
+          // Create monthly chart with Highcharts
+          Highcharts.chart('monthlyChart', {
+            chart: {
+              type: 'spline',
+              backgroundColor: 'transparent',
+              height: 300
+            },
+            responsive: {
+              rules: [{
+                condition: {
+                  maxWidth: 500
+                },
+                chartOptions: {
+                  chart: {
+                    height: 300
+                  }
+                }
+              }]
+            },
+            title: {
+              text: null
+            },
+            xAxis: {
+              categories: monthlyData.months,
+              labels: {
+                style: {
+                  color: '#ffffff'
+                }
+              }
+            },
+            yAxis: {
+              title: {
+                text: 'Deliveries',
+                style: {
+                  color: '#ffffff'
+                }
+              },
+              labels: {
+                style: {
+                  color: '#ffffff'
+                }
+              },
+              gridLineColor: 'rgba(255, 255, 255, 0.1)'
+            },
+            legend: {
+              enabled: false
+            },
+            plotOptions: {
+              line: {
+                marker: {
+                  enabled: true,
+                  radius: 4
+                }
+              }
+            },
+            series: [{
+              name: 'Total Deliveries',
+              data: monthlyData.totals,
+              color: '#007FFF',
+              lineWidth: 3
+            }],
+            credits: {
+              enabled: false
+            }
+          });
+
+          // Fetch status count data
+          const statusResponse = await fetch("/exportmanagement/api/getstatuscount", {
+            method: "GET",
+            headers: { "Content-Type": "application/json" }
+          });
+          const statusData = await statusResponse.json();
+          console.log("Status data:", statusData);
+
+          // Create status chart with Highcharts
+          Highcharts.chart('orderChart', {
+            chart: {
+              type: 'pie',
+              backgroundColor: 'transparent',
+              height: 300
+            },
+            responsive: {
+              rules: [{
+                condition: {
+                  maxWidth: 500
+                },
+                chartOptions: {
+                  chart: {
+                    height: 300
+                  }
+                }
+              }]
+            },
+            title: {
+              text: null
+            },
+            plotOptions: {
+              series: {
+               dataLabels: [{
+                enabled: true,
+                distance: 20,
+                format: '{point.name}',
+                style: {
+                    fontSize: '0.7em',
+                    color: 'white', textOutline: 'none'
+                }
+            }, {
+                enabled: true,
+                distance: -15,
+                format: '{point.percentage:.0f}%',
+                style: {
+                    fontSize: '0.7em',
+                    color: 'white', textOutline: 'none'
+                }
+            }],
+              },
+              pie: {
+                innerSize: '60%',
+                dataLabels: {
+                  enabled: false
+                },
+                showInLegend: true
+              }
+            },
+            legend: {
+              align: 'center',
+              verticalAlign: 'bottom',
+              itemStyle: {
+                color: '#ffffff'
+              }
+            },
+            series: [{
+              name: 'Status',
+              data: [
+                {
+                  name: 'Complete',
+                  y: statusData.completed || 0,
+                  color: '#10b981'
+                },
+                {
+                  name: 'In Progress',
+                  y: statusData.inProgress || 0,
+                  color: '#f59e0b'
+                }
+              ]
+            }],
+            credits: {
+              enabled: false
+            }
+          });
+
+        } catch (err) {
+          console.error("Error fetching data:", err);
+          totalInDayElem.textContent = '0';
+          performanceElem.textContent = '0%';
+          
+          // Create fallback monthly chart with Highcharts
+          Highcharts.chart('monthlyChart', {
+            chart: {
+              type: 'line',
+              backgroundColor: 'transparent',
+              height: 250
+            },
+            responsive: {
+              rules: [{
+                condition: {
+                  maxWidth: 500
+                },
+                chartOptions: {
+                  chart: {
+                    height: 200
+                  }
+                }
+              }]
+            },
+            title: {
+              text: null
+            },
+            xAxis: {
+              categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+              labels: {
+                style: {
+                  color: '#ffffff'
+                }
+              }
+            },
+            yAxis: {
+              title: {
+                text: 'Deliveries',
+                style: {
+                  color: '#ffffff'
+                }
+              },
+              labels: {
+                style: {
+                  color: '#ffffff'
+                }
+              },
+              gridLineColor: 'rgba(255, 255, 255, 0.1)'
+            },
+            legend: {
+              enabled: false
+            },
+            series: [{
+              name: 'Total Deliveries',
+              data: [0, 0, 0, 0, 0, 0],
+              color: '#007FFF',
+              lineWidth: 3
+            }],
+            credits: {
+              enabled: false
+            }
+          });
+
+          // Create fallback status chart with Highcharts
+          Highcharts.chart('orderChart', {
+            chart: {
+              type: 'pie',
+              backgroundColor: 'transparent',
+              height: 250
+            },
+            responsive: {
+              rules: [{
+                condition: {
+                  maxWidth: 500
+                },
+                chartOptions: {
+                  chart: {
+                    height: 200
+                  }
+                }
+              }]
+            },
+            title: {
+              text: null
+            },
+            plotOptions: {
+              pie: {
+                innerSize: '60%',
+                dataLabels: {
+                  enabled: false
+                },
+                showInLegend: true
+              }
+            },
+            legend: {
+              align: 'center',
+              verticalAlign: 'bottom',
+              itemStyle: {
+                color: '#ffffff'
+              }
+            },
+            series: [{
+              name: 'Status',
+              data: [
+                {
+                  name: 'Complete',
+                  y: 0,
+                  color: '#10b981'
+                },
+                {
+                  name: 'In Progress',
+                  y: 0,
+                  color: '#f59e0b'
+                }
+              ]
+            }],
+            credits: {
+              enabled: false
+            }
+          });
+        }
+      });       
+    </script>
+</body>
+</html>
