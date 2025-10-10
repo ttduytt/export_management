@@ -11,16 +11,16 @@ router.get("/home", function (req, res, next) {
   res.sendFile(path.join(__dirname, "../views/Home.html"));
 });
 
-router.get("/modelinfo", function (req, res, next) {
-  res.sendFile(path.join(__dirname, "../views/ModelInfo.html"));
-});
-
 router.get("/delivery", function (req, res, next) {
   res.sendFile(path.join(__dirname, "../views/Delivery.html"));
 });
 
-router.get("/delivery/history", function (req, res, next) {
+router.get("/deliveryHistory", function (req, res, next) {
   res.sendFile(path.join(__dirname, "../views/DeliveryHistory.html"));
+});
+  
+router.get("/admin", function (req, res, next) {
+  res.sendFile(path.join(__dirname, "../views/Admin.html"));
 });
 
 module.exports = router;

@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../config/dbconfig");
+const { route } = require("./api");
 
 // user
 router.get("/users", async (req, res) => {
@@ -16,7 +17,6 @@ router.get("/users", async (req, res) => {
     if (conn) conn.release();
   }
 });
-
 // model spec
 router.get("/models", async (req, res) => {
   let conn;
@@ -33,9 +33,9 @@ router.get("/models", async (req, res) => {
 });
 
 // delivery
-router.get("/delivery/:facory", async (req, res) => {
+router.get("/delivery/:factory", async (req, res) => {
   let conn;
-  const factory = req.params.facory;
+  const factory = req.params.factory;
   let sqlquery;
 
   try {
@@ -197,7 +197,7 @@ router.post("/delivery/history/:factory", async (req, res) => {
 router.post("/api/login", async (req, res) => {
   const { username, password } = req.body;
   try {
-    const rows = await db.query(
+    const rows = await pool.query(
       "SELECT * FROM user WHERE user_name = ? AND password = ?",
       [username, password]
     );
@@ -216,6 +216,85 @@ router.post("/api/login", async (req, res) => {
   } catch (err) {
     console.error("DB error:", err);
     res.status(500).json({ error: "Database error" });
+  }
+});
+
+router.get("/api/getoverview", async (req, res) => {
+  try {
+    const totalExportRows = await pool.query(`
+      SELECT COUNT(*) AS total 
+      FROM delivery 
+      WHERE DATE(create_at) = CURDATE()
+    `);
+
+    const performanceRows = await pool.query(`
+      SELECT COUNT(*) AS completed 
+      FROM delivery 
+      WHERE status = 'COMPLETE' 
+        AND DATE(create_at) = CURDATE()
+    `);
+    
+    const totalExport = Number(totalExportRows[0].total);
+    const performanceInDay = Number(performanceRows[0].completed)/(totalExport || 1) * 100;
+
+    res.json({
+      totalExport,
+      performanceInDay
+    });
+  } catch (err) {
+    console.error("DB error:", err);
+    res.status(500).json({ error: "Database error: " + err.message });
+  }
+});
+
+router.get("/api/getmonthlyperformance", async (req, res) => {
+  try {
+    const rows = await pool.query(`
+      SELECT 
+          DATE_FORMAT(create_at, '%Y-%m') AS month,
+          COUNT(*) AS total
+      FROM delivery
+      WHERE create_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+      GROUP BY DATE_FORMAT(create_at, '%Y-%m')
+      ORDER BY month;
+    `);
+
+    const months = rows.map(r => r.month);
+    const totals = rows.map(r => Number(r.total));
+
+    res.json({ months, totals });
+  } catch (err) {
+    console.error("DB error:", err);
+    res.status(500).json({ error: "Database error: " + err.message });
+  }
+});
+
+router.get("/api/getstatuscount", async (req, res) => {
+  try {
+    const rows = await pool.query(`
+      SELECT 
+          status,
+          COUNT(*) AS count
+      FROM delivery
+      GROUP BY status;
+    `);
+
+    const statusCounts = {};
+    rows.forEach(r => {
+      statusCounts[r.status] = Number(r.count);
+    });
+
+    // Tính tổng complete và tổng run + wait
+    const completed = statusCounts['Complete'] || 0;
+    const inProgress = (statusCounts['Run'] || 0) + (statusCounts['Wait'] || 0);
+
+    res.json({
+      completed: completed,
+      inProgress: inProgress
+    });
+  } catch (err) {
+    console.error("DB error:", err);
+    res.status(500).json({ error: "Database error: " + err.message });
   }
 });
 

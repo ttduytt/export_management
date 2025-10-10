@@ -341,7 +341,6 @@
             width: 100%;
             font-size: 14px;
           }
-
           .content-right img {
             width: 90%;
             max-width: 300px;
@@ -473,27 +472,23 @@
               break;
 
             case 'history':
-              window.location.href = '/history';
+              window.location.href = '/deliveryHistory';
               break;
 
             case 'admin':
-              const userRole = sessionStorage.getItem('role');
-              if (userRole === 'MANAGER') {
+              const user = JSON.parse(localStorage.getItem('user'));
+              if (user.role === 'MANAGER') {
                 window.location.href = '/admin';
               } else {
                 alert('Access denied. Admins only.');
               }
               break;
-
             default:
-              // Không làm gì cho các case khác
               console.log('Unknown menu item:', parentClass);
               break;
           }
         });
-        });
-
-         
+        });         
     </script>
 </body>
 </html>

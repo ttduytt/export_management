@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "debug": "node --inspect app.js",
+    "debug-brk": "node --inspect-brk app.js"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
