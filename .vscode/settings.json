@@ -1,8 +1,0 @@
-{
-  "debug.node.autoAttach": "on",
-  "debug.terminal.clearBeforeReusing": true,
-  "debug.javascript.autoAttachFilter": "smart",
-  "debug.javascript.terminalOptions": {
-    "console": "integratedTerminal"
-  }
-}
