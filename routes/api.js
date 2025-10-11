@@ -22,7 +22,7 @@ router.get("/models", async (req, res) => {
   let conn;
   try {
     conn = await pool.getConnection();
-    const rows = await conn.query("SELECT * FROM delivery_spec");
+    const rows = await conn.query("SELECT * FROM delivery_spec ORDER BY MOBIS_CODE");
     res.json(rows);
   } catch (err) {
     console.error("Error fetching delivery_spec:", err);

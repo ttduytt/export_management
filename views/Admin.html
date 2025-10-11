@@ -17,10 +17,6 @@
             line-height: 1.6;
             color: #333;
             background-color: #040818;
-            background-image:
-              linear-gradient(to right, rgba(75, 85, 99, 0.4) 1px, transparent 1px),
-              linear-gradient(to bottom, rgba(75, 85, 99, 0.4) 1px, transparent 1px);
-            background-size: 40px 40px, 40px 40px, 100% 100%;
         }
         /* Navigation */
         nav {
@@ -120,7 +116,6 @@
         }
         /* Footer */
         footer {
-          background: #040818b7;
           color: white;
           font-size: 12px;
           text-align: center;
@@ -166,6 +161,7 @@
           display: flex;
           height: calc(100vh - 140px);
           color: white;
+          margin-top: 16px;
         }
         .logout span{
           display: flex;
@@ -188,13 +184,14 @@
         }
         .bottom-row{
           display: flex;
+          flex-direction: column;
           gap: 20px;
           width: 40%;
           flex: 1;
           color: white;
           flex-wrap: wrap;
           margin: 0 20px 0 0;
-          background-color: #8d8d8d;
+          padding-left: 24px;
         }
         .welcome-card {
           width: 100%;
@@ -205,7 +202,6 @@
           background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
           border-radius: 8px;
           padding: 30px 20px;
-          border: 1px solid #e5e7eb;
         }
         .welcome-left {
           display: flex;
@@ -264,7 +260,6 @@
           padding: 24px;
           color: #ffff;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-          border: 1px solid #e5e7eb;
         }
 
         .chart-header h3 {
@@ -289,6 +284,281 @@
         .chart-container div {
           width: 100% !important;
           height: 100% !important;
+        }
+
+        .management-user{
+          flex: 1;
+          width: 100%;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+          background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+          border-radius: 12px;
+          max-height: 300px;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+        }
+        .management-user table {
+          border-collapse: collapse;
+          width: 100%;
+          border: none;
+          background: transparent;
+          flex: 1;
+        }
+        
+        .management-user .table-container {
+          flex: 1;
+          overflow-y: auto;
+          max-height: 300px;
+        }
+        
+        .management-user .table-header {
+          background: rgba(102, 126, 234, 0.3);
+          position: sticky;
+          top: 0;
+          z-index: 10;
+        }
+
+        .management-user th,
+        .management-user td {
+          padding: 12px 16px;
+          text-align: center;
+          border: none;
+          border-bottom: 1px solid #e5e7eb83;
+        }
+
+        .management-user th {
+          background: rgba(102, 126, 234, 0.4);
+          color: #fff;
+          font-weight: 600;
+          text-align: center;
+          position: sticky;
+          top: 0;
+          text-transform: uppercase;
+          z-index: 5;
+        }
+
+        .management-user tbody {
+          display: block;
+          max-height: 300px;
+          overflow-y: auto;
+          overflow-x: hidden;
+        }
+        
+        .management-user thead {
+          display: block;
+        }
+        
+        .management-user tr {
+          display: table;
+          width: 100%;
+          table-layout: fixed;
+        }
+
+        /* Custom scrollbar for webkit browsers */
+        .management-user tbody::-webkit-scrollbar {
+          width: 8px;
+        }
+
+        .management-user tbody::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 4px;
+        }
+
+        .management-user tbody::-webkit-scrollbar-thumb {
+          background: rgba(102, 126, 234, 0.6);
+          border-radius: 4px;
+        }
+
+        .management-user tbody::-webkit-scrollbar-thumb:hover {
+          background: rgba(102, 126, 234, 0.8);
+        }
+
+        .management-user tr:last-child td {
+          border-bottom: none;
+        }
+
+        .edit-user, .delete-user {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          border: none;
+          color: white;
+          padding: 6px 12px;
+          margin-right: 6px;
+          margin-bottom: 8px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 14px;
+          transition: all 0.3s ease;
+        }
+        .edit-user:hover, .delete-user:hover {
+          background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+        }
+        .add-user {
+          background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+          border: none;
+          color: white;
+          padding: 8px 16px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 14px;
+          transition: all 0.3s ease;
+        }
+        .add-user:hover {
+          background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
+        }
+        .management-delivery-spec{
+          flex: 1;
+          width: 100%;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+          background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+          border-radius: 12px;
+          max-height: 320px;
+          overflow: hidden;
+          transition: all 0.3s ease;
+          display: flex;
+          flex-direction: column;
+        }
+        .management-delivery-spec table {
+          border-collapse: collapse;
+          width: 100%;
+          border: none;
+          background: transparent;
+          transition: all 0.3s ease;
+          flex: 1;
+        }
+
+        .management-delivery-spec .table-container {
+          flex: 1;
+          overflow-y: auto;
+          max-height: 300px;
+        }
+
+        .management-delivery-spec .table-header {
+          background: rgba(102, 126, 234, 0.3);
+          position: sticky;
+          top: 0;
+          z-index: 10;
+        }
+
+        .management-delivery-spec th,
+        .management-delivery-spec td {
+          padding: 12px 16px;
+          text-align: center;
+          border: none;
+          word-wrap: break-word;
+          border-bottom: 1px solid #e5e7eb83;
+        }
+
+        .management-delivery-spec th {
+          background: rgba(102, 126, 234, 0.4);
+          color: #fff;
+          font-weight: 600;
+          text-align: center;
+          position: sticky;
+          top: 0;
+          text-transform: uppercase;
+          z-index: 5;
+        }
+
+        .management-delivery-spec tbody {
+          display: block;
+          max-height: 300px;
+          overflow-y: auto;
+          overflow-x: hidden;
+        }
+
+        .management-delivery-spec thead {
+          display: block;
+        }
+
+        .management-delivery-spec tr {
+          display: table;
+          width: 100%;
+          table-layout: fixed;
+          }
+          @media screen and (max-width: 1600px) {
+            .container {
+              flex-direction: column;
+              height: auto;
+            }
+            .top-row, .bottom-row {
+              width: 100%;
+              margin: 0 0 20px 0;
+            }
+            .welcome-card {
+              flex-direction: row;
+              height: auto;
+              text-align: center;
+            }
+            .welcome-right img {
+              width: 100%;
+              max-width: 300px;
+              margin-top: 20px;
+            }
+            .chart-row {
+              flex-direction: row;
+            }
+            .bottom-row{
+              padding-left: 0;
+            }
+            .management-delivery-spec, .management-user {
+              margin: 0;
+              padding: 0;
+            }
+            
+          }
+        /* Custom scrollbar for webkit browsers */
+        .management-delivery-spec tbody::-webkit-scrollbar {
+          width: 8px;
+        }
+
+        .management-delivery-spec tbody::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 4px;
+        }
+
+        .management-delivery-spec tbody::-webkit-scrollbar-thumb {
+          background: rgba(102, 126, 234, 0.6);
+          border-radius: 4px;
+        }
+
+        .management-delivery-spec tbody::-webkit-scrollbar-thumb:hover {
+          background: rgba(102, 126, 234, 0.8);
+        }
+
+        .management-delivery-spec tr:last-child td {
+          border-bottom: none;
+        }
+        .import, .export {
+          background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+          border: none;
+          color: white;
+          padding: 8px 16px;
+          margin-right: 8px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 14px;
+          transition: all 0.3s ease;
+        }
+        .import:hover, .export:hover {
+          background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
+        }
+        .searchText{
+          padding: 8px 12px;
+          border-radius: 4px;
+          border: none;
+          width: 100%;
+          max-width: 200px;
+          background: rgba(255, 255, 255, 0.1);
+          color: white;
+        }
+        .searchText::placeholder{
+          color: #d1d5db;
+        }
+        .searchText:focus{
+          outline: none;
+          background: rgba(255, 255, 255, 0.2);
         }
     </style>
 </head>
@@ -327,9 +597,9 @@
             <div class="welcome-text">
               <h2>Welcome back, Admin!</h2>
               <div class="stats">
-                <div><strong id="totalInDay">10</strong><span>Total in day</span></div>
+                <div><strong id="totalInDay"></strong><span>Total in day</span></div>
                 <div class="divider"></div>
-                <div><strong id="performance">35%</strong><span>Performance</span></div>
+                <div><strong id="performance"></strong><span>Performance</span></div>
               </div>
             </div>
           </div>
@@ -359,24 +629,49 @@
           </div>
         </div>
         </div>
-      <!-- Hàng 2: Biểu đồ -->
+      <!-- Hàng 2: Management -->
       <div class="bottom-row">
-        <div class="card large">
-          <h3>Revenue Updates</h3>
-          <p>Overview of Profit</p>
-          <div id="chart-revenue"></div>
+        <div class="management-user">
+          <table>
+            <thead>
+              <tr>
+                <th colspan="3" style="text-align: left; font-size: 20px; padding-bottom: 10px; text-transform: uppercase;">User Management</th>
+                <th colspan="1" style="text-align: right;"><button class="add-user">Add User</button></th>              
+              </tr>
+              <tr>
+                <th>STT</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="userTableBody">
+            </tbody>
+          </table>
         </div>
 
-        <div class="card large">
-          <h3>Sales Overview</h3>
-          <p>Every month</p>
-          <div id="chart-sales"></div>
-        </div>
-
-        <div class="card medium">
-          <h3>Monthly Earnings</h3>
-          <p>$6,820 <span class="up">+9%</span></p>
-          <div id="chart-earnings"></div>
+        <div class="management-delivery-spec">
+          <table>
+            <thead>
+              <tr>
+                <th colspan="1" style="text-align: left; font-size: 20px; padding-bottom: 10px; text-transform: uppercase;">Model Spec</th>
+                <th colspan="2"><input class="searchText" type="text" name="searchText" id="searchText" placeholder="Search all"></th>
+                <th colspan="1" style="text-align: right;"><button class="import">Add Model</button></th>
+                <th colspan="1" style="text-align: right;"><button class="import">Import File</button></th>   
+                <th colspan="1" style="text-align: right;"><button class="export">Export File</button></th>   
+              </tr>
+              <tr>
+                <th>STT</th>
+                <th>Mobis Type</th>
+                <th>Mobis code</th>
+                <th>Partron Code</th>
+                <th>Model Name</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="specTableBody">
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -437,13 +732,12 @@
           }
         });
         });
-
-      document.addEventListener('DOMContentLoaded', async function () {
+      
+      //overview
+      async function initOverview() {
         const totalInDayElem = document.getElementById('totalInDay');
-        const performanceElem = document.getElementById('performance');
-        
-        try {
-          // Fetch overview data
+        const performanceElem = document.getElementById('performance'); 
+        // Fetch overview data
           const overviewResponse = await fetch("/exportmanagement/api/getoverview", {
             method: "GET",
             headers: { "Content-Type": "application/json" }
@@ -460,9 +754,7 @@
             headers: { "Content-Type": "application/json" }
           });
           const monthlyData = await monthlyResponse.json();
-          console.log("Monthly performance data:", monthlyData);
-
-          // Create monthly chart with Highcharts
+          // Monthly chart with Highcharts
           Highcharts.chart('monthlyChart', {
             chart: {
               type: 'spline',
@@ -536,7 +828,7 @@
           const statusData = await statusResponse.json();
           console.log("Status data:", statusData);
 
-          // Create status chart with Highcharts
+          // Status chart with Highcharts
           Highcharts.chart('orderChart', {
             chart: {
               type: 'pie',
@@ -613,6 +905,105 @@
             }
           });
 
+      }
+      
+      //User management table
+      async function initUserManagement(){
+        // Create user management table
+          const userTableBody = document.getElementById('userTableBody');
+          const usersResponse = await fetch("/exportmanagement/users", {
+            method: "GET",
+            headers: { "Content-Type": "application/json" }
+          });
+          const usersData = await usersResponse.json();
+          var stt = 1;
+          // Populate user management table
+          usersData.forEach(user => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${stt++}</td>
+              <td>${user.user_name}</td>
+              <td>${user.password}</td>
+              <td>
+                <button class="edit-user" data-id="${user.id}">Edit</button>
+                <button class="delete-user" data-id="${user.id}">Delete</button>
+              </td>
+            `;
+            userTableBody.appendChild(row);
+          });
+      }
+      
+        //Spec management table
+      async function initSpecModel(){
+        const searchText = document.getElementById('searchText');   
+        // Spec management table
+          const specTableBody = document.getElementById('specTableBody');
+          const specsResponse = await fetch("/exportmanagement/models", {
+            method: "GET",
+            headers: { "Content-Type": "application/json" }
+          });
+          const specsData = await specsResponse.json();
+          var sttSpec = 1;
+          // Populate spec management table
+          specsData.forEach(spec => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${sttSpec++}</td>
+              <td>${spec.model_type || ''}</td>
+              <td>${spec.mobis_code || ''}</td>
+              <td>${spec.partron_code || ''}</td>
+              <td>${spec.model_name || ''}</td>
+              <td>
+                <button class="edit-user" data-id="${spec.id}">Edit</button>
+                <button class="delete-user" data-id="${spec.id}">Delete</button>
+              </td>
+            `;
+            specTableBody.appendChild(row);
+          });
+          
+          // Search functionality for spec table
+          searchText.addEventListener('input', function () {
+            const filter = this.value.trim().toLowerCase();
+            const rows = specTableBody.getElementsByTagName('tr');
+
+            Array.from(rows).forEach(row => {
+              const cells = row.getElementsByTagName('td');
+              let match = false;
+              const cellsToSearch = Array.from(cells).slice(0, -1);
+
+              cellsToSearch.forEach(cell => {
+                const originalText = cell.getAttribute('data-original-text') || cell.textContent;
+                if (!cell.getAttribute('data-original-text')) {
+                  cell.setAttribute('data-original-text', originalText);
+                }
+
+                if (filter && originalText.toLowerCase().includes(filter)) {
+                  match = true;
+                  const regex = new RegExp(`(${filter})`, 'gi');
+                  cell.innerHTML = originalText.replace(regex, '<mark>$1</mark>');
+                } else {
+                  cell.innerHTML = originalText;
+                }
+              });
+              row.style.display = match || filter === '' ? '' : 'none';
+            });
+          });
+        
+      }
+      document.addEventListener('DOMContentLoaded', async function () {  
+        try {
+          // Initialize overview metrics and charts
+          initOverview();
+          // Initialize user management table
+          initUserManagement();
+          // Initialize spec management table
+          initSpecModel();
+        
+        
+        
+        
+        
+        
         } catch (err) {
           console.error("Error fetching data:", err);
           totalInDayElem.textContent = '0';
