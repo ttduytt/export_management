@@ -18,7 +18,7 @@ router.get("/delivery", function (req, res, next) {
 router.get("/deliveryHistory", function (req, res, next) {
   res.sendFile(path.join(__dirname, "../views/DeliveryHistory.html"));
 });
-  
+
 router.get("/admin", function (req, res, next) {
   res.sendFile(path.join(__dirname, "../views/Admin.html"));
 });

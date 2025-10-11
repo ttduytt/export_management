@@ -235,13 +235,14 @@ router.get("/api/getoverview", async (req, res) => {
       WHERE status = 'COMPLETE' 
         AND DATE(create_at) = CURDATE()
     `);
-    
+
     const totalExport = Number(totalExportRows[0].total);
-    const performanceInDay = Number(performanceRows[0].completed)/(totalExport || 1) * 100;
+    const performanceInDay =
+      (Number(performanceRows[0].completed) / (totalExport || 1)) * 100;
 
     res.json({
       totalExport,
-      performanceInDay
+      performanceInDay,
     });
   } catch (err) {
     console.error("DB error:", err);
@@ -261,8 +262,8 @@ router.get("/api/getmonthlyperformance", async (req, res) => {
       ORDER BY month;
     `);
 
-    const months = rows.map(r => r.month);
-    const totals = rows.map(r => Number(r.total));
+    const months = rows.map((r) => r.month);
+    const totals = rows.map((r) => Number(r.total));
 
     res.json({ months, totals });
   } catch (err) {
@@ -282,17 +283,17 @@ router.get("/api/getstatuscount", async (req, res) => {
     `);
 
     const statusCounts = {};
-    rows.forEach(r => {
+    rows.forEach((r) => {
       statusCounts[r.status] = Number(r.count);
     });
 
     // Tính tổng complete và tổng run + wait
-    const completed = statusCounts['Complete'] || 0;
-    const inProgress = (statusCounts['Run'] || 0) + (statusCounts['Wait'] || 0);
+    const completed = statusCounts["Complete"] || 0;
+    const inProgress = (statusCounts["Run"] || 0) + (statusCounts["Wait"] || 0);
 
     res.json({
       completed: completed,
-      inProgress: inProgress
+      inProgress: inProgress,
     });
   } catch (err) {
     console.error("DB error:", err);
