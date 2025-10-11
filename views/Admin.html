@@ -446,6 +446,7 @@
           padding: 12px 16px;
           text-align: center;
           border: none;
+          font-size: 12px;
           word-wrap: break-word;
           border-bottom: 1px solid #e5e7eb83;
         }
@@ -736,9 +737,11 @@
       //overview
       async function initOverview() {
         const totalInDayElem = document.getElementById('totalInDay');
-        const performanceElem = document.getElementById('performance'); 
+        const performanceElem = document.getElementById('performance');
+        const user = JSON.parse(localStorage.getItem('user'));
+        const factory = user.factory || 'V4'; 
         // Fetch overview data
-          const overviewResponse = await fetch("/exportmanagement/api/getoverview", {
+          const overviewResponse = await fetch(`/exportmanagement/api/getoverview?factory=${(factory)}`, {
             method: "GET",
             headers: { "Content-Type": "application/json" }
           });
@@ -749,7 +752,7 @@
           performanceElem.textContent = (overviewData.performanceInDay ? Math.round(overviewData.performanceInDay) + '%' : '0%');
 
           // Fetch monthly performance data
-          const monthlyResponse = await fetch("/exportmanagement/api/getmonthlyperformance", {
+          const monthlyResponse = await fetch(`/exportmanagement/api/getmonthlyperformance?factory=${(factory)}`, {
             method: "GET",
             headers: { "Content-Type": "application/json" }
           });
@@ -821,7 +824,7 @@
           });
 
           // Fetch status count data
-          const statusResponse = await fetch("/exportmanagement/api/getstatuscount", {
+          const statusResponse = await fetch(`/exportmanagement/api/getstatuscount?factory=${(factory)}`, {
             method: "GET",
             headers: { "Content-Type": "application/json" }
           });
@@ -904,7 +907,6 @@
               enabled: false
             }
           });
-
       }
       
       //User management table

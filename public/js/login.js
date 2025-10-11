@@ -25,8 +25,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
 
       if (data.success) {
-        sessionStorage.setItem("user", JSON.stringify({ username: data.username, password: data.password, role: data.role }));
-        localStorage.setItem("user", JSON.stringify({ username: data.username, password: data.password, role: data.role }));
+        sessionStorage.setItem("user", JSON.stringify({ username: data.username, password: data.password, role: data.role, factory: data.factory }));
+        localStorage.setItem("user", JSON.stringify({ username: data.username, password: data.password, role: data.role, factory: data.factory }));
         window.location.href = "/home";
       } else {
         alert("Sai tài khoản hoặc mật khẩu!");

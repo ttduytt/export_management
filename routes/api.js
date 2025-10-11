@@ -194,6 +194,7 @@ router.post("/delivery/history/:factory", async (req, res) => {
     if (conn) conn.release();
   }
 });
+
 router.post("/api/login", async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -209,6 +210,7 @@ router.post("/api/login", async (req, res) => {
         username: user.user_name,
         password: user.password,
         role: user.role,
+        factory: user.factory
       });
     } else {
       res.status(401).json({ success: false, message: "Invalid credentials" });
@@ -220,27 +222,77 @@ router.post("/api/login", async (req, res) => {
 });
 
 router.get("/api/getoverview", async (req, res) => {
+  const factory = req.query.factory || 'V0'; 
   try {
-    const totalExportRows = await pool.query(`
+    if(factory == 'V0'){
+      const totalExportRowsV0 = await pool.query(`
       SELECT COUNT(*) AS total 
-      FROM delivery 
+      FROM delivery_v0
       WHERE DATE(create_at) = CURDATE()
     `);
-
-    const performanceRows = await pool.query(`
+    const performanceRowsV0 = await pool.query(`
       SELECT COUNT(*) AS completed 
-      FROM delivery 
+      FROM delivery_v0
       WHERE status = 'COMPLETE' 
         AND DATE(create_at) = CURDATE()
     `);
-    
-    const totalExport = Number(totalExportRows[0].total);
-    const performanceInDay = Number(performanceRows[0].completed)/(totalExport || 1) * 100;
-
+    const totalExport = Number(totalExportRowsV0[0].total);
+    const performanceInDay = (Number(performanceRowsV0[0].completed) || 0) / (totalExport || 1) * 100;
     res.json({
       totalExport,
       performanceInDay
     });
+    }
+    else if(factory == 'V5') {
+      const totalExportRowsV5 = await pool.query(`
+      SELECT COUNT(*) AS total 
+      FROM delivery_v5
+      WHERE DATE(create_at) = CURDATE()
+    `);
+    const performanceRowsV5 = await pool.query(`
+      SELECT COUNT(*) AS completed 
+      FROM delivery_v5
+      WHERE status = 'COMPLETE' 
+        AND DATE(create_at) = CURDATE()
+    `);
+    const totalExport = Number(totalExportRowsV5[0].total);
+    const performanceInDay = Number(performanceRowsV5[0].completed) / (totalExport || 1) * 100;
+    res.json({
+      totalExport,
+      performanceInDay
+    });
+    }
+    else {
+      const totalExportRowsV0 = await pool.query(`
+      SELECT COUNT(*) AS total 
+      FROM delivery_v0
+      WHERE DATE(create_at) = CURDATE()
+    `);
+      const performanceRowsV0 = await pool.query(`
+      SELECT COUNT(*) AS completed 
+      FROM delivery_v0
+      WHERE status = 'COMPLETE' 
+        AND DATE(create_at) = CURDATE()
+    `);
+      const totalExportRowsV5 = await pool.query(`
+      SELECT COUNT(*) AS total 
+      FROM delivery_v5
+      WHERE DATE(create_at) = CURDATE()
+    `);
+      const performanceRowsV5 = await pool.query(`
+      SELECT COUNT(*) AS completed 
+      FROM delivery_v5
+      WHERE status = 'COMPLETE' 
+        AND DATE(create_at) = CURDATE()
+    `);
+    const totalExport = Number(totalExportRowsV0[0].total)+Number(totalExportRowsV5[0].total);
+    const performanceInDay = (Number(performanceRowsV0[0].completed)+Number(performanceRowsV5[0].completed) || 0) / (totalExport || 1) * 100;
+    res.json({
+      totalExport,
+      performanceInDay
+    });
+    }
+
   } catch (err) {
     console.error("DB error:", err);
     res.status(500).json({ error: "Database error: " + err.message });
@@ -249,20 +301,68 @@ router.get("/api/getoverview", async (req, res) => {
 
 router.get("/api/getmonthlyperformance", async (req, res) => {
   try {
+    const factory = req.query.factory || 'V0';
+    if(factory == 'V0') {
     const rows = await pool.query(`
       SELECT 
-          DATE_FORMAT(create_at, '%Y-%m') AS month,
+          month,
           COUNT(*) AS total
-      FROM delivery
-      WHERE create_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
-      GROUP BY DATE_FORMAT(create_at, '%Y-%m')
+      FROM (
+          SELECT DATE_FORMAT(create_at, '%Y-%m') AS month
+          FROM delivery_v0
+          WHERE create_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+      ) AS combined
+      GROUP BY month
       ORDER BY month;
+      
     `);
-
     const months = rows.map(r => r.month);
     const totals = rows.map(r => Number(r.total));
 
     res.json({ months, totals });
+    }
+    else if(factory == 'V5') {
+      const rows = await pool.query(`
+      SELECT
+          month,
+          COUNT(*) AS total
+      FROM (
+          SELECT DATE_FORMAT(create_at, '%Y-%m') AS month
+          FROM delivery_v5
+          WHERE create_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+      ) AS combined
+      GROUP BY month
+      ORDER BY month;      
+    `);
+    const months = rows.map(r => r.month);
+    const totals = rows.map(r => Number(r.total));
+
+    res.json({ months, totals });
+    }
+    else{
+      const rows = await pool.query(`
+      SELECT 
+          month,
+          COUNT(*) AS total
+      FROM (
+          SELECT DATE_FORMAT(create_at, '%Y-%m') AS month
+          FROM delivery_v0
+          WHERE create_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+
+          UNION ALL
+
+          SELECT DATE_FORMAT(create_at, '%Y-%m') AS month
+          FROM delivery_v5
+          WHERE create_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+      ) AS combined
+      GROUP BY month
+      ORDER BY month;
+    `);
+      const months = rows.map(r => r.month);
+      const totals = rows.map(r => Number(r.total));
+
+    res.json({ months, totals });
+    }
   } catch (err) {
     console.error("DB error:", err);
     res.status(500).json({ error: "Database error: " + err.message });
@@ -271,27 +371,87 @@ router.get("/api/getmonthlyperformance", async (req, res) => {
 
 router.get("/api/getstatuscount", async (req, res) => {
   try {
-    const rows = await pool.query(`
-      SELECT 
-          status,
-          COUNT(*) AS count
-      FROM delivery
-      GROUP BY status;
-    `);
+      const factory = req.query.factory || 'V0';
+      if (factory == 'V0') {
+      const rows = await pool.query(`
+        SELECT 
+            status,
+            COUNT(*) AS count
+        FROM (
+            SELECT status FROM delivery_v0
+        ) AS combined
+        GROUP BY status
+        ORDER BY status;
+      `);
 
-    const statusCounts = {};
-    rows.forEach(r => {
-      statusCounts[r.status] = Number(r.count);
-    });
+      const statusCounts = {};
+      rows.forEach(r => {
+        statusCounts[r.status] = Number(r.count);
+      });      
 
-    // Tính tổng complete và tổng run + wait
-    const completed = statusCounts['Complete'] || 0;
-    const inProgress = (statusCounts['Run'] || 0) + (statusCounts['Wait'] || 0);
+      // Tính tổng complete và tổng run + wait
+      const completed = statusCounts['Complete'] || 0;
+      const inProgress = (statusCounts['Run'] || 0) + (statusCounts['Wait'] || 0);
 
-    res.json({
-      completed: completed,
-      inProgress: inProgress
-    });
+      res.json({
+        completed: completed,
+        inProgress: inProgress
+      });
+  } 
+      else if (factory == 'V5') {
+        const rows = await pool.query(`
+          SELECT 
+              status,
+              COUNT(*) AS count
+          FROM (
+              SELECT status FROM delivery_v5
+          ) AS combined
+          GROUP BY status
+          ORDER BY status;
+        `);
+
+        const statusCounts = {};
+        rows.forEach(r => {
+          statusCounts[r.status] = Number(r.count);
+        });
+        
+
+        // Tính tổng complete và tổng run + wait
+        const completed = statusCounts['Complete'] || 0;
+        const inProgress = (statusCounts['Run'] || 0) + (statusCounts['Wait'] || 0);
+
+        res.json({
+          completed: completed,
+          inProgress: inProgress
+        });        
+      }
+      else{
+        const rows = await pool.query(`
+          SELECT 
+              status,
+              COUNT(*) AS count
+          FROM (
+              SELECT status FROM delivery_v0
+              UNION ALL
+              SELECT status FROM delivery_v5
+          ) AS combined
+          GROUP BY status
+          ORDER BY status;
+        `);
+        const statusCounts = {};
+      rows.forEach(r => {
+        statusCounts[r.status] = Number(r.count);
+      });
+
+      // Tính tổng complete và tổng run + wait
+      const completed = statusCounts['Complete'] || 0;
+      const inProgress = (statusCounts['Run'] || 0) + (statusCounts['Wait'] || 0);
+
+      res.json({
+        completed: completed,
+        inProgress: inProgress
+      });
+      }
   } catch (err) {
     console.error("DB error:", err);
     res.status(500).json({ error: "Database error: " + err.message });
