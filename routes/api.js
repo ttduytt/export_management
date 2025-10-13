@@ -17,6 +17,88 @@ router.get("/users", async (req, res) => {
     if (conn) conn.release();
   }
 });
+//add user
+router.post("/users", async (req, res) => {
+  let conn;
+  const { user_name, password, role, factory } = req.body;
+  try {
+    conn = await pool.getConnection();
+    let result = await conn.query(
+      "INSERT INTO user (user_name, password, role, factory) VALUES (?, ?, ?, ?)",
+      [user_name, password, role, factory]
+    );
+    res.status(201).json({ message: "User created successfully" });
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res.status(500).json({ message: "Internal server error" + error.message });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+// edit user
+router.put("/users/:id", async (req, res) => {
+  let conn;
+  const userId = req.params.id;
+  const { password, role, factory } = req.body;
+
+  try {
+    conn = await pool.getConnection();
+
+    const existing = await conn.query("SELECT * FROM user WHERE id = ?", [
+      userId,
+    ]);
+    if (existing.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const result = await conn.query(
+      "UPDATE user SET password = ?, role = ?, factory = ? WHERE id = ?",
+      [password, role, factory, userId]
+    );
+
+    if (result.affectedRows > 0) {
+      res.json({ message: `User ${userId} updated successfully` });
+    } else {
+      res.status(400).json({ message: "Update failed" });
+    }
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ message: "Internal server error" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+// delete user
+router.delete("/users/:id", async (req, res) => {
+  let conn;
+  const userId = req.params.id;
+  try {
+    conn = await pool.getConnection();
+
+    const existing = await conn.query("SELECT * FROM user WHERE id = ?", [
+      userId,
+    ]);
+    if (existing.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const result = await conn.query("DELETE FROM user WHERE id = ?", [userId]);
+
+    if (result.affectedRows > 0) {
+      res.json({ message: `User ${userId} deleted successfully` });
+    } else {
+      res.status(400).json({ message: "Delete failed" });
+    }
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ message: "Internal server error" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
 // model spec
 router.get("/models", async (req, res) => {
   let conn;
@@ -34,6 +116,146 @@ router.get("/models", async (req, res) => {
   }
 });
 
+//add model spec
+router.post("/models", async (req, res) => {
+  let conn;
+  const { model_type, mobis_code, partron_code, model_name, event_user } =
+    req.body;
+  try {
+    conn = await pool.getConnection();
+    let result = await conn.query(
+      "INSERT INTO delivery_spec (model_type, mobis_code, partron_code, model_name, event_user) VALUES (?, ?, ?, ?, ?)",
+      [model_type, mobis_code, partron_code, model_name, event_user]
+    );
+    res.status(201).json({ message: "Model spec created successfully" });
+  } catch (error) {
+    console.error("Error creating model spec:", error);
+    res.status(500).json({ message: "Internal server error" + error.message });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+//edit model spec
+router.put("/models/:id", async (req, res) => {
+  let conn;
+  const modelId = req.params.id;
+  const { model_type, mobis_code, partron_code, model_name, event_user } =
+    req.body;
+
+  try {
+    conn = await pool.getConnection();
+
+    const existing = await conn.query(
+      "SELECT * FROM delivery_spec WHERE id = ?",
+      [modelId]
+    );
+    if (existing.length === 0) {
+      return res.status(404).json({ message: "Model spec not found" });
+    }
+
+    const result = await conn.query(
+      "UPDATE delivery_spec SET model_type = ?, mobis_code = ?, partron_code = ?, model_name = ?, event_user = ? WHERE id = ?",
+      [model_type, mobis_code, partron_code, model_name, event_user, modelId]
+    );
+
+    if (result.affectedRows > 0) {
+      res.json({ message: `Model spec ${modelId} updated successfully` });
+    } else {
+      res.status(400).json({ message: "Update failed" });
+    }
+  } catch (error) {
+    console.error("Error updating model spec:", error);
+    res.status(500).json({ message: "Internal server error" + error.message });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+// delete model spec
+router.delete("/models/:id", async (req, res) => {
+  let conn;
+  const id = req.params.id;
+  try {
+    conn = await pool.getConnection();
+
+    const existing = await conn.query(
+      "SELECT * FROM delivery_spec WHERE id = ?",
+      [id]
+    );
+    if (existing.length === 0) {
+      return res.status(404).json({ message: "Model spec not found" });
+    }
+
+    const result = await conn.query("DELETE FROM delivery_spec WHERE id = ?", [
+      id,
+    ]);
+
+    if (result.affectedRows > 0) {
+      res.json({ message: `Model spec ${id} deleted successfully` });
+    } else {
+      res.status(400).json({ message: "Delete failed" });
+    }
+  } catch (error) {
+    console.error("Error deleting model spec:", error);
+    res.status(500).json({ message: "Internal server error" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+// Bulk import model specs
+router.post("/models/importmodelspec", async (req, res) => {
+  let conn;
+  const models = req.body.specs;
+  if (!Array.isArray(models) || models.length === 0) {
+    return res.status(400).json({ message: "Invalid input data" });
+  }
+
+  try {
+    conn = await pool.getConnection();
+    await conn.beginTransaction();
+
+    const insertSQL = `
+      INSERT INTO delivery_spec (model_type, mobis_code, partron_code, model_name, event_user)
+      VALUES (?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+        model_type = VALUES(model_type),
+        partron_code = VALUES(partron_code),
+        model_name = VALUES(model_name),
+        event_user = VALUES(event_user)
+    `;
+
+    const insertPromises = models.map((model) => {
+      const { model_type, mobis_code, partron_code, model_name, event_user } =
+        model;
+      return conn.query(insertSQL, [
+        model_type,
+        mobis_code,
+        partron_code,
+        model_name,
+        event_user,
+      ]);
+    });
+
+    await Promise.all(insertPromises);
+    await conn.commit();
+    res
+      .status(201)
+      .json({
+        message: "Model specs imported successfully (inserted/updated)",
+      });
+  } catch (error) {
+    if (conn) await conn.rollback();
+    console.error("Error importing model specs:", error.message);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
 // delivery
 router.get("/delivery/:factory", async (req, res) => {
   let conn;
@@ -45,6 +267,22 @@ router.get("/delivery/:factory", async (req, res) => {
     factory === "v0"
       ? (sqlquery = "SELECT * FROM delivery_v0")
       : (sqlquery = "SELECT * FROM delivery_v5");
+    const rows = await conn.query(sqlquery);
+    res.json(rows);
+  } catch (err) {
+    console.error("Error fetching delivery:", err);
+    res.status(500).json({ message: "Internal server error" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+router.get("/delivery", async (req, res) => {
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    const sqlquery =
+      "SELECT * FROM delivery_v0 union all select * from delivery_v5";
     const rows = await conn.query(sqlquery);
     res.json(rows);
   } catch (err) {
@@ -242,6 +480,7 @@ router.post("/api/login", async (req, res) => {
         username: user.user_name,
         password: user.password,
         role: user.role,
+        factory: user.factory,
       });
     } else {
       res.status(401).json({ success: false, message: "Invalid credentials" });
@@ -253,28 +492,82 @@ router.post("/api/login", async (req, res) => {
 });
 
 router.get("/api/getoverview", async (req, res) => {
+  const factory = req.query.factory || "V0";
   try {
-    const totalExportRows = await pool.query(`
+    if (factory == "V0") {
+      const totalExportRowsV0 = await pool.query(`
       SELECT COUNT(*) AS total 
-      FROM delivery 
+      FROM delivery_v0
       WHERE DATE(create_at) = CURDATE()
     `);
-
-    const performanceRows = await pool.query(`
+      const performanceRowsV0 = await pool.query(`
       SELECT COUNT(*) AS completed 
-      FROM delivery 
+      FROM delivery_v0
       WHERE status = 'COMPLETE' 
         AND DATE(create_at) = CURDATE()
     `);
-
-    const totalExport = Number(totalExportRows[0].total);
-    const performanceInDay =
-      (Number(performanceRows[0].completed) / (totalExport || 1)) * 100;
-
-    res.json({
-      totalExport,
-      performanceInDay,
-    });
+      const totalExport = Number(totalExportRowsV0[0].total);
+      const performanceInDay =
+        ((Number(performanceRowsV0[0].completed) || 0) / (totalExport || 1)) *
+        100;
+      res.json({
+        totalExport,
+        performanceInDay,
+      });
+    } else if (factory == "V5") {
+      const totalExportRowsV5 = await pool.query(`
+      SELECT COUNT(*) AS total 
+      FROM delivery_v5
+      WHERE DATE(create_at) = CURDATE()
+    `);
+      const performanceRowsV5 = await pool.query(`
+      SELECT COUNT(*) AS completed 
+      FROM delivery_v5
+      WHERE status = 'COMPLETE' 
+        AND DATE(create_at) = CURDATE()
+    `);
+      const totalExport = Number(totalExportRowsV5[0].total);
+      const performanceInDay =
+        (Number(performanceRowsV5[0].completed) / (totalExport || 1)) * 100;
+      res.json({
+        totalExport,
+        performanceInDay,
+      });
+    } else {
+      const totalExportRowsV0 = await pool.query(`
+      SELECT COUNT(*) AS total 
+      FROM delivery_v0
+      WHERE DATE(create_at) = CURDATE()
+    `);
+      const performanceRowsV0 = await pool.query(`
+      SELECT COUNT(*) AS completed 
+      FROM delivery_v0
+      WHERE status = 'COMPLETE' 
+        AND DATE(create_at) = CURDATE()
+    `);
+      const totalExportRowsV5 = await pool.query(`
+      SELECT COUNT(*) AS total 
+      FROM delivery_v5
+      WHERE DATE(create_at) = CURDATE()
+    `);
+      const performanceRowsV5 = await pool.query(`
+      SELECT COUNT(*) AS completed 
+      FROM delivery_v5
+      WHERE status = 'COMPLETE' 
+        AND DATE(create_at) = CURDATE()
+    `);
+      const totalExport =
+        Number(totalExportRowsV0[0].total) + Number(totalExportRowsV5[0].total);
+      const performanceInDay =
+        ((Number(performanceRowsV0[0].completed) +
+          Number(performanceRowsV5[0].completed) || 0) /
+          (totalExport || 1)) *
+        100;
+      res.json({
+        totalExport,
+        performanceInDay,
+      });
+    }
   } catch (err) {
     console.error("DB error:", err);
     res.status(500).json({ error: "Database error: " + err.message });
@@ -283,20 +576,66 @@ router.get("/api/getoverview", async (req, res) => {
 
 router.get("/api/getmonthlyperformance", async (req, res) => {
   try {
-    const rows = await pool.query(`
+    const factory = req.query.factory || "V0";
+    if (factory == "V0") {
+      const rows = await pool.query(`
       SELECT 
-          DATE_FORMAT(create_at, '%Y-%m') AS month,
+          month,
           COUNT(*) AS total
-      FROM delivery
-      WHERE create_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
-      GROUP BY DATE_FORMAT(create_at, '%Y-%m')
+      FROM (
+          SELECT DATE_FORMAT(create_at, '%Y-%m') AS month
+          FROM delivery_v0
+          WHERE create_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+      ) AS combined
+      GROUP BY month
+      ORDER BY month;
+      
+    `);
+      const months = rows.map((r) => r.month);
+      const totals = rows.map((r) => Number(r.total));
+
+      res.json({ months, totals });
+    } else if (factory == "V5") {
+      const rows = await pool.query(`
+      SELECT
+          month,
+          COUNT(*) AS total
+      FROM (
+          SELECT DATE_FORMAT(create_at, '%Y-%m') AS month
+          FROM delivery_v5
+          WHERE create_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+      ) AS combined
+      GROUP BY month
+      ORDER BY month;      
+    `);
+      const months = rows.map((r) => r.month);
+      const totals = rows.map((r) => Number(r.total));
+
+      res.json({ months, totals });
+    } else {
+      const rows = await pool.query(`
+      SELECT 
+          month,
+          COUNT(*) AS total
+      FROM (
+          SELECT DATE_FORMAT(create_at, '%Y-%m') AS month
+          FROM delivery_v0
+          WHERE create_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+
+          UNION ALL
+
+          SELECT DATE_FORMAT(create_at, '%Y-%m') AS month
+          FROM delivery_v5
+          WHERE create_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+      ) AS combined
+      GROUP BY month
       ORDER BY month;
     `);
+      const months = rows.map((r) => r.month);
+      const totals = rows.map((r) => Number(r.total));
 
-    const months = rows.map((r) => r.month);
-    const totals = rows.map((r) => Number(r.total));
-
-    res.json({ months, totals });
+      res.json({ months, totals });
+    }
   } catch (err) {
     console.error("DB error:", err);
     res.status(500).json({ error: "Database error: " + err.message });
@@ -305,27 +644,87 @@ router.get("/api/getmonthlyperformance", async (req, res) => {
 
 router.get("/api/getstatuscount", async (req, res) => {
   try {
-    const rows = await pool.query(`
-      SELECT 
-          status,
-          COUNT(*) AS count
-      FROM delivery
-      GROUP BY status;
-    `);
+    const factory = req.query.factory || "V0";
+    if (factory == "V0") {
+      const rows = await pool.query(`
+        SELECT 
+            status,
+            COUNT(*) AS count
+        FROM (
+            SELECT status FROM delivery_v0
+        ) AS combined
+        GROUP BY status
+        ORDER BY status;
+      `);
 
-    const statusCounts = {};
-    rows.forEach((r) => {
-      statusCounts[r.status] = Number(r.count);
-    });
+      const statusCounts = {};
+      rows.forEach((r) => {
+        statusCounts[r.status] = Number(r.count);
+      });
 
-    // Tính tổng complete và tổng run + wait
-    const completed = statusCounts["Complete"] || 0;
-    const inProgress = (statusCounts["Run"] || 0) + (statusCounts["Wait"] || 0);
+      // Tính tổng complete và tổng run + wait
+      const completed = statusCounts["Complete"] || 0;
+      const inProgress =
+        (statusCounts["Run"] || 0) + (statusCounts["Wait"] || 0);
 
-    res.json({
-      completed: completed,
-      inProgress: inProgress,
-    });
+      res.json({
+        completed: completed,
+        inProgress: inProgress,
+      });
+    } else if (factory == "V5") {
+      const rows = await pool.query(`
+          SELECT 
+              status,
+              COUNT(*) AS count
+          FROM (
+              SELECT status FROM delivery_v5
+          ) AS combined
+          GROUP BY status
+          ORDER BY status;
+        `);
+
+      const statusCounts = {};
+      rows.forEach((r) => {
+        statusCounts[r.status] = Number(r.count);
+      });
+
+      // Tính tổng complete và tổng run + wait
+      const completed = statusCounts["Complete"] || 0;
+      const inProgress =
+        (statusCounts["Run"] || 0) + (statusCounts["Wait"] || 0);
+
+      res.json({
+        completed: completed,
+        inProgress: inProgress,
+      });
+    } else {
+      const rows = await pool.query(`
+          SELECT 
+              status,
+              COUNT(*) AS count
+          FROM (
+              SELECT status FROM delivery_v0
+              UNION ALL
+              SELECT status FROM delivery_v5
+          ) AS combined
+          GROUP BY status
+          ORDER BY status;
+        `);
+      const statusCounts = {};
+      rows.forEach((r) => {
+        statusCounts[r.status] = Number(r.count);
+      });
+
+      // Tính tổng complete và tổng run + wait
+      const completed = statusCounts["Complete"] || 0;
+      const inProgress =
+        (statusCounts["Run"] || 0) + (statusCounts["Wait"] || 0);
+
+      res.json({
+        completed: completed,
+        inProgress: inProgress,
+      });
+    }
   } catch (err) {
     console.error("DB error:", err);
     res.status(500).json({ error: "Database error: " + err.message });
