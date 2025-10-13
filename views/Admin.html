@@ -159,7 +159,7 @@
         }
         .container {
           display: flex;
-          height: calc(100vh - 140px);
+          /* height: calc(100vh - 140px); */
           color: white;
           margin-top: 16px;
         }
@@ -325,6 +325,7 @@
           text-align: center;
           border: none;
           border-bottom: 1px solid #e5e7eb83;
+          font-size: 12px;
         }
 
         .management-user th {
@@ -340,7 +341,7 @@
 
         .management-user tbody {
           display: block;
-          max-height: 300px;
+          max-height: 200px;
           overflow-y: auto;
           overflow-x: hidden;
         }
@@ -378,7 +379,7 @@
           border-bottom: none;
         }
 
-        .edit-user, .delete-user {
+        .edit-user, .delete-user, .edit-model, .delete-model {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           border: none;
           color: white;
@@ -390,7 +391,7 @@
           font-size: 14px;
           transition: all 0.3s ease;
         }
-        .edit-user:hover, .delete-user:hover {
+        .edit-user:hover, .delete-user:hover, .edit-model:hover, .delete-model:hover {
           background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
         }
         .add-user {
@@ -406,7 +407,7 @@
         .add-user:hover {
           background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
         }
-        .management-delivery-spec{
+        .management-delivery-spec {
           flex: 1;
           width: 100%;
           border-radius: 12px;
@@ -415,7 +416,6 @@
           border-radius: 12px;
           max-height: 320px;
           overflow: hidden;
-          transition: all 0.3s ease;
           display: flex;
           flex-direction: column;
         }
@@ -424,10 +424,9 @@
           width: 100%;
           border: none;
           background: transparent;
-          transition: all 0.3s ease;
           flex: 1;
         }
-
+        
         .management-delivery-spec .table-container {
           flex: 1;
           overflow-y: auto;
@@ -446,9 +445,8 @@
           padding: 12px 16px;
           text-align: center;
           border: none;
-          font-size: 12px;
-          word-wrap: break-word;
           border-bottom: 1px solid #e5e7eb83;
+          font-size: 12px;
         }
 
         .management-delivery-spec th {
@@ -464,20 +462,20 @@
 
         .management-delivery-spec tbody {
           display: block;
-          max-height: 300px;
+          max-height: 200px;
           overflow-y: auto;
           overflow-x: hidden;
         }
-
+        
         .management-delivery-spec thead {
           display: block;
         }
-
+        
         .management-delivery-spec tr {
           display: table;
           width: 100%;
           table-layout: fixed;
-          }
+        }
           @media screen and (max-width: 1600px) {
             .container {
               flex-direction: column;
@@ -494,7 +492,7 @@
             }
             .welcome-right img {
               width: 100%;
-              max-width: 300px;
+              max-width: 350px;
               margin-top: 20px;
             }
             .chart-row {
@@ -507,6 +505,15 @@
               margin: 0;
               padding: 0;
             }
+            .management-user th,
+            .management-user td{
+              font-size: 14px;
+            }
+            .management-delivery-spec th,
+            .management-delivery-spec td{
+              font-size: 14px;
+            }
+            
             
           }
         /* Custom scrollbar for webkit browsers */
@@ -531,7 +538,7 @@
         .management-delivery-spec tr:last-child td {
           border-bottom: none;
         }
-        .import, .export {
+        .import, .export, .add-spec {
           background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
           border: none;
           color: white;
@@ -542,7 +549,7 @@
           font-size: 14px;
           transition: all 0.3s ease;
         }
-        .import:hover, .export:hover {
+        .import:hover, .export:hover, .add-spec:hover {
           background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
         }
         .searchText{
@@ -560,6 +567,114 @@
         .searchText:focus{
           outline: none;
           background: rgba(255, 255, 255, 0.2);
+        }
+
+        .edit-input {
+          background: rgba(255, 255, 255, 0.9);
+          border: 1px solid #667eea;
+          border-radius: 4px;
+          padding: 6px 8px;
+          color: #333;
+          font-size: 12px;
+          width: 100%;
+          min-width: 80px;
+        }
+
+        .edit-input:focus {
+          outline: none;
+          border-color: #764ba2;
+          background: white;
+        }
+
+        .bottom-row3{
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+          width: 100%;
+          color: white;          
+          margin: 0 20px 0 0;
+          padding: 12px 24px 24px 24px;
+          flex-wrap: wrap;        
+        }
+
+        .management-delivery {
+          flex: 1;
+          width: 100%;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+          background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .management-delivery table {
+          border-collapse: collapse;
+          width: 100%;
+          table-layout: fixed;
+          border: none;
+          background: transparent;
+        }
+        .management-delivery thead,
+        .management-delivery tbody tr {
+          display: table;
+          width: 100%;
+          table-layout: fixed;
+        }
+
+        .management-delivery tbody {
+          display: block;
+          max-height: 200px;
+          overflow-y: auto;
+        }
+
+        /* Header cố định */
+        .management-delivery thead {
+          background: rgba(102, 126, 234, 0.4);
+          color: #fff;
+          font-weight: 600;
+          text-transform: uppercase;
+          position: sticky;
+          top: 0;
+          z-index: 5;
+        }
+
+        /* Căn giữa & padding chuẩn */
+        .management-delivery th,
+        .management-delivery td {
+          padding: 12px 16px;
+          text-align: center;
+          border-bottom: 1px solid rgba(229, 231, 235, 0.3);
+          font-size: 12px;
+          color: white;
+        }
+
+        .management-delivery tr:last-child td {
+          border-bottom: none;
+        }
+
+
+        /* Custom scrollbar for webkit browsers */
+        .management-delivery tbody::-webkit-scrollbar {
+          width: 8px;
+        }
+
+        .management-delivery tbody::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 4px;
+        }
+
+        .management-delivery tbody::-webkit-scrollbar-thumb {
+          background: rgba(102, 126, 234, 0.6);
+          border-radius: 4px;
+        }
+
+        .management-delivery tbody::-webkit-scrollbar-thumb:hover {
+          background: rgba(102, 126, 234, 0.8);
+        }
+
+        .management-delivery tr:last-child td {
+          border-bottom: none;
         }
     </style>
 </head>
@@ -592,11 +707,12 @@
         </div>
     </nav>
     <div class="container">
+      <!-- Hàng 1: Overview & Charts -->
       <div class="top-row">
         <div class="welcome-card">
           <div class="welcome-left">
             <div class="welcome-text">
-              <h2>Welcome back, Admin!</h2>
+              <h2 id="welcome">Welcome back, Admin!</h2>
               <div class="stats">
                 <div><strong id="totalInDay"></strong><span>Total in day</span></div>
                 <div class="divider"></div>
@@ -632,8 +748,9 @@
         </div>
       <!-- Hàng 2: Management -->
       <div class="bottom-row">
+        <!-- User Management Table -->
         <div class="management-user">
-          <table>
+          <table class="table-container">
             <thead>
               <tr>
                 <th colspan="3" style="text-align: left; font-size: 20px; padding-bottom: 10px; text-transform: uppercase;">User Management</th>
@@ -642,7 +759,9 @@
               <tr>
                 <th>STT</th>
                 <th>Username</th>
+                <th>Password</th>
                 <th>Role</th>
+                <th>Factory</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -650,21 +769,21 @@
             </tbody>
           </table>
         </div>
-
+        <!-- Delivery Spec Table -->
         <div class="management-delivery-spec">
           <table>
             <thead>
               <tr>
                 <th colspan="1" style="text-align: left; font-size: 20px; padding-bottom: 10px; text-transform: uppercase;">Model Spec</th>
                 <th colspan="2"><input class="searchText" type="text" name="searchText" id="searchText" placeholder="Search all"></th>
-                <th colspan="1" style="text-align: right;"><button class="import">Add Model</button></th>
-                <th colspan="1" style="text-align: right;"><button class="import">Import File</button></th>   
-                <th colspan="1" style="text-align: right;"><button class="export">Export File</button></th>   
+                <th colspan="1" style="text-align: right;"><button class="add-spec">Add Model</button></th>
+                <th colspan="1" style="text-align: right;"><button class="import" id="importButton">Import File</button></th>   
+                <th colspan="1" style="text-align: right;"><button class="export" id="exportButton">Export File</button></th>   
               </tr>
               <tr>
                 <th>STT</th>
-                <th>Mobis Type</th>
-                <th>Mobis code</th>
+                <th>Model Type</th>
+                <th>Mobis Code</th>
                 <th>Partron Code</th>
                 <th>Model Name</th>
                 <th>Actions</th>
@@ -674,8 +793,39 @@
             </tbody>
           </table>
         </div>
+      </div>  
+    </div>    
+      <!-- Hàng 3: Delivery Management -->
+      <div class="bottom-row3">
+        <!-- Delivery Table -->
+        <div class="management-delivery">
+          <table>
+            <thead>
+              <tr>
+                <th colspan="1" style="text-align: left; font-size: 20px; padding-bottom: 10px; text-transform: uppercase;">Delivery</th>
+                <th colspan="12"><input class="searchText" type="text" name="searchTextDelivery" id="searchTextDelivery" placeholder="Search all"></th>
+              </tr>
+              <tr>
+                <th>STT</th>
+                <th>Model Id</th>
+                <th>Mobis Code</th>
+                <th>Model Name</th>
+                <th>Type</th>
+                <th>Target</th>
+                <th>Quantity</th>
+                <th>Status</th>
+                <th>Complete Time</th>
+                <th>Create At</th>
+                <th>Shipment Date</th>
+                <th>Shipping Method</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="DeliveryTableBody">
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
         <!-- Footer -->
     <footer>
         <p>&copy; 2025 Copyright for Partron VN</p>
@@ -740,6 +890,9 @@
         const performanceElem = document.getElementById('performance');
         const user = JSON.parse(localStorage.getItem('user'));
         const factory = user.factory || 'V4'; 
+        if (!document.getElementById('monthlyChart')) return;
+        if (!document.getElementById('orderChart')) return;
+
         // Fetch overview data
           const overviewResponse = await fetch(`/exportmanagement/api/getoverview?factory=${(factory)}`, {
             method: "GET",
@@ -835,8 +988,7 @@
           Highcharts.chart('orderChart', {
             chart: {
               type: 'pie',
-              backgroundColor: 'transparent',
-              height: 300
+              backgroundColor: 'transparent'
             },
             responsive: {
               rules: [{
@@ -919,13 +1071,18 @@
           });
           const usersData = await usersResponse.json();
           var stt = 1;
+          // Clear existing content
+          userTableBody.innerHTML = '';
+          
           // Populate user management table
           usersData.forEach(user => {
             const row = document.createElement('tr');
             row.innerHTML = `
               <td>${stt++}</td>
-              <td>${user.user_name}</td>
-              <td>${user.password}</td>
+              <td class="username">${user.user_name}</td>
+              <td class="password">${user.password}</td>
+              <td class="role">${user.role}</td>
+              <td class="factory">${user.factory}</td>
               <td>
                 <button class="edit-user" data-id="${user.id}">Edit</button>
                 <button class="delete-user" data-id="${user.id}">Delete</button>
@@ -933,13 +1090,265 @@
             `;
             userTableBody.appendChild(row);
           });
+          userTableBody.removeEventListener('click', handleUserTableClick);
+          userTableBody.addEventListener('click', handleUserTableClick);
+          
+          // Setup Add User button listener
+          const addUserButton = document.querySelector('.add-user');
+          addUserButton.removeEventListener('click', handleAddUser);
+          addUserButton.addEventListener('click', handleAddUser);
+      }
+
+      //even add user
+      async function handleAddUser() {
+        const userTableBody = document.getElementById('userTableBody');
+        
+        // Check if there's already an add row
+        const existingAddRow = userTableBody.querySelector('.add-new-row');
+        if (existingAddRow) {
+          alert('Please complete or cancel the current addition first.');
+          return;
+        }
+
+        // Get next STT number
+        const rows = userTableBody.querySelectorAll('tr:not(.add-new-row)');
+        const nextStt = rows.length + 1;
+
+        // Create new row with input fields
+        const newRow = document.createElement('tr');
+        newRow.classList.add('add-new-row');
+        newRow.innerHTML = `
+          <td>${nextStt}</td>
+          <td class="username"><input type="text" placeholder="Enter username" class="edit-input username-input" required/></td>
+          <td class="password"><input type="password" placeholder="Enter password" class="edit-input password-input" required/></td>
+          <td class="role">
+            <select class="edit-input role-input">
+              <option value="STAFF" selected>STAFF</option>
+              <option value="MANAGER">MANAGER</option>
+            </select>
+          </td>
+          <td class="factory">
+            <select class="edit-input factory-input">
+              <option value="V0" selected>V0</option>
+              <option value="V4">V4</option>              
+              <option value="V5">V5</option>
+            </select>
+          </td>
+          <td>
+            <button class="edit-user save-new-user">Save</button>
+            <button class="delete-user cancel-new-user">Cancel</button>
+          </td>
+        `;
+
+        // Append to table body
+        userTableBody.appendChild(newRow);
+
+        // Scroll to the new row
+        newRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+        // Focus on username input
+        const usernameInput = newRow.querySelector('.username-input');
+        usernameInput.focus();
+
+        // Add event listeners for save and cancel
+        const saveButton = newRow.querySelector('.save-new-user');
+        const cancelButton = newRow.querySelector('.cancel-new-user');
+
+        saveButton.addEventListener('click', async () => {
+          await saveNewUser(newRow);
+        });
+
+        cancelButton.addEventListener('click', () => {
+          cancelNewUser(newRow);
+        });
+
+        // Add Enter key listener for inputs
+        const inputs = newRow.querySelectorAll('input, select');
+        inputs.forEach(input => {
+          input.addEventListener('keypress', async (e) => {
+            if (e.key === 'Enter') {
+              await saveNewUser(newRow);
+            }
+          });
+        });
+      }
+
+      // Function to save new user
+      async function saveNewUser(row) {
+        const usernameInput = row.querySelector('.username-input');
+        const passwordInput = row.querySelector('.password-input');
+        const roleInput = row.querySelector('.role-input');
+        const factoryInput = row.querySelector('.factory-input');
+
+        // Validate inputs
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value.trim();
+        const role = roleInput.value;
+        const factory = factoryInput.value;
+
+        if (!username) {
+          alert('Username is required.');
+          usernameInput.focus();
+          return;
+        }
+
+        if (!password) {
+          alert('Password is required.');
+          passwordInput.focus();
+          return;
+        }
+
+        const newUser = { 
+          user_name: username, 
+          password, 
+          role, 
+          factory 
+        };
+
+        try {
+          // Disable save button during request
+          const saveButton = row.querySelector('.save-new-user');
+          saveButton.textContent = 'Saving...';
+          saveButton.disabled = true;
+
+          const res = await fetch('/exportmanagement/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newUser)
+          });
+
+          if (res.ok) {
+            alert('User added successfully!');
+            await initUserManagement(); // Refresh the table
+          } else {
+            const data = await res.json();
+            alert('Error: ' + (data.message || 'Unknown error'));
+            
+            // Re-enable save button
+            saveButton.textContent = 'Save';
+            saveButton.disabled = false;
+          }
+        } catch (error) {
+          console.error('Error adding user:', error);
+          alert('Connection error: ' + error.message);
+          
+          // Re-enable save button
+          const saveButton = row.querySelector('.save-new-user');
+          saveButton.textContent = 'Save';
+          saveButton.disabled = false;
+        }
+      }
+
+      // Function to cancel new user addition
+      function cancelNewUser(row) {
+        if (confirm('Are you sure you want to cancel adding this user?')) {
+          row.remove();
+        }
       }
       
-        //Spec management table
+      //even edit user and delete user
+      async function handleUserTableClick(e) {
+        const row = e.target.closest('tr');
+        const id = e.target.dataset.id;
+
+        // Handle Edit button click
+        if (e.target.classList.contains('edit-user')) {
+          if (e.target.textContent === 'Edit') {
+            // Convert cells to inputs
+            const passwordTd = row.querySelector('.password');
+            const roleTd = row.querySelector('.role');
+            const factoryTd = row.querySelector('.factory');
+
+            passwordTd.innerHTML = `<input type="text" value="${passwordTd.textContent}" class="edit-input password-input"/>`;
+            roleTd.innerHTML = `<select class="edit-input role-input">
+                                  <option value="MANAGER" ${roleTd.textContent === 'MANAGER' ? 'selected' : ''}>MANAGER</option>
+                                  <option value="STAFF" ${roleTd.textContent === 'STAFF' ? 'selected' : ''}>STAFF</option>
+                                </select>`;
+            factoryTd.innerHTML = `<select class="edit-input factory-input">
+                                    <option value="V0" ${factoryTd.textContent === 'V0' ? 'selected' : ''}>V0</option>
+                                    <option value="V4" ${factoryTd.textContent === 'V4' ? 'selected' : ''}>V4</option>
+                                    <option value="V5" ${factoryTd.textContent === 'V5' ? 'selected' : ''}>V5</option>
+                                  </select>`;
+            e.target.textContent = 'Save';
+            e.target.nextElementSibling.textContent = 'Cancel';
+          } 
+          else if (e.target.textContent === 'Save') {
+            // Get values from inputs
+            const updatedUser = {
+              password: row.querySelector('.password-input').value,
+              role: row.querySelector('.role-input').value,
+              factory: row.querySelector('.factory-input').value
+            };
+
+            try {
+              // Send PUT request
+              const res = await fetch(`/exportmanagement/users/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedUser)
+              });
+
+              if (res.ok) {
+                alert('Update successful!');
+                // Refresh the table
+                await initUserManagement();
+              } else {
+                const data = await res.json();
+                alert('Error: ' + (data.message || 'Unknown error'));
+                // Reset to original values
+                await initUserManagement();
+              }
+            } catch (error) {
+              console.error('Error updating user:', error);
+              alert('Connection error: ' + error.message);
+              await initUserManagement();
+            }
+          }
+        }
+
+        // Handle Delete button click
+        if (e.target.classList.contains('delete-user')) {
+          if (e.target.textContent === 'Delete') {
+            if (confirm('Are you sure you want to delete this user?')) {
+              try {
+                const res = await fetch(`/exportmanagement/users/${id}`, {
+                  method: 'DELETE',
+                  headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (res.ok) {
+                  alert('Delete successful!');
+                  await initUserManagement();
+                } else {
+                  const data = await res.json();
+                  alert('Error: ' + (data.message || 'Unknown error'));
+                }
+              } catch (error) {
+                console.error('Error deleting user:', error);
+                alert('Connection error: ' + error.message);
+              }
+            }
+          } else if (e.target.textContent === 'Cancel') {
+            // Reset the table
+            await initUserManagement();
+          }
+        }
+      }
+      
+      //Spec management table
       async function initSpecModel(){
-        const searchText = document.getElementById('searchText');   
-        // Spec management table
+          const searchText = document.getElementById('searchText');   
+          // Spec management table
           const specTableBody = document.getElementById('specTableBody');
+          
+          // Clear existing content first
+          specTableBody.innerHTML = '';
+          //export file csv
+          const exportButton = document.getElementById('exportButton');
+          exportButton.addEventListener('click', exportToCSV);
+          //import file csv
+          const importButton = document.getElementById('importButton');
+          importButton.addEventListener('click', importFromCSV);
           const specsResponse = await fetch("/exportmanagement/models", {
             method: "GET",
             headers: { "Content-Type": "application/json" }
@@ -951,13 +1360,13 @@
             const row = document.createElement('tr');
             row.innerHTML = `
               <td>${sttSpec++}</td>
-              <td>${spec.model_type || ''}</td>
-              <td>${spec.mobis_code || ''}</td>
-              <td>${spec.partron_code || ''}</td>
-              <td>${spec.model_name || ''}</td>
+              <td class="model-type">${spec.model_type || ''}</td>
+              <td class="mobis-code">${spec.mobis_code || ''}</td>
+              <td class="partron-code">${spec.partron_code || ''}</td>
+              <td class="model-name">${spec.model_name || ''}</td>
               <td>
-                <button class="edit-user" data-id="${spec.id}">Edit</button>
-                <button class="delete-user" data-id="${spec.id}">Delete</button>
+                <button class="edit-model" data-id="${spec.id}">Edit</button>
+                <button class="delete-model" data-id="${spec.id}">Delete</button>
               </td>
             `;
             specTableBody.appendChild(row);
@@ -990,28 +1399,399 @@
               row.style.display = match || filter === '' ? '' : 'none';
             });
           });
-        
-      }
-      document.addEventListener('DOMContentLoaded', async function () {  
-        try {
-          // Initialize overview metrics and charts
-          initOverview();
-          // Initialize user management table
-          initUserManagement();
-          // Initialize spec management table
-          initSpecModel();
-        
-        
-        
-        
-        
-        
-        } catch (err) {
-          console.error("Error fetching data:", err);
-          totalInDayElem.textContent = '0';
-          performanceElem.textContent = '0%';
           
-          // Create fallback monthly chart with Highcharts
+          //add event edit, delete model spec
+          specTableBody.removeEventListener('click', handleModelTableClick);
+          specTableBody.addEventListener('click', handleModelTableClick);
+          // Setup Add model spec button listener
+          const addSpecButton = document.querySelector('.add-spec');
+          addSpecButton.removeEventListener('click', handleAddSpec);
+          addSpecButton.addEventListener('click', handleAddSpec);
+      }
+
+      //even add model spec
+      async function handleAddSpec() {
+        const specTableBody = document.getElementById('specTableBody');
+
+        // Check if there's already an add row
+        const existingAddRow = specTableBody.querySelector('.add-new-row');
+        if (existingAddRow) {
+          alert('Please complete or cancel the current addition first.');
+          return;
+        }
+        // Get next STT number
+        const rows = specTableBody.querySelectorAll('tr:not(.add-new-row)');
+        const nextStt = rows.length + 1;
+
+        // Create new row with input fields
+        const newRow = document.createElement('tr');
+        newRow.classList.add('add-new-row');
+        newRow.innerHTML = `
+          <td>${nextStt}</td>
+          <td class="model-type"><input type="text" placeholder="Enter model type" class="edit-input model-type-input" required/></td>
+          <td class="mobis-code"><input type="text" placeholder="Enter mobis code" class="edit-input mobis-code-input" required/></td>
+          <td class="partron-code"><input type="text" placeholder="Enter partron code" class="edit-input partron-code-input" required/></td>
+          <td class="model-name"><input type="text" placeholder="Enter model name" class="edit-input model-name-input" required/></td>
+          <td>
+            <button class="edit-model save-new-model">Save</button>
+            <button class="delete-model cancel-new-model">Cancel</button>
+          </td>
+        `;
+        // Append to table body
+        specTableBody.appendChild(newRow);
+
+        // Focus on model type input
+        const modelTypeInput = newRow.querySelector('.model-type-input');
+        modelTypeInput.focus();
+        
+
+        // Add event listeners for save and cancel
+        const saveButton = newRow.querySelector('.save-new-model');
+        const cancelButton = newRow.querySelector('.cancel-new-model');
+
+        saveButton.addEventListener('click', async () => {
+          await saveNewModel(newRow);
+          newRow.remove();
+        });
+
+        cancelButton.addEventListener('click', () => {
+          cancelNewModel(newRow);
+        });
+        const inputs = newRow.querySelectorAll('input, select');
+        inputs.forEach(input => {
+          input.addEventListener('keypress', async (e) => {
+            if (e.key === 'Enter') {
+              await saveNewModel(newRow);
+            }
+          });
+        });
+      }
+      
+      // Function to save new model spec
+      async function saveNewModel(row) {
+        const modelTypeInput = row.querySelector('.model-type-input');
+        const mobisCodeInput = row.querySelector('.mobis-code-input');
+        const partronCodeInput = row.querySelector('.partron-code-input');
+        const modelNameInput = row.querySelector('.model-name-input');
+
+        // Validate inputs
+        const modelType = modelTypeInput.value.trim();
+        const mobisCode = mobisCodeInput.value.trim();
+        const partronCode = partronCodeInput.value.trim();
+        const modelName = modelNameInput.value.trim();
+
+        if (!modelType) {
+          alert('Model type is required.');
+          modelTypeInput.focus();
+          return;
+        }
+
+        if (!mobisCode) {
+          alert('Mobis code is required.');
+          mobisCodeInput.focus();
+          return;
+        }
+
+        if (!partronCode) {
+          alert('Partron code is required.');
+          partronCodeInput.focus();
+          return;
+        }
+
+        if (!modelName) {
+          alert('Model name is required.');
+          modelNameInput.focus();
+          return;
+        }       
+
+        const newModel = { 
+          model_type: modelType, 
+          mobis_code: mobisCode,
+          partron_code: partronCode,
+          model_name: modelName
+        };
+
+        try {
+          // Disable save button during request
+          const saveButton = row.querySelector('.save-new-model');
+          saveButton.textContent = 'Saving...';
+          saveButton.disabled = true;
+
+          const res = await fetch('/exportmanagement/models', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newModel)
+          });
+          if (res.ok) {
+            alert('Model added successfully!');
+            await initSpecModel(); // Refresh the table
+          } else {
+            const data = await res.json();
+            alert('Error: ' + (data.message || 'Unknown error'));
+            
+            // Re-enable save button
+            saveButton.textContent = 'Save';
+            saveButton.disabled = false;
+          }
+
+        } catch (error) {
+          console.error('Error adding model:', error);
+          alert('Connection error: ' + error.message);
+          
+          // Re-enable save button
+          const saveButton = row.querySelector('.save-new-model');
+          saveButton.textContent = 'Save';
+          saveButton.disabled = false;
+        }
+      }
+
+      // Function to cancel new model addition
+      function cancelNewModel(row) {
+        if (confirm('Are you sure you want to cancel adding this model?')) {
+          row.remove();
+        }
+      }
+      
+      async function handleModelTableClick(e) {
+        const row = e.target.closest('tr');
+        const id = e.target.dataset.id;
+
+        if (e.target.classList.contains('edit-model')) {
+          if (e.target.textContent === 'Edit') {
+            const modelType = row.querySelector('.model-type');
+            const mobisCode = row.querySelector('.mobis-code');
+            const partronCode = row.querySelector('.partron-code');
+            const modelName = row.querySelector('.model-name');
+
+            modelType.innerHTML = `<input type="text" value="${modelType.textContent}" class="edit-input model-type-input"/>`;
+            mobisCode.innerHTML = `<input type="text" value="${mobisCode.textContent}" class="edit-input mobis-code-input"/>`;
+            partronCode.innerHTML = `<input type="text" value="${partronCode.textContent}" class="edit-input partron-code-input"/>`;
+            modelName.innerHTML = `<input type="text" value="${modelName.textContent}" class="edit-input model-name-input"/>`;
+
+            e.target.textContent = 'Save';
+            e.target.nextElementSibling.textContent = 'Cancel';
+          }
+          else if (e.target.textContent === 'Save') {
+            const modelTypeInput = row.querySelector('.model-type-input');
+            const mobisCodeInput = row.querySelector('.mobis-code-input');
+            const partronCodeInput = row.querySelector('.partron-code-input');
+            const modelNameInput = row.querySelector('.model-name-input');
+            // Validate inputs
+            const updatedModel = {
+              model_type: modelTypeInput.value.trim(),
+              mobis_code: mobisCodeInput.value.trim(),
+              partron_code: partronCodeInput.value.trim(),
+              model_name: modelNameInput.value.trim(),
+              event_user: JSON.parse(localStorage.getItem('user')).username,
+            };
+
+            if (!updatedModel.model_type || !updatedModel.mobis_code || !updatedModel.partron_code || !updatedModel.model_name) {
+              alert('All fields are required.');
+              return;
+            }
+
+            e.target.disabled = true;
+
+            try {
+              const res = await fetch(`/exportmanagement/models/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedModel)
+              });
+
+              if (res.ok) {
+                alert('Update successful!');
+                await initSpecModel();
+              } else {
+                const data = await res.json();
+                alert('Error: ' + (data.message || 'Unknown error'));
+                await initSpecModel();
+              }
+            } catch (error) {
+              console.error('Error updating model spec:', error);
+              alert('Connection error: ' + error.message);
+              await initSpecModel();
+            }
+          }
+        }
+
+        // === Handle Delete button ===
+        if (e.target.classList.contains('delete-model')) {
+          if (e.target.textContent === 'Delete') {
+            if (confirm('Are you sure you want to delete this model spec?')) {
+              try {
+                const res = await fetch(`/exportmanagement/models/${id}`, {
+                  method: 'DELETE',
+                  headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (res.ok) {
+                  alert('Delete successful!');
+                  await initSpecModel();
+                } else {
+                  const data = await res.json();
+                  alert('Error: ' + (data.message || 'Unknown error'));
+                }
+              } catch (error) {
+                console.error('Error deleting model spec:', error);
+                alert('Connection error: ' + error.message);
+              }
+            }
+          } else if (e.target.textContent === 'Cancel') {
+            await initSpecModel();
+          }
+        }
+      }
+      
+      // Export data model spec to CSV file
+      async function exportToCSV() {
+        const specTableBody = document.getElementById('specTableBody');
+        const rows = specTableBody.querySelectorAll('tr');
+        if (rows.length === 0) {
+          alert('No data to export!');
+          return;
+        }
+
+        let csvContent = 'data:text/csv;charset=utf-8,';
+        csvContent += 'ModelType,MobisCode,PartronCode,ModelName\n';
+
+        rows.forEach(row => {
+          const cells = row.querySelectorAll('td');
+          const rowData = Array.from(cells)
+            .slice(1, -1)
+            .map(td => td.textContent.trim().replace(/,/g, ''));
+          csvContent += rowData.join(',') + '\n';
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute('download', 'model_spec_data.csv');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      // Import data model spec from CSV file
+      async function importFromCSV() {
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = '.csv';
+        fileInput.click();
+        fileInput.onchange = async () => {
+          const file = fileInput.files[0];
+          if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = async (e) => {
+            const text = e.target.result;
+            const lines = text.split('\n').slice(1); 
+            const newSpecs = [];
+            const user = JSON.parse(localStorage.getItem('user')).username;
+            for (const line of lines) {
+              const [model_type, mobis_code, partron_code, model_name] = line.split(',').map(item => item.trim());
+              if (model_type && mobis_code && partron_code && model_name) {
+                newSpecs.push({ model_type, mobis_code, partron_code, model_name, event_user: user });
+              }
+            }
+
+            if (newSpecs.length === 0) {
+              alert('No valid data found in the CSV file!');
+              return;
+            }
+
+            try {
+              const res = await fetch('/exportmanagement/models/importmodelspec', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ specs: newSpecs })
+              });
+
+              if (res.ok) {
+                alert('Import successful!');
+                await initSpecModel();
+              } else {
+                const data = await res.json();
+                alert('Error: ' + (data.message || 'Unknown error'));
+              }
+            } catch (error) {
+              console.error('Error importing model specs:', error);
+              alert('Connection error: ' + error.message);
+            }
+          };
+          reader.readAsText(file);
+        };
+      }
+      //delivery table
+      async function initDelivery(){
+          const searchTextDelivery = document.getElementById('searchTextDelivery');   
+          // Spec management table
+          const specTableBody = document.getElementById('DeliveryTableBody');          
+          // Clear existing content first
+          specTableBody.innerHTML = '';
+          const deliveryResponse = await fetch("/exportmanagement/delivery", {
+            method: "GET",
+            headers: { "Content-Type": "application/json" }
+          });
+          const deliveryData = await deliveryResponse.json();
+          var sttSpec = 1;
+          // Populate spec management table
+          deliveryData.forEach(delivery => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${sttSpec++}</td>
+              <td class="model-type">${delivery.model_id || ''}</td>
+              <td class="mobis-code">${delivery.mobis_code || ''}</td>
+              <td class="partron-code">${delivery.model_name || ''}</td>
+              <td class="model-name">${delivery.type || ''}</td>
+              <td class="model-name">${delivery.target || ''}</td>
+              <td class="model-name">${delivery.quantity || ''}</td>
+              <td class="model-name">${delivery.status || ''}</td>
+              <td class="model-name">${delivery.complete_time || ''}</td>
+              <td class="model-name">${delivery.create_at || ''}</td>
+              <td class="model-name">${delivery.shipment_date || ''}</td>
+              <td class="model-name">${delivery.shipping_method || ''}</td>
+              <td>
+                <button class="delete-model" data-id="${delivery.id}">Delete</button>
+              </td>
+            `;
+            specTableBody.appendChild(row);
+          });
+          
+          // Search functionality for spec table
+          searchTextDelivery.addEventListener('input', function () {
+            const filter = this.value.trim().toLowerCase();
+            const rows = specTableBody.getElementsByTagName('tr');
+
+            Array.from(rows).forEach(row => {
+              const cells = row.getElementsByTagName('td');
+              let match = false;
+              const cellsToSearch = Array.from(cells).slice(0, -1);
+
+              cellsToSearch.forEach(cell => {
+                const originalText = cell.getAttribute('data-original-text') || cell.textContent;
+                if (!cell.getAttribute('data-original-text')) {
+                  cell.setAttribute('data-original-text', originalText);
+                }
+
+                if (filter && originalText.toLowerCase().includes(filter)) {
+                  match = true;
+                  const regex = new RegExp(`(${filter})`, 'gi');
+                  cell.innerHTML = originalText.replace(regex, '<mark>$1</mark>');
+                } else {
+                  cell.innerHTML = originalText;
+                }
+              });
+              row.style.display = match || filter === '' ? '' : 'none';
+            });
+          });
+          
+      }
+
+
+      // Rerender charts with default data in case of error
+      function rerendercharts(){
+        // Create fallback monthly chart with Highcharts
           Highcharts.chart('monthlyChart', {
             chart: {
               type: 'line',
@@ -1126,6 +1906,34 @@
               enabled: false
             }
           });
+      }
+      
+      // Initialize everything on DOMContentLoaded
+      document.addEventListener('DOMContentLoaded', async () => {
+        try {
+          const welcome = document.getElementById('welcome');
+          const user = JSON.parse(localStorage.getItem('user'));
+          if (user.role === 'MANAGER') {
+            welcome.textContent = `Welcome Manager back, ${user.username || 'Admin'}`;
+          } else {
+            welcome.textContent = 'Welcome staff back, Admin';
+          }
+          // Initialize overview metrics and charts
+          await initOverview();
+          // Initialize user management table
+          await initUserManagement();
+          // Initialize spec management table
+          await initSpecModel();
+          // Initialize delivery table
+          await initDelivery();
+
+
+        } catch (err) {
+          console.error("Error fetching data:", err);
+          totalInDayElem.textContent = '0';
+          performanceElem.textContent = '0%';
+          rerendercharts();
+          
         }
       });       
     </script>

@@ -4,49 +4,32 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Server",
+      "name": "Debug Backend (Node.js)",
       "program": "${workspaceFolder}/app.js",
-      "env": {
-        "NODE_ENV": "development"
-      },
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen",
-      "restart": true,
-      "runtimeExecutable": "node",
-      "skipFiles": [
-        "<node_internals>/**"
-      ]
+      "skipFiles": [        
+        "<node_internals>/**/*.js",
+        "${workspaceFolder}/node_modules/**/*.js",
+        "**/dist/**/*.js",
+        "**/build/**/*.js",
+        "**/coverage/**/*.js",
+        "**/logs/**/*.js",
+        "**/public/**/*.js",
+        "**/*.spec.js",
+        "**/*.test.js"
+      ],
+      "console": "integratedTerminal"
     },
     {
       "type": "chrome",
       "request": "launch",
-      "name": "Launch Browser",
+      "name": "Debug Frontend (Chrome)",
       "url": "http://localhost:3000",
-      "webRoot": "${workspaceFolder}",
+      "webRoot": "${workspaceFolder}/public",
       "sourceMaps": true,
-      "userDataDir": "${workspaceFolder}/.vscode/chrome_debug_user_data",
-      "runtimeArgs": [
-        "--disable-web-security",
-        "--disable-features=VizDisplayCompositor"
+      "skipFiles": [
+        "${workspaceFolder}/node_modules/**/*.js",
+        "<node_internals>/**/*.js"
       ]
-    },
-    {
-      "type": "chrome",
-      "request": "attach",
-      "name": "Attach to Browser",
-      "port": 9222,
-      "webRoot": "${workspaceFolder}",
-      "sourceMaps": true
-    }
-  ],
-  "compounds": [
-    {
-      "name": "Launch Full Stack",
-      "configurations": [
-        "Launch Server",
-        "Launch Browser"
-      ],
-      "stopAll": true
     }
   ]
 }

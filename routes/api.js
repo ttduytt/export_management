@@ -17,6 +17,81 @@ router.get("/users", async (req, res) => {
     if (conn) conn.release();
   }
 });
+//add user
+router.post("/users", async (req, res) => {
+  let conn;
+  const { user_name, password, role, factory } = req.body;
+  try {
+    conn = await pool.getConnection();
+    let result = await conn.query("INSERT INTO user (user_name, password, role, factory) VALUES (?, ?, ?, ?)", [user_name, password, role, factory]);
+    res.status(201).json({ message: "User created successfully"});
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res.status(500).json({ message: "Internal server error"+ error.message });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+// edit user
+router.put("/users/:id", async (req, res) => {
+  let conn;
+  const userId = req.params.id;
+  const { password, role, factory } = req.body;
+
+  try {
+    conn = await pool.getConnection();
+
+    const existing = await conn.query("SELECT * FROM user WHERE id = ?", [userId]);
+    if (existing.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const result = await conn.query(
+      "UPDATE user SET password = ?, role = ?, factory = ? WHERE id = ?",
+      [password, role, factory, userId]
+    );
+
+    if (result.affectedRows > 0) {
+      res.json({ message: `User ${userId} updated successfully` });
+    } else {
+      res.status(400).json({ message: "Update failed" });
+    }
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ message: "Internal server error" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+// delete user
+router.delete("/users/:id", async (req, res) => {
+  let conn;
+  const userId = req.params.id;
+  try {
+    conn = await pool.getConnection();
+
+    const existing = await conn.query("SELECT * FROM user WHERE id = ?", [userId]);
+    if (existing.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const result = await conn.query("DELETE FROM user WHERE id = ?", [userId]);
+
+    if (result.affectedRows > 0) {
+      res.json({ message: `User ${userId} deleted successfully` });
+    } else {
+      res.status(400).json({ message: "Delete failed" });
+    }
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ message: "Internal server error" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
 // model spec
 router.get("/models", async (req, res) => {
   let conn;
@@ -27,6 +102,120 @@ router.get("/models", async (req, res) => {
   } catch (err) {
     console.error("Error fetching delivery_spec:", err);
     res.status(500).json({ message: "Internal server error" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+//add model spec
+router.post("/models", async (req, res) => {
+  let conn;
+  const { model_type, mobis_code, partron_code, model_name, event_user } = req.body;
+  try {
+    conn = await pool.getConnection();
+    let result = await conn.query("INSERT INTO delivery_spec (model_type, mobis_code, partron_code, model_name, event_user) VALUES (?, ?, ?, ?, ?)", [model_type, mobis_code, partron_code, model_name, event_user]);
+    res.status(201).json({ message: "Model spec created successfully"});
+  } catch (error) {
+    console.error("Error creating model spec:", error);
+    res.status(500).json({ message: "Internal server error"+ error.message });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+//edit model spec
+router.put("/models/:id", async (req, res) => {
+  let conn;
+  const modelId = req.params.id;
+  const { model_type, mobis_code, partron_code, model_name, event_user } = req.body;
+
+  try {
+    conn = await pool.getConnection();
+
+    const existing = await conn.query("SELECT * FROM delivery_spec WHERE id = ?", [modelId]);
+    if (existing.length === 0) {
+      return res.status(404).json({ message: "Model spec not found" });
+    }
+
+    const result = await conn.query(
+      "UPDATE delivery_spec SET model_type = ?, mobis_code = ?, partron_code = ?, model_name = ?, event_user = ? WHERE id = ?",
+      [model_type, mobis_code, partron_code, model_name, event_user, modelId]
+    );
+
+    if (result.affectedRows > 0) {
+      res.json({ message: `Model spec ${modelId} updated successfully` });
+    } else {
+      res.status(400).json({ message: "Update failed" });
+    }
+  } catch (error) {
+    console.error("Error updating model spec:", error);
+    res.status(500).json({ message: "Internal server error" + error.message });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+// delete model spec
+router.delete("/models/:id", async (req, res) => {
+  let conn;
+  const id = req.params.id;
+  try {
+    conn = await pool.getConnection();
+
+    const existing = await conn.query("SELECT * FROM delivery_spec WHERE id = ?", [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ message: "Model spec not found" });
+    }
+
+    const result = await conn.query("DELETE FROM delivery_spec WHERE id = ?", [id]);
+
+    if (result.affectedRows > 0) {
+      res.json({ message: `Model spec ${id} deleted successfully` });
+    } else {
+      res.status(400).json({ message: "Delete failed" });
+    }
+  } catch (error) {
+    console.error("Error deleting model spec:", error);
+    res.status(500).json({ message: "Internal server error" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+// Bulk import model specs
+router.post("/models/importmodelspec", async (req, res) => {
+  let conn;
+  const models = req.body.specs;
+  if (!Array.isArray(models) || models.length === 0) {
+    return res.status(400).json({ message: "Invalid input data" });
+  }
+
+  try {
+    conn = await pool.getConnection();
+    await conn.beginTransaction();
+
+    const insertSQL = `
+      INSERT INTO delivery_spec (model_type, mobis_code, partron_code, model_name, event_user)
+      VALUES (?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+        model_type = VALUES(model_type),
+        partron_code = VALUES(partron_code),
+        model_name = VALUES(model_name),
+        event_user = VALUES(event_user)
+    `;
+
+    const insertPromises = models.map(model => {
+      const { model_type, mobis_code, partron_code, model_name, event_user } = model;
+      return conn.query(insertSQL, [model_type, mobis_code, partron_code, model_name, event_user]);
+    });
+
+    await Promise.all(insertPromises);
+    await conn.commit();
+    res.status(201).json({ message: "Model specs imported successfully (inserted/updated)" });
+  } catch (error) {
+    if (conn) await conn.rollback();
+    console.error("Error importing model specs:", error.message);
+    res.status(500).json({ message: "Internal server error", error: error.message });
   } finally {
     if (conn) conn.release();
   }
@@ -43,6 +232,21 @@ router.get("/delivery/:factory", async (req, res) => {
     factory === "v0"
       ? (sqlquery = "SELECT * FROM delivery_v0")
       : (sqlquery = "SELECT * FROM delivery_v5");
+    const rows = await conn.query(sqlquery);
+    res.json(rows);
+  } catch (err) {
+    console.error("Error fetching delivery:", err);
+    res.status(500).json({ message: "Internal server error" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+router.get("/delivery", async (req, res) => {
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    const sqlquery = "SELECT * FROM delivery_v0 union all select * from delivery_v5";
     const rows = await conn.query(sqlquery);
     res.json(rows);
   } catch (err) {
