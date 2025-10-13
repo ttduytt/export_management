@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../config/dbconfig");
-const { route } = require("./api");
+const dayjs = require("dayjs");
 
 // user
 router.get("/users", async (req, res) => {
@@ -22,7 +22,9 @@ router.get("/models", async (req, res) => {
   let conn;
   try {
     conn = await pool.getConnection();
-    const rows = await conn.query("SELECT * FROM delivery_spec ORDER BY MOBIS_CODE");
+    const rows = await conn.query(
+      "SELECT * FROM delivery_spec ORDER BY MOBIS_CODE"
+    );
     res.json(rows);
   } catch (err) {
     console.error("Error fetching delivery_spec:", err);
@@ -86,45 +88,119 @@ router.delete("/delivery", async (req, res) => {
   }
 });
 
-router.post("/delivery", async (req, res) => {
-  const factory = req.query.factory;
-  const data = req.body;
+router.post("/delivery/import", async (req, res) => {
+  const { username, factory, deliveries } = req.body;
   let conn;
 
   try {
     conn = await pool.getConnection();
+    await conn.beginTransaction(); // khởi tạo transaction
 
-    const table = factory === "v0" ? "delivery_v0" : "delivery_v5";
+    for (const [index, delivery] of deliveries.entries()) {
+      const isSpecExist = await conn.query(
+        `SELECT COUNT(*) AS count
+   FROM delivery_spec
+   WHERE mobis_code = ?
+     AND model_type = ?
+     AND partron_code = ?
+     AND model_name = ?`,
+        [
+          delivery.mobiscode,
+          delivery.modeltype,
+          delivery.partroncode,
+          delivery.modelname,
+        ]
+      );
 
-    const sql = `
-      INSERT INTO ${table}
-      (model_id, mobis_code, model_name, type, target, quantity, status, complete_time, create_at, shipment_date, shipping_method)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
+      if (Number(isSpecExist[0].count) === 0) {
+        res.status(400).json({
+          message: `Dữ liệu tiêu chuẩn tại dòng ${index + 2} không tồn tại`,
+        });
+        return;
+      }
 
-    const params = [
-      data.model_id,
-      data.mobis_code,
-      data.model_name,
-      data.type,
-      data.target,
-      data.quantity,
-      data.status,
-      data.complete_time,
-      data.create_at,
-      data.shipment_date,
-      data.shipping_method,
-    ];
+      const isDeliveryExist = await conn.query(
+        `SELECT COUNT(*) AS count
+   FROM delivery_${factory}
+   WHERE mobis_code = ?
+     AND target = ?
+     AND shipment_date = ?
+     AND shipping_method = ?
+     AND type = ?`,
+        [
+          delivery.mobiscode,
+          delivery.targetquantity,
+          delivery.shipmentdate,
+          delivery.shippingmethod,
+          delivery.type,
+        ]
+      );
 
-    const result = await conn.query(sql, params);
+      if (isDeliveryExist[0].count != 0) {
+        res.status(400).json({
+          message: `Thông tin xuất hàng tại dòng ${index + 2} đã tồn tại`,
+        });
+        return;
+      }
 
-    res.status(201).json({
-      message: "Delivery added successfully",
-      insertId: result.insertId,
-    });
-  } catch (err) {
-    console.error("Error adding delivery:", err);
-    res.status(500).json({ message: "Internal server error" });
+      let modelid = await conn.query(
+        `SELECT COALESCE(MAX(CAST(SUBSTRING_INDEX(model_id, '-', -1) AS UNSIGNED)), 0)
+                          FROM delivery_${factory}
+                          WHERE mobis_code = ?`,
+        [delivery.mobiscode]
+      );
+
+      // Thêm vào bảng delivery
+      const deliverySql = `
+        INSERT INTO ${factory === "v0" ? "delivery_v0" : "delivery_v5"}
+        (model_id, mobis_code, model_name, type, target, status,
+         quantity, shipping_method, shipment_date)
+        VALUES (?,?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+
+      await conn.query(deliverySql, [
+        modelid[0] + 1,
+        delivery.mobiscode,
+        delivery.modelname,
+        delivery.type,
+        delivery.targetquantity,
+        "Wait",
+        delivery.quantity,
+        delivery.shippingmethod,
+        toMySQLDate(delivery.shipmentdate),
+      ]);
+
+      //  Thêm vào bảng history
+      const historySql = `
+        INSERT INTO ${
+          factory === "v0" ? "delivery_history_v0" : "delivery_history_v5"
+        }
+        (model_id, qr, mobis_code, model_name, type, target, event_quantity,
+         shipment_date, shipping_method, event_user, event_time)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+
+      await conn.query(historySql, [
+        modelid[0] + 1,
+        delivery.qr,
+        delivery.mobiscode,
+        delivery.modelname,
+        delivery.type,
+        delivery.target,
+        delivery.quantity,
+        delivery.shipmentdate,
+        delivery.shippingmethod,
+        username,
+        new Date(),
+      ]);
+    }
+
+    await conn.commit(); // ✅ commit
+    res.status(201).json({ message: "Import delivery thành công!" });
+  } catch (error) {
+    if (conn) await conn.rollback(); // rollback nếu bất kỳ dòng nào lỗi
+    console.error("Error inserting deliveries:", error);
+    res.status(500).json({ message: "Thêm thất bại, đã rollback toàn bộ" });
   } finally {
     if (conn) conn.release();
   }
@@ -144,51 +220,6 @@ router.get("/delivery/history/:fatory", async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error("Error fetching delivery:", error);
-    res.status(500).json({ message: "Internal server error" });
-  } finally {
-    if (conn) conn.release();
-  }
-});
-
-router.post("/delivery/history/:factory", async (req, res) => {
-  const factory = req.params.fatory;
-  const data = req.body;
-  let conn;
-
-  try {
-    conn = await pool.getConnection();
-
-    const sql = `
-      INSERT INTO ${
-        factory === "v0" ? "delivery_history_v0" : "delivery_history_v5"
-      }
-      (model_id, qr, mobis_code, model_name, type, target, event_quantity,
-       shipment_date, shipping_method, event_user, event_time)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-
-    const params = [
-      data.model_id,
-      data.qr,
-      data.mobis_code,
-      data.model_name,
-      data.type,
-      data.target,
-      data.event_quantity,
-      data.shipment_date,
-      data.shipping_method,
-      data.event_user,
-      data.event_time,
-    ];
-
-    const result = await conn.query(sql, params);
-
-    res.status(201).json({
-      message: "History record added successfully",
-      insertId: result.insertId.toString(),
-    });
-  } catch (err) {
-    console.error("Error adding delivery history:", err);
     res.status(500).json({ message: "Internal server error" });
   } finally {
     if (conn) conn.release();
@@ -300,5 +331,25 @@ router.get("/api/getstatuscount", async (req, res) => {
     res.status(500).json({ error: "Database error: " + err.message });
   }
 });
+
+function toMySQLDate(input) {
+  // input dạng "DD/MM/YYYY"
+  const [day, month, year] = input.split("/").map(Number);
+
+  // Tạo Date object local
+  const date = new Date(year, month - 1, day);
+
+  const pad = (n) => String(n).padStart(2, "0");
+
+  // Format chuẩn MySQL DATETIME
+  return (
+    `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+      date.getDate()
+    )} ` +
+    `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(
+      date.getSeconds()
+    )}`
+  );
+}
 
 module.exports = router;
