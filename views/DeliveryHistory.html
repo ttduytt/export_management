@@ -10,16 +10,11 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
             background-color: #040818;
-            background-image:
-              linear-gradient(to right, rgba(75, 85, 99, 0.4) 1px, transparent 1px),
-              linear-gradient(to bottom, rgba(75, 85, 99, 0.4) 1px, transparent 1px);
-            background-size: 40px 40px, 40px 40px, 100% 100%;
         }
         /* Navigation */
         nav {
@@ -163,138 +158,30 @@
         }
         .container {
           display: flex;
-          height: calc(100vh - 140px); /* Chiều cao toàn màn hình trừ header/footer nếu có */
+          height: calc(100vh - 140px);
           color: white;
+          width: 100%;
         }
         /* Cột bên trái */
         .content-left {
-          flex: 1;
+          width: 75%;
           display: flex;
-          justify-content: center; /* căn giữa ngang */
-          align-items: center;     /* căn giữa dọc */
+          flex-direction: column;
+          justify-content: center; 
           text-align: center;
-          padding: 40px;
-        }
-
-        .text-wrapper h1 {
-          font-size: 40px;
-          margin-bottom: 20px;
-          text-transform: uppercase;
-          font-weight: 700;
-        }
-
-        .text-wrapper p {
-          font-size: 18px;
-          color: #ccc;
-        }
-        .text-wrapper {
-          text-align: center;
-          color: white;
-          margin: 50px auto;
-        }
-
-        .typing-text {
-          overflow: hidden;
-          border-right: 3px solid #fff;
-          white-space: nowrap;
-          margin: 0 auto;
-          letter-spacing: 2px;
-          width: 0;
-          animation: typing 5s steps(40, end) forwards, blink 1s step-end infinite;
-        }
-
-        /* Dòng chứa các slogan */
-        .slogan-row {
-          display: flex;
-          justify-content: center;
-          gap: 20px;           
-          flex-wrap: wrap;
-        }
-          .typing-sub.show {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        .typing-sub {
-          background: rgba(255, 255, 255, 0.25);
-          border-radius: 12px;
-          padding: 15px 20px;
-          font-size: 16px;
-          width: 250px;
-          color: white;
-          text-align: center;
-          opacity: 0; /* ẩn ban đầu */
-          transform: translateY(30px);
-          transition: all 0.5s ease;
-          animation: fadeInUp 1s ease forwards;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-        }
-
-        .typing-sub span {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-        }
-        .logout span{
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .typing-sub svg {
-          color: #4ade80;
-          flex-shrink: 0;
-        }
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .typing-sub:nth-child(1) {
-          animation-delay: 5s;
-        }
-
-        .typing-sub:nth-child(2) {
-          animation-delay: 5.5s;
-        }
-
-        .typing-sub:nth-child(3) {
-          animation-delay: 6s; 
-        }
-
-        .typing-sub:hover {
-          transform: translateY(-10px);
-          background: rgba(102, 126, 234, 0.2);
-        }
-        @keyframes typing {
-          from { width: 0 }
-          to { width: 100% }
-        }
-        @keyframes blink {
-          50% { border-color: transparent }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0 }
-          to { opacity: 1 }
+          padding: 20px 0px 20px 20px;
         }
         /* Cột bên phải */
         .content-right {
-          flex: 1;
+          width: 25%;
           display: flex;
           flex-direction: column;
           justify-content: center; 
           align-items: center;    
+          /* background-color: #225ad3; */
           gap: 20px;
         }
         .content-right img {
-          width: 80%;
           max-width: 400px;
           max-height: 350px;
           border-radius: 12px;
@@ -305,30 +192,7 @@
         .content-right img:hover {
           transform: scale(1.05);
         }
-
-        /* Responsive: khi màn nhỏ, xếp dọc */
-        @media (max-width: 900px) {
-          .container {
-            flex-direction: column;
-            height: auto;
-          }
-
-          .content-left, .content-right {
-            width: 100%;
-          }
-
-          .content-right {
-            flex-direction: row;
-            flex-wrap: wrap;
-            gap: 10px;
-          }
-
-          .content-right img {
-            width: 45%;
-            max-width: 200px;
-          }
-        }
-        @media (max-width: 1600px) {
+        @media  (max-width: 1600px) {
           .text-wrapper h1 {
             font-size: 28px;
           }
@@ -345,7 +209,13 @@
             width: 90%;
             max-width: 300px;
           }
+          .management-delivery tbody {
+          display: block;
+          overflow-y: auto;
+          max-height: 420px !important;
         }
+        }
+        
         .vertical-slider {
           overflow: hidden;
           position: relative;
@@ -365,6 +235,177 @@
           margin: 20px 0;
           border-radius: 10px;
           box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        @media screen and (max-width: 1940px){
+            .management-delivery tbody {
+              display: block ;
+              max-height: 580px ;
+              overflow-y: auto !important;
+            }
+          }
+
+        .management-delivery {
+          flex: 1;
+          width: 100%;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+          background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .management-delivery table {
+          border-collapse: collapse;
+          width: 100%;
+          table-layout: fixed;
+          border: none;
+          background: transparent;
+        }
+        .management-delivery thead,
+        .management-delivery tbody tr {
+          display: table;
+          width: 100%;
+          table-layout: fixed;
+        }
+
+        .management-delivery tbody {
+          display: block;
+          overflow-y: auto;
+        }
+
+        /* Header cố định */
+        .management-delivery thead {
+          background: rgba(102, 126, 234, 0.4);
+          color: #fff;
+          font-weight: 600;
+          text-transform: uppercase;
+          position: sticky;
+          top: 0;
+          z-index: 5;
+        }
+
+        /* Căn giữa & padding chuẩn */
+        .management-delivery th,
+        .management-delivery td {
+          padding: 12px 16px;
+          text-align: center;
+          border-bottom: 1px solid rgba(229, 231, 235, 0.3);
+          font-size: 12px;
+          color: white;
+        }
+
+        .management-delivery tr:last-child td {
+          border-bottom: none;
+        }
+
+
+        /* Custom scrollbar for webkit browsers */
+        .management-delivery tbody::-webkit-scrollbar {
+          width: 8px;
+        }
+
+        .management-delivery tbody::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 4px;
+        }
+
+        .management-delivery tbody::-webkit-scrollbar-thumb {
+          background: rgba(102, 126, 234, 0.6);
+          border-radius: 4px;
+        }
+
+        .management-delivery tbody::-webkit-scrollbar-thumb:hover {
+          background: rgba(102, 126, 234, 0.8);
+        }
+
+        .management-delivery tr:last-child td {
+          border-bottom: none;
+        }
+
+        #factorySelect {
+          padding: 6px 8px;
+          border-radius: 4px;
+          border: none;
+          background: rgba(255, 255, 255, 0.1);
+          color: white;
+          font-size: 14px;
+        }
+        #factorySelect:focus {
+          outline: none;
+          background: rgba(255, 255, 255, 0.2);
+        }
+        #factorySelect option {
+          background-color: #2b2b2bb7; 
+          color: white;
+        }
+        #clearFilters {
+          background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
+          border: none;
+          color: white;
+          padding: 8px 16px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 14px;
+          transition: all 0.3s ease;
+        }
+        #clearFilters:hover {
+          background: linear-gradient(135deg, #05855c 0%, #225ad3 100%);
+        }
+        .date-filter {
+          padding: 6px 8px;
+          border-radius: 4px;
+          border: none;
+          background: rgba(255, 255, 255, 0.1);
+          color: white;
+          font-size: 14px;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+          filter: invert(1);
+        }
+        .searchText{
+          padding: 8px 12px;
+          border-radius: 4px;
+          border: none;
+          width: 100%;
+          max-width: 300px;
+          background: rgba(255, 255, 255, 0.1);
+          color: white;
+        }
+        .searchText::placeholder{
+          color: #d1d5db;
+        }
+        .searchText:focus{
+          outline: none;
+          background: rgba(255, 255, 255, 0.2);
+        }
+        .pagination {
+          display: flex;
+          justify-content: center;
+          padding: 12px 0;
+          gap: 12px;
+        }
+        .pagination button {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          border: none;
+          color: white;
+          padding: 8px 16px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 14px;
+          transition: all 0.3s ease;
+        }
+        .pagination button:hover {
+          background: linear-gradient(135deg, #556cd6 0%, #653d9e 100%);
+        }
+        .pagination button:disabled {
+          background: rgba(102, 126, 234, 0.3);
+          cursor: not-allowed;
+          opacity: 0.5;
+        }
+        .pagination button:disabled:hover {
+          background: rgba(102, 126, 234, 0.3);
         }
     </style>
 </head>
@@ -398,14 +439,49 @@
     </nav>
     <div class="container">
       <div class="content-left">
-        <div class="text-wrapper">
-          <h1 class="typing-text">Welcome to the ACM Finished Goods Delivery System</h1>
-          <div class="slogan-row">
-            <p class="typing-sub"><span><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-check-big-icon lucide-circle-check-big"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></span>Precision in Every Shipment - Perfection in Every Delivery.</p>
-            <p class="typing-sub"><span><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-check-big-icon lucide-circle-check-big"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></span>Delivering Accuracy, Speed, and Quality.</p>
-            <p class="typing-sub"><span><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-check-big-icon lucide-circle-check-big"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></span>Every Box, a Promise Delivered.</p>
-          </div>
+        <div class="management-delivery">
+          <table>
+            <thead>
+              <tr>
+                <th colspan="2" style="text-align: left; font-size: 20px; padding-bottom: 10px; text-transform: uppercase;">Delivery History</th>
+                <th colspan="3"><input class="searchText" type="text" name="searchTextDelivery" id="searchTextDelivery" placeholder="Search Mobis Code, Model Name"></th>
+                <th colspan="2">
+                  <span>Factory:</span>
+                  <select name="factory" id="factorySelect">
+                    <option value="V0" selected>V0</option>
+                    <option value="V5">V5</option>
+                  </select>
+                </th>
+                <th colspan="2">From: <input type="date" id="deliveryDateFrom" class="date-filter" name="deliveryDateFrom"></th> 
+                <th colspan="2">To: <input type="date" id="deliveryDateTo" class="date-filter" name="deliveryDateTo"></th>
+                <th colspan="1"><button id="clearFilters"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-ccw-icon lucide-refresh-ccw"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button></th>
+              </tr>
+              <tr>
+                <th>STT</th>
+                <th>Model Id</th>
+                <th>QR</th>
+                <th>Mobis Code</th>
+                <th>Model Name</th>
+                <th>Type</th>
+                <th>Target</th>
+                <th>Even Quantity</th>
+                <th>Shipping Date</th>
+                <th>Shipping Method</th>
+                <th>Event User</th>
+                <th>Event Time</th>
+              </tr>
+            </thead>
+            <tbody id="DeliveryTableBody">
+            </tbody>
+          </table>
         </div>
+        <div class="pagination">
+          <button id="prevPage">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+          </button>
+          <button id="nextPage">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right-icon lucide-arrow-right"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </button></div>
       </div>
       <div class="content-right">
         <div class="vertical-slider">
@@ -422,6 +498,7 @@
     <footer>
         <p>&copy; 2025 Copyright for Partron VN</p>
     </footer>
+    <script src="/js/dayjs.min.js"></script>
     <script>
         //animation images
         const track = document.getElementById("slideTrack");
@@ -489,6 +566,141 @@
           }
         });
         });         
+      // initialize delivery data
+      async function initDelivery(page = 1){
+        const searchTextDelivery = document.getElementById('searchTextDelivery');
+        const factorySelect = document.getElementById('factorySelect');
+        const searchDateFrom = document.getElementById('deliveryDateFrom');
+        const searchDateTo = document.getElementById('deliveryDateTo');
+        const prevPageBtn = document.getElementById('prevPage');
+        const nextPageBtn = document.getElementById('nextPage');
+
+        const specTableBody = document.getElementById('DeliveryTableBody');
+        specTableBody.innerHTML = '';
+
+        // Call api with filters
+        const url = `/exportmanagement/delivery/history/${factorySelect.value}?page=${page}` +
+          `&search=${encodeURIComponent(searchTextDelivery.value.trim())}` +
+          `&dateFrom=${encodeURIComponent(searchDateFrom.value)}` +
+          `&dateTo=${encodeURIComponent(searchDateTo.value)}`;
+
+        const deliveryResponse = await fetch(url, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        });
+
+        if (!deliveryResponse.ok) {
+          console.error("Fetch error", await deliveryResponse.text());
+          alert("Không thể tải dữ liệu Delivery!");
+          return;
+        }
+
+        const deliveryResult = await deliveryResponse.json();
+        const deliveryData = deliveryResult.data || [];
+
+        let sttSpec = ((deliveryResult.page - 1) * deliveryResult.limit) + 1;
+
+        deliveryData.forEach(delivery => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${sttSpec++}</td>
+            <td class="model-id">${delivery.model_id || ''}</td>
+            <td class="qr">${delivery.qr || ''}</td>
+            <td class="mobis-code">${delivery.mobis_code || ''}</td>
+            <td class="model-name">${delivery.model_name || ''}</td>
+            <td class="type">${delivery.type || ''}</td>
+            <td class="target">${delivery.target || ''}</td>
+            <td class="quantity">${delivery.event_quantity || ''}</td>
+            <td class="shipment-date">${delivery.shipment_date ? dayjs(delivery.shipment_date).format('YYYY-MM-DD HH:mm:ss') : ''}</td>
+            <td class="shipping-method">${delivery.shipping_method || ''}</td>
+            <td class="event-user">${delivery.event_user || ''}</td>
+            <td class="event-time">${delivery.event_time ? dayjs(delivery.event_time).format('YYYY-MM-DD HH:mm:ss') : ''}</td>
+          `;
+          specTableBody.appendChild(row);
+        });
+
+        // Pagination
+        prevPageBtn.disabled = deliveryResult.page <= 1;
+        nextPageBtn.disabled = !deliveryResult.hasNextPage;
+        window.currentDeliveryPage = deliveryResult.page;
+
+        prevPageBtn.onclick = async () => {
+          if (window.currentDeliveryPage > 1) {
+            await initDelivery(window.currentDeliveryPage - 1);
+          }
+        };
+        nextPageBtn.onclick = async () => {
+          if (deliveryResult.hasNextPage) {
+            await initDelivery(window.currentDeliveryPage + 1);
+          }
+        };
+        let debounceTimeoutSearch;
+        if (!searchTextDelivery._boundSearchHandler) {
+          const handler = () => {
+            clearTimeout(debounceTimeoutSearch);
+            debounceTimeoutSearch = setTimeout(() => {
+              window.currentDeliveryPage = 1;
+              initDelivery(1);
+            }, 500);
+          };
+          searchTextDelivery.addEventListener('input', handler);
+          searchTextDelivery._boundSearchHandler = handler;
+        }
+
+        // Date change -> (reset page)
+        if (!searchDateFrom._boundChangeHandler) {
+          const handler = () => {
+            window.currentDeliveryPage = 1;
+            initDelivery(1);
+          };
+          searchDateFrom.addEventListener('change', handler);
+          searchDateFrom._boundChangeHandler = handler;
+        }
+        if (!searchDateTo._boundChangeHandler) {
+          const handler = () => {
+            window.currentDeliveryPage = 1;
+            initDelivery(1);
+          };
+          searchDateTo.addEventListener('change', handler);
+          searchDateTo._boundChangeHandler = handler;
+        }
+
+        // Factory select change -> gọi server (reset page)
+        if (!factorySelect._boundChangeHandler) {
+          const handler = async () => {
+            window.currentDeliveryPage = 1;
+            await initDelivery(1);
+          };
+          factorySelect.addEventListener('change', handler);
+          factorySelect._boundChangeHandler = handler;
+        }
+
+        // Clear filters button
+        const clearButton = document.getElementById('clearFilters');
+        if (clearButton && !clearButton._boundClearHandler) {
+          const handler = () => {
+            searchTextDelivery.value = '';
+            searchDateFrom.value = '';
+            searchDateTo.value = '';
+            window.currentDeliveryPage = 1;
+            initDelivery(1);
+          };
+          clearButton.addEventListener('click', handler);
+          clearButton._boundClearHandler = handler;
+        }
+      }
+
+      // Initialize everything on DOMContentLoaded
+      document.addEventListener('DOMContentLoaded', async () => {
+        try {
+          await initDelivery(1);
+        } catch (err) {
+          console.error("Error fetching data:", err);
+          
+        }
+      });       
+ 
+    
     </script>
 </body>
 </html>
