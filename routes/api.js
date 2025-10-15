@@ -262,14 +262,17 @@ router.get("/delivery/:factory", async (req, res) => {
 
   try {
     conn = await pool.getConnection();
-    factory === "v0"
-      ? (sqlquery = "SELECT * FROM delivery_v0")
-      : (sqlquery = "SELECT * FROM delivery_v5");
+    factory === "V0"
+      ? (sqlquery = "SELECT * FROM delivery_v0 ORDER BY create_at DESC")
+      : (sqlquery = "SELECT * FROM delivery_v5 ORDER BY create_at DESC");
+    // if (factory !== "V0" && factory !== "V5") {
+    //   sqlquery = "SELECT * FROM delivery_v0 union all select * from delivery_v5";
+    // }
     const rows = await conn.query(sqlquery);
     res.json(rows);
   } catch (err) {
     console.error("Error fetching delivery:", err);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error", error: err.message });
   } finally {
     if (conn) conn.release();
   }
@@ -317,8 +320,8 @@ router.delete("/delivery", async (req, res) => {
       res.status(400).json({ message: "Delete failed" });
     }
   } catch (error) {
-    console.error("Error deleting delivery:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error deleting delivery:", error.message);
+    res.status(500).json({ message: "Internal server error", error: error.message });
   } finally {
     if (conn) conn.release();
   }
@@ -446,24 +449,74 @@ router.post("/delivery/import", async (req, res) => {
 });
 
 // history delivery
-router.get("/delivery/history/:fatory", async (req, res) => {
+router.get("/delivery/history/:factory", async (req, res) => {
   let conn;
-  const factory = req.params.fatory;
+  const factory = req.params.factory;
+  const page = parseInt(req.query.page) || 1;
+  const limit = 500;
+  const offset = (page - 1) * limit;
+  // Các tham số lọc
+  const search = req.query.search ? req.query.search.trim() : '';
+  const dateFrom = req.query.dateFrom ? req.query.dateFrom.trim() : '';
+  const dateTo = req.query.dateTo ? req.query.dateTo.trim() : '';
 
   try {
     conn = await pool.getConnection();
-    const rows = await conn.query(`SELECT * FROM delivery_history_${factory}`);
+    let sql = `SELECT * FROM delivery_history_${factory} WHERE 1=1`;
+    const params = [];
+    // Bộ lọc text (mobis_code, model_name)
+    if (search) {
+      sql += ` AND (
+        mobis_code LIKE ? OR
+        model_name LIKE ?
+      )`;
+      const likeStr = `%${search}%`;
+      params.push(likeStr, likeStr);
+    }
+
+    // Bộ lọc ngày
+    if (dateFrom) {
+      sql += ` AND event_time >= ?`;
+      params.push(dateFrom);
+    }
+    if (dateTo) {
+      sql += ` AND event_time <= ?`;
+      params.push(dateTo);
+    }
+
+    // Phân trang + sắp xếp
+    sql += ` ORDER BY event_time DESC LIMIT ? OFFSET ?`;
+    params.push(limit, offset);
+    const rows = await conn.query(sql, params);
+    // Kiểm tra có trang tiếp theo không
+    const nextRows = await conn.query(
+      `SELECT 1 FROM delivery_history_${factory} WHERE 1=1
+       ${search ? ` AND (mobis_code LIKE ? OR model_name LIKE ?)` : ''}
+       ${dateFrom ? ` AND event_time >= ?` : ''}
+       ${dateTo ? ` AND event_time <= ?` : ''}
+       LIMIT 1 OFFSET ?`,
+      search
+        ? [...Array(2).fill(`%${search}%`), ...(dateFrom ? [dateFrom] : []), ...(dateTo ? [dateTo] : []), offset + limit]
+        : [...(dateFrom ? [dateFrom] : []), ...(dateTo ? [dateTo] : []), offset + limit]
+    );
+
     const result = JSON.parse(
       JSON.stringify(rows, (_, v) => (typeof v === "bigint" ? v.toString() : v))
     );
-    res.json(result);
+    res.json({
+      page,
+      limit,
+      data: result,
+      hasNextPage: nextRows.length > 0
+    });
   } catch (error) {
-    console.error("Error fetching delivery:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error fetching delivery history:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
   } finally {
     if (conn) conn.release();
   }
 });
+
 
 // login
 router.post("/api/login", async (req, res) => {
