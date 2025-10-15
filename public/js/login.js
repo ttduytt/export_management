@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const forgotBtn = document.querySelector("#forgotBtn");
     forgotBtn.addEventListener("click", (e) => {
     e.preventDefault(); // chặn chuyển trang
-    alert("Vui lòng liên hệ IT để lấy lại mật khẩu!");
+    alert("Please contact IT to retrieve your password!");
   });
   submitBtn.addEventListener("click", async (e) => {
     e.preventDefault(); // chặn chuyển trang
@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = form.querySelector("input[name='password']").value.trim();
 
     if (!username || !password) {
-      alert("Vui lòng nhập đủ tài khoản và mật khẩu!");
+      alert("Please enter your username and password!");
       return;
     }
     try {
@@ -29,10 +29,10 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("user", JSON.stringify({ username: data.username, password: data.password, role: data.role, factory: data.factory }));
         window.location.href = "/home";
       } else {
-        alert("Sai tài khoản hoặc mật khẩu!");
+        alert("Incorrect username or password!");
       }
     } catch (err) {
-      alert("Lỗi kết nối server!", err);
+      alert("Server connection error!", err);
     }
   });
 });

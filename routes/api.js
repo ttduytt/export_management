@@ -420,7 +420,7 @@ router.post("/delivery/import", async (req, res) => {
         }
         (model_id, qr, mobis_code, model_name, type, target, event_quantity,
          shipment_date, shipping_method, event_user)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       await conn.query(historySql, [
@@ -516,7 +516,6 @@ router.get("/delivery/history/:factory", async (req, res) => {
     if (conn) conn.release();
   }
 });
-
 
 // login
 router.post("/api/login", async (req, res) => {
