@@ -240,11 +240,9 @@ router.post("/models/importmodelspec", async (req, res) => {
 
     await Promise.all(insertPromises);
     await conn.commit();
-    res
-      .status(201)
-      .json({
-        message: "Model specs imported successfully (inserted/updated)",
-      });
+    res.status(201).json({
+      message: "Model specs imported successfully (inserted/updated)",
+    });
   } catch (error) {
     if (conn) await conn.rollback();
     console.error("Error importing model specs:", error.message);
@@ -374,20 +372,24 @@ router.post("/delivery/import", async (req, res) => {
         ]
       );
 
-      if (isDeliveryExist[0].count != 0) {
+      if (Number(isDeliveryExist[0].count) != 0) {
         res.status(400).json({
           message: `Thông tin xuất hàng tại dòng ${index + 2} đã tồn tại`,
         });
         return;
       }
 
-      let modelid = await conn.query(
-        `SELECT COALESCE(MAX(CAST(SUBSTRING_INDEX(model_id, '-', -1) AS UNSIGNED)), 0)
-                          FROM delivery_${factory}
-                          WHERE mobis_code = ?`,
+      let rows = await conn.query(
+        `
+        SELECT COALESCE(MAX(CAST(SUBSTRING_INDEX(model_id, '-', -1) AS UNSIGNED)), 0) AS countModel
+        FROM delivery_${factory}
+        WHERE mobis_code = ?`,
         [delivery.mobiscode]
       );
-
+      const countModel = Number(rows[0].countModel) + 1;
+      const now = new Date();
+      const formattedDate = now.toISOString().split("T")[0].replace(/-/g, "");
+      const modelid = `${delivery.mobiscode}-${formattedDate}-${countModel}`;
       // Thêm vào bảng delivery
       const deliverySql = `
         INSERT INTO ${factory === "v0" ? "delivery_v0" : "delivery_v5"}
@@ -397,7 +399,7 @@ router.post("/delivery/import", async (req, res) => {
       `;
 
       await conn.query(deliverySql, [
-        modelid[0] + 1,
+        modelid,
         delivery.mobiscode,
         delivery.modelname,
         delivery.type,
@@ -405,7 +407,7 @@ router.post("/delivery/import", async (req, res) => {
         "Wait",
         delivery.quantity,
         delivery.shippingmethod,
-        toMySQLDate(delivery.shipmentdate),
+        delivery.shipmentdate,
       ]);
 
       //  Thêm vào bảng history
@@ -414,22 +416,21 @@ router.post("/delivery/import", async (req, res) => {
           factory === "v0" ? "delivery_history_v0" : "delivery_history_v5"
         }
         (model_id, qr, mobis_code, model_name, type, target, event_quantity,
-         shipment_date, shipping_method, event_user, event_time)
+         shipment_date, shipping_method, event_user)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       await conn.query(historySql, [
-        modelid[0] + 1,
+        modelid,
         delivery.qr,
         delivery.mobiscode,
         delivery.modelname,
         delivery.type,
-        delivery.target,
+        delivery.targetquantity,
         delivery.quantity,
         delivery.shipmentdate,
         delivery.shippingmethod,
         username,
-        new Date(),
       ]);
     }
 
@@ -730,25 +731,5 @@ router.get("/api/getstatuscount", async (req, res) => {
     res.status(500).json({ error: "Database error: " + err.message });
   }
 });
-
-function toMySQLDate(input) {
-  // input dạng "DD/MM/YYYY"
-  const [day, month, year] = input.split("/").map(Number);
-
-  // Tạo Date object local
-  const date = new Date(year, month - 1, day);
-
-  const pad = (n) => String(n).padStart(2, "0");
-
-  // Format chuẩn MySQL DATETIME
-  return (
-    `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-      date.getDate()
-    )} ` +
-    `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(
-      date.getSeconds()
-    )}`
-  );
-}
 
 module.exports = router;

@@ -68,6 +68,7 @@ function validateRow(row, rowIndex) {
       }
 
       case "shipmentdate": {
+        // Xử lý số Excel date
         if (typeof value === "number") {
           const excelDate = new Date(Date.UTC(1899, 11, 30 + value));
           if (isNaN(excelDate.getTime())) {
@@ -82,41 +83,136 @@ function validateRow(row, rowIndex) {
           const month = excelDate.getUTCMonth() + 1;
           const year = excelDate.getUTCFullYear();
 
-          row[key] = `${String(day).padStart(2, "0")}/${String(month).padStart(
-            2,
-            "0"
-          )}/${year}`;
+          row[key] = `${year}-${String(month).padStart(2, "0")}-${String(
+            day
+          ).padStart(2, "0")}`;
           break;
         }
 
-        // Nếu là chuỗi thì xử lý như trước
+        // Xử lý Date object
+        if (value instanceof Date) {
+          if (isNaN(value.getTime())) {
+            throw new Error(
+              `Lỗi tại dòng ${rowIndex + 2}, cột "${key}": Ngày không hợp lệ`
+            );
+          }
+
+          const day = value.getDate();
+          const month = value.getMonth() + 1;
+          const year = value.getFullYear();
+
+          row[key] = `${year}-${String(month).padStart(2, "0")}-${String(
+            day
+          ).padStart(2, "0")}`;
+          break;
+        }
+
+        // Xử lý chuỗi
         const str = String(value).trim();
-        const parts = str.split(/[\/\-]/).map(Number);
-        if (parts.length !== 3) {
+
+        const match = str.match(/^(\d{1,4})[\/\-](\d{1,2})[\/\-](\d{1,4})$/);
+        if (!match) {
           throw new Error(
             `Lỗi tại dòng ${
               rowIndex + 2
-            }, cột "${key}": Ngày không hợp lệ: "${value}"`
+            }, cột "${key}": Định dạng ngày không hợp lệ: "${value}". ` +
+              `Chỉ chấp nhận: dd/mm/yyyy hoặc yyyy/mm/dd`
           );
         }
 
-        const [day, month, year] = parts;
+        const part1 = parseInt(match[1]);
+        const part2 = parseInt(match[2]);
+        const part3 = parseInt(match[3]);
+
+        let day, month, year;
+
+        // Phân biệt dd/mm/yyyy vs yyyy/mm/dd
+        // Nếu part1 > 31 → chắc chắn là năm → format yyyy/mm/dd
+        if (part1 > 31) {
+          year = part1;
+          month = part2;
+          day = part3;
+        }
+        // Nếu part3 > 31 → chắc chắn là năm → format dd/mm/yyyy
+        else if (part3 > 31) {
+          day = part1;
+          month = part2;
+          year = part3;
+        }
+        // Nếu part1 > 12 và part1 <= 31 → chắc chắn là ngày → format dd/mm/yyyy
+        else if (part1 > 12) {
+          day = part1;
+          month = part2;
+          year = part3;
+        }
+        // Nếu part3 <= 31 và có 4 chữ số → format dd/mm/yyyy
+        else if (part3 >= 1000) {
+          day = part1;
+          month = part2;
+          year = part3;
+        }
+        // Nếu part1 có 4 chữ số → format yyyy/mm/dd
+        else if (part1 >= 1000) {
+          year = part1;
+          month = part2;
+          day = part3;
+        }
+        // Mặc định: dd/mm/yyyy (trường hợp애매: 11/10/2025)
+        else {
+          day = part1;
+          month = part2;
+          year = part3;
+        }
+
+        // Validate năm hợp lý
+        if (year < 1900 || year > 2100) {
+          throw new Error(
+            `Lỗi tại dòng ${
+              rowIndex + 2
+            }, cột "${key}": Năm không hợp lệ (${year}). Năm phải từ 1900-2100.`
+          );
+        }
+
+        // Validate tháng
+        if (month < 1 || month > 12) {
+          throw new Error(
+            `Lỗi tại dòng ${
+              rowIndex + 2
+            }, cột "${key}": Tháng không hợp lệ (${month}). Tháng phải từ 1-12.`
+          );
+        }
+
+        // Validate ngày
+        if (day < 1 || day > 31) {
+          throw new Error(
+            `Lỗi tại dòng ${
+              rowIndex + 2
+            }, cột "${key}": Ngày không hợp lệ (${day}). Ngày phải từ 1-31.`
+          );
+        }
+
+        // Kiểm tra ngày có tồn tại trong tháng đó
         const date = new Date(year, month - 1, day);
-        if (isNaN(date.getTime())) {
+        if (
+          isNaN(date.getTime()) ||
+          date.getDate() !== day ||
+          date.getMonth() !== month - 1 ||
+          date.getFullYear() !== year
+        ) {
           throw new Error(
             `Lỗi tại dòng ${
               rowIndex + 2
-            }, cột "${key}": Ngày không hợp lệ: "${value}"`
+            }, cột "${key}": Ngày không tồn tại: ${day}/${month}/${year}. ` +
+              `Tháng ${month} không có ngày ${day}.`
           );
         }
 
-        row[key] = `${String(day).padStart(2, "0")}/${String(month).padStart(
-          2,
-          "0"
-        )}/${year}`;
+        // Format về yyyy-mm-dd
+        row[key] = `${year}-${String(month).padStart(2, "0")}-${String(
+          day
+        ).padStart(2, "0")}`;
         break;
       }
-
       default:
         continue;
     }
@@ -134,7 +230,7 @@ async function addDeliveryAndHistory(factory, rows) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        username: user.user_name,
+        username: user.username,
         factory: factory,
         deliveries: rows,
       }),
@@ -193,7 +289,6 @@ function validateExcelFile(file) {
         }
 
         rows.forEach((row, index) => {
-          console.log(row, index);
           const keySignature = [
             row.mobiscode,
             row.target,
@@ -328,12 +423,10 @@ listBtn.addEventListener("click", () => {
   tableHeader.classList.remove("hidden");
 });
 
-searchInput.addEventListener("input", (e) => {
-  const searchTerm = e.target.value.toLowerCase();
-  document.querySelectorAll(".table-row, .card").forEach((item) => {
-    const text = item.textContent.toLowerCase();
-    item.style.display = text.includes(searchTerm) ? "" : "none";
-  });
+searchInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    alert("Người dùng nhấn Enter với giá trị:", searchInput.value);
+  }
 });
 
 getAll();
