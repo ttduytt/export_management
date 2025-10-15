@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../config/dbconfig");
-const dayjs = require("dayjs");
 
 // user
 router.get("/users", async (req, res) => {
@@ -17,6 +16,7 @@ router.get("/users", async (req, res) => {
     if (conn) conn.release();
   }
 });
+
 //add user
 router.post("/users", async (req, res) => {
   let conn;
@@ -545,7 +545,7 @@ router.post("/api/login", async (req, res) => {
 });
 
 router.get("/api/getoverview", async (req, res) => {
-  const factory = req.query.factory || "V0";
+  const factory = req.query.factory;
   try {
     if (factory == "V0") {
       const totalExportRowsV0 = await pool.query(`

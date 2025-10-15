@@ -525,7 +525,7 @@
 
           @media screen and (min-width: 1700px){
             .bottom-row3{
-              padding: 12px 24px 24px 24px;
+              padding: 12px 20px 24px 20px;
             }
           }
         /* Custom scrollbar for webkit browsers */
@@ -734,7 +734,7 @@
     <!-- Navigation -->
     <nav>
         <div class="nav-container">
-            <div class="logo" ><span><img style="width: 80px;" src="/images/logo.png" alt=""></span>MANAGERMENT DELIVERY</div>
+            <div class="logo" ><span><img style="width: 80px;" src="/images/logo.png" alt=""></span><a href="/home">MANAGERMENT DELIVERY</a></div>
             <ul class="nav-menu" id="navMenu">
                 <li class="home"><a href="#">Home</a></li>
                 <li class="delivery"><a href="#delivery">Delivery</a></li>
@@ -826,7 +826,7 @@
             <thead>
               <tr>
                 <th colspan="1" style="text-align: left; font-size: 20px; padding-bottom: 10px; text-transform: uppercase;">Model Spec</th>
-                <th colspan="2"><input class="searchText" type="text" name="searchText" id="searchText" placeholder="Search all"></th>
+                <th colspan="2"><input class="searchText" type="text" name="searchText" id="searchText" placeholder="Search All"></th>
                 <th colspan="1" style="text-align: right;"><button class="add-spec">Add Model</button></th>
                 <th colspan="1" style="text-align: right;"><button class="import" id="importButton">Import File</button></th>   
                 <th colspan="1" style="text-align: right;"><button class="export" id="exportButton">Export File</button></th>   
@@ -974,11 +974,14 @@
           const monthlyData = await monthlyResponse.json();
           // Monthly chart with Highcharts
           Highcharts.chart('monthlyChart', {
+             accessibility: {
+              enabled: false
+            },
             chart: {
               type: 'spline',
               backgroundColor: 'transparent',
               height: 300
-            },
+            },            
             responsive: {
               rules: [{
                 condition: {
@@ -1035,7 +1038,7 @@
             }],
             credits: {
               enabled: false
-            }
+            }            
           });
 
           // Fetch status count data
@@ -1048,6 +1051,9 @@
 
           // Status chart with Highcharts
           Highcharts.chart('orderChart', {
+            accessibility: {
+              enabled: false
+            },
             chart: {
               type: 'pie',
               backgroundColor: 'transparent'
