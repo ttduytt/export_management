@@ -8,19 +8,22 @@ const tableHeader = document.getElementById("tableHeader");
 const searchInput = document.getElementById("searchInput");
 const importBtn = document.querySelector(".btnImport");
 const excelInput = document.getElementById("excelInput");
+import { formatDate } from "../js/utils.js";
 
 const data = [];
 const requiredColumns = [
   "MobisCode",
   "ModelName",
   "ModelType",
-  "TargetQuantity",
+  "Target",
   "Type",
   "PartronCode",
   "Quantity",
   "ShippingMethod",
   "ShipmentDate",
 ];
+
+const user = JSON.parse(localStorage.getItem("user"));
 
 function getAll() {
   fetch("/exportmanagement/delivery/v0")
@@ -32,7 +35,6 @@ function getAll() {
     })
     .catch((error) => console.error("Error fetching data:", error));
 }
-
 function validateRow(row, rowIndex) {
   for (const [key, value] of Object.entries(row)) {
     if (value === null || value === undefined || value === "") {
@@ -83,6 +85,21 @@ function validateRow(row, rowIndex) {
           const month = excelDate.getUTCMonth() + 1;
           const year = excelDate.getUTCFullYear();
 
+          // ✅ Kiểm tra ngày xuất hàng không nhỏ hơn ngày hiện tại
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const compareDate = new Date(Date.UTC(year, month - 1, day));
+
+          if (compareDate < today) {
+            throw new Error(
+              `Lỗi tại dòng ${
+                rowIndex + 2
+              }, cột "${key}": Ngày xuất hàng (${day}/${month}/${year}) không được nhỏ hơn ngày hiện tại (${today.getDate()}/${
+                today.getMonth() + 1
+              }/${today.getFullYear()}).`
+            );
+          }
+
           row[key] = `${year}-${String(month).padStart(2, "0")}-${String(
             day
           ).padStart(2, "0")}`;
@@ -100,6 +117,21 @@ function validateRow(row, rowIndex) {
           const day = value.getDate();
           const month = value.getMonth() + 1;
           const year = value.getFullYear();
+
+          // ✅ Kiểm tra ngày xuất hàng không nhỏ hơn ngày hiện tại
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const compareDate = new Date(Date.UTC(year, month - 1, day));
+
+          if (compareDate < today) {
+            throw new Error(
+              `Lỗi tại dòng ${
+                rowIndex + 2
+              }, cột "${key}": Ngày xuất hàng (${day}/${month}/${year}) không được nhỏ hơn ngày hiện tại (${today.getDate()}/${
+                today.getMonth() + 1
+              }/${today.getFullYear()}).`
+            );
+          }
 
           row[key] = `${year}-${String(month).padStart(2, "0")}-${String(
             day
@@ -207,6 +239,18 @@ function validateRow(row, rowIndex) {
           );
         }
 
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // bỏ phần giờ để so sánh chỉ theo ngày
+        if (date < today) {
+          throw new Error(
+            `Lỗi tại dòng ${
+              rowIndex + 2
+            }, cột "${key}": Ngày xuất hàng (${day}/${month}/${year}) không được nhỏ hơn ngày hiện tại (${today.getDate()}/${
+              today.getMonth() + 1
+            }/${today.getFullYear()}).`
+          );
+        }
+
         // Format về yyyy-mm-dd
         row[key] = `${year}-${String(month).padStart(2, "0")}-${String(
           day
@@ -225,7 +269,6 @@ function validateRow(row, rowIndex) {
 
 async function addDeliveryAndHistory(factory, rows) {
   try {
-    const user = JSON.parse(localStorage.getItem("user"));
     const res = await fetch(`/exportmanagement/delivery/import`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -423,9 +466,160 @@ listBtn.addEventListener("click", () => {
   tableHeader.classList.remove("hidden");
 });
 
-searchInput.addEventListener("keydown", (e) => {
+async function checkQrExist(factory, qr) {
+  try {
+    const response = await fetch(
+      `exportmanagement/qr/getvalue?factory=${factory}&qrvalue=${qr}`
+    );
+    if (!response.ok) {
+      console.log(response.message);
+      return null;
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Lỗi khi gọi API checkQrExist:", error);
+    return null;
+  }
+}
+
+async function findDelivery(qrData) {
+  try {
+    const response = await fetch(
+      `exportmanagement/qr/v0/${qrData.mobiscode}/${qrData.type}`
+    );
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
+
+function getQrData(qr) {
+  const parts = qr.split("-");
+  let qrData = {};
+  switch (parts.length) {
+    case 7: {
+      if (!Number(parts[3])) {
+        throw new Error("Mã QR không hợp lệ");
+      }
+      qrData = {
+        mobiscode: parts[2],
+        quantity: parts[3],
+        type: parts[4],
+      };
+      return qrData;
+    }
+
+    case 8: {
+      if (!Number(parts[4])) {
+        throw new Error("Mã QR không hợp lệ");
+      }
+      qrData = {
+        mobiscode: parts[2] + parts[3],
+        quantity: parts[4],
+        type: parts[5],
+      };
+      return qrData;
+    }
+
+    case 9: {
+      if (!Number(parts[5])) {
+        throw new Error("Mã QR không hợp lệ");
+      }
+      qrData = {
+        mobiscode: parts[2] + parts[3] + parts[4],
+        quantity: parts[5],
+        type: parts[6],
+      };
+      return qrData;
+    }
+
+    default:
+      throw new Error("Mã QR không hợp lệ");
+  }
+}
+
+async function updateDelivery(username, factory, delivery, qr) {
+  try {
+    const response = await fetch("exportmanagement/delivery/update/quantity", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username,
+        factory,
+        delivery,
+        qr,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Lỗi HTTP: ${response.status}`);
+    }
+
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.log(error);
+    return { status: 500, message: "Cập nhật thất bại (fetch error)" };
+  }
+}
+
+searchInput.addEventListener("keydown", async (e) => {
   if (e.key === "Enter") {
-    alert("Người dùng nhấn Enter với giá trị:", searchInput.value);
+    try {
+      const qrValue = searchInput.value.trim();
+      if (!qrValue) return;
+
+      const isQrExist = await checkQrExist("v0", qrValue);
+
+      if (isQrExist) {
+        alert("Mã QR đã tồn tại");
+        return;
+      }
+
+      const qrData = getQrData(qrValue);
+      const delivery = await findDelivery(qrData);
+
+      if (!delivery) {
+        alert("không tìm thấy thông tin xuất hàng khớp với qr");
+        return;
+      }
+
+      let newQuantity = Number(delivery.quantity) + Number(qrData.quantity);
+      if (newQuantity > delivery.target) {
+        alert("số lượng cộng thêm lớn hơn số lượng mục tiêu");
+        return;
+      }
+
+      if (newQuantity === delivery.target) {
+        delivery.status = "Complete";
+        let completeTime = new Date();
+        delivery.complete_time = formatDate(completeTime);
+      }
+
+      if (newQuantity < delivery.target) {
+        delivery.status = "Run";
+      }
+
+      delivery.quantity = newQuantity;
+      delivery.shipment_date = formatDate(delivery.shipment_date);
+
+      const response = await updateDelivery(
+        user.username,
+        "v0",
+        delivery,
+        qrValue
+      );
+      alert(response.message);
+    } catch (error) {
+      alert(error);
+      searchInput.value = "";
+    }
   }
 });
 
