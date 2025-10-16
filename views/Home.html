@@ -479,7 +479,7 @@
 
             case 'admin':
               const user = JSON.parse(localStorage.getItem('user'));
-              console.log('User Role:', user.role); // Debug line
+              console.log('User Role:', user.role);
               if (user.role === 'MANAGER') {
                 window.location.href = '/admin';
               } else {
