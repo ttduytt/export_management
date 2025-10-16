@@ -195,7 +195,7 @@
           padding-left: 24px;
         }
         .welcome-card {
-          width: 100%;
+          width: 100.7%;
           display: flex;
           height: 200px;
           justify-content: space-between;
@@ -632,7 +632,11 @@
           width: 100%;
           table-layout: fixed;
         }
-
+        .management-delivery thead tr {
+        display: table;
+        width: calc(100% - 8px);
+        table-layout: fixed;
+      }
         .management-delivery tbody {
           display: block;
           max-height: 200px;
@@ -726,6 +730,55 @@
         input[type="date"]::-webkit-calendar-picker-indicator {
           filter: invert(1);
         }
+
+        .role-badge {
+          display: inline-block;
+          padding: 4px 12px;
+          border-radius: 10px;
+          font-weight: 500;
+          font-size: 13px;
+          text-align: center;
+        }
+
+        .role-badge.manager {
+          background-color: #ccf4f1;
+          color: #009688;
+        }
+
+        .role-badge.staff {
+          background-color: #fff4cc; 
+          color: #f5a623;
+        }
+
+        .role-badge.low {
+          background-color: #e8f5e9;
+          color: #388e3c;
+        }
+
+        .status-badge {
+          display: inline-block;
+          padding: 4px 12px;
+          border-radius: 10px;
+          font-weight: 500;
+          font-size: 13px;
+          text-align: center;
+        }
+
+        .status-badge.complete {
+          background-color: #ccf4f1;
+          color: #009688;
+        }
+
+        .status-badge.wait {
+          background-color: #fff4cc; 
+          color: #f5a623;
+        }
+
+        .status-badge.run {
+          background-color: #cef7d1;
+          color: #2e9734;
+        }
+
 
     </style>
 </head>
@@ -1149,7 +1202,9 @@
               <td>${stt++}</td>
               <td class="username">${user.user_name}</td>
               <td class="password">${user.password}</td>
-              <td class="role">${user.role}</td>
+              <td class="role">
+                <span class="role-badge ${user.role.toLowerCase()}">${user.role}</span>
+              </td>
               <td class="factory">${user.factory}</td>
               <td>
                 <button class="edit-user" data-id="${user.id}">Edit</button>
@@ -1821,7 +1876,7 @@
               <td class="model-name">${delivery.type || ''}</td>
               <td class="model-name">${delivery.target || ''}</td>
               <td class="model-name">${delivery.quantity || ''}</td>
-              <td class="model-name">${delivery.status || ''}</td>
+              <td class="model-name"><span class="status-badge ${delivery.status.toLowerCase()}">${delivery.status || ''}</span></td>
               <td class="model-name">${dayjs(delivery.complete_time).format('YYYY-MM-DD HH:mm:ss') || ''}</td>
               <td class="model-name">${dayjs(delivery.shipment_date).format('YYYY-MM-DD HH:mm:ss') || ''}</td>
               <td class="model-name">${delivery.shipping_method || ''}</td>
@@ -2096,9 +2151,9 @@
           const welcome = document.getElementById('welcome');
           const user = JSON.parse(localStorage.getItem('user'));
           if (user.role === 'MANAGER') {
-            welcome.textContent = `Welcome Manager back, ${user.username || 'Admin'}`;
+            welcome.textContent = `Welcome Manager Back, ${user.username || 'Admin'}`;
           } else {
-            welcome.textContent = 'Welcome staff back, Admin';
+            welcome.textContent = 'Welcome Staff Back, Admin';
           }
           // Initialize overview metrics and charts
           await initOverview();
