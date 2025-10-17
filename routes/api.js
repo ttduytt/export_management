@@ -275,6 +275,86 @@ router.post("/models/importmodelspec", async (req, res) => {
   }
 });
 
+// history delivery
+router.get("/delivery/history/:factory", async (req, res) => {
+  let conn;
+  const factory = req.params.factory;
+  const page = parseInt(req.query.page) || 1;
+  const limit = 500;
+  const offset = (page - 1) * limit;
+  // Các tham số lọc
+  const search = req.query.search ? req.query.search.trim() : "";
+  const dateFrom = req.query.dateFrom ? req.query.dateFrom.trim() : "";
+  const dateTo = req.query.dateTo ? req.query.dateTo.trim() : "";
+
+  try {
+    conn = await pool.getConnection();
+    let sql = `SELECT * FROM delivery_history_${factory} WHERE 1=1`;
+    const params = [];
+    // Bộ lọc text (mobis_code, model_name)
+    if (search) {
+      sql += ` AND (
+        mobis_code LIKE ? OR
+        model_name LIKE ?
+      )`;
+      const likeStr = `%${search}%`;
+      params.push(likeStr, likeStr);
+    }
+
+    // Bộ lọc ngày
+    if (dateFrom) {
+      sql += ` AND event_time >= ?`;
+      params.push(dateFrom);
+    }
+    if (dateTo) {
+      sql += ` AND event_time <= ?`;
+      params.push(dateTo);
+    }
+
+    // Phân trang + sắp xếp
+    sql += ` ORDER BY event_time DESC LIMIT ? OFFSET ?`;
+    params.push(limit, offset);
+    const rows = await conn.query(sql, params);
+    // Kiểm tra có trang tiếp theo không
+    const nextRows = await conn.query(
+      `SELECT 1 FROM delivery_history_${factory} WHERE 1=1
+       ${search ? ` AND (mobis_code LIKE ? OR model_name LIKE ?)` : ""}
+       ${dateFrom ? ` AND event_time >= ?` : ""}
+       ${dateTo ? ` AND event_time <= ?` : ""}
+       LIMIT 1 OFFSET ?`,
+      search
+        ? [
+            ...Array(2).fill(`%${search}%`),
+            ...(dateFrom ? [dateFrom] : []),
+            ...(dateTo ? [dateTo] : []),
+            offset + limit,
+          ]
+        : [
+            ...(dateFrom ? [dateFrom] : []),
+            ...(dateTo ? [dateTo] : []),
+            offset + limit,
+          ]
+    );
+
+    const result = JSON.parse(
+      JSON.stringify(rows, (_, v) => (typeof v === "bigint" ? v.toString() : v))
+    );
+    res.json({
+      page,
+      limit,
+      data: result,
+      hasNextPage: nextRows.length > 0,
+    });
+  } catch (error) {
+    console.error("Error fetching delivery history:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
 // delivery
 router.get("/delivery/:factory", async (req, res) => {
   let conn;
@@ -535,86 +615,6 @@ router.put("/delivery/update/quantity", async (req, res) => {
     console.error(error);
     if (conn) await conn.rollback();
     res.status(500).json({ message: "Cập nhật thất bại" });
-  }
-});
-
-// history delivery
-router.get("/delivery/history/:factory", async (req, res) => {
-  let conn;
-  const factory = req.params.factory;
-  const page = parseInt(req.query.page) || 1;
-  const limit = 500;
-  const offset = (page - 1) * limit;
-  // Các tham số lọc
-  const search = req.query.search ? req.query.search.trim() : "";
-  const dateFrom = req.query.dateFrom ? req.query.dateFrom.trim() : "";
-  const dateTo = req.query.dateTo ? req.query.dateTo.trim() : "";
-
-  try {
-    conn = await pool.getConnection();
-    let sql = `SELECT * FROM delivery_history_${factory} WHERE 1=1`;
-    const params = [];
-    // Bộ lọc text (mobis_code, model_name)
-    if (search) {
-      sql += ` AND (
-        mobis_code LIKE ? OR
-        model_name LIKE ?
-      )`;
-      const likeStr = `%${search}%`;
-      params.push(likeStr, likeStr);
-    }
-
-    // Bộ lọc ngày
-    if (dateFrom) {
-      sql += ` AND event_time >= ?`;
-      params.push(dateFrom);
-    }
-    if (dateTo) {
-      sql += ` AND event_time <= ?`;
-      params.push(dateTo);
-    }
-
-    // Phân trang + sắp xếp
-    sql += ` ORDER BY event_time DESC LIMIT ? OFFSET ?`;
-    params.push(limit, offset);
-    const rows = await conn.query(sql, params);
-    // Kiểm tra có trang tiếp theo không
-    const nextRows = await conn.query(
-      `SELECT 1 FROM delivery_history_${factory} WHERE 1=1
-       ${search ? ` AND (mobis_code LIKE ? OR model_name LIKE ?)` : ""}
-       ${dateFrom ? ` AND event_time >= ?` : ""}
-       ${dateTo ? ` AND event_time <= ?` : ""}
-       LIMIT 1 OFFSET ?`,
-      search
-        ? [
-            ...Array(2).fill(`%${search}%`),
-            ...(dateFrom ? [dateFrom] : []),
-            ...(dateTo ? [dateTo] : []),
-            offset + limit,
-          ]
-        : [
-            ...(dateFrom ? [dateFrom] : []),
-            ...(dateTo ? [dateTo] : []),
-            offset + limit,
-          ]
-    );
-
-    const result = JSON.parse(
-      JSON.stringify(rows, (_, v) => (typeof v === "bigint" ? v.toString() : v))
-    );
-    res.json({
-      page,
-      limit,
-      data: result,
-      hasNextPage: nextRows.length > 0,
-    });
-  } catch (error) {
-    console.error("Error fetching delivery history:", error);
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: error.message });
-  } finally {
-    if (conn) conn.release();
   }
 });
 
