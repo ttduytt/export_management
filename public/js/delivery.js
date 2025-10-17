@@ -380,7 +380,7 @@ function renderList() {
         : "";
 
       return `
-        <div class="table-row">
+        <div  style=" background-color: green; opacity: 0.5;" class="table-row">
           <div></div>
           <div>${item.mobis_code}</div>
           <div>${item.model_name}</div>
