@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/images/logoweb.jpg" type="image/x-icon">
     <script src="/js/highcharts.js"></script>
     <title>Managerment Delivery - Admin Dashboard</title>
     <style>
@@ -194,7 +195,7 @@
           padding-left: 24px;
         }
         .welcome-card {
-          width: 100%;
+          width: 100.7%;
           display: flex;
           height: 200px;
           justify-content: space-between;
@@ -524,7 +525,7 @@
 
           @media screen and (min-width: 1700px){
             .bottom-row3{
-              padding: 12px 24px 24px 24px;
+              padding: 12px 20px 24px 20px;
             }
           }
         /* Custom scrollbar for webkit browsers */
@@ -631,7 +632,11 @@
           width: 100%;
           table-layout: fixed;
         }
-
+        .management-delivery thead tr {
+        display: table;
+        width: calc(100% - 8px);
+        table-layout: fixed;
+      }
         .management-delivery tbody {
           display: block;
           max-height: 200px;
@@ -726,6 +731,55 @@
           filter: invert(1);
         }
 
+        .role-badge {
+          display: inline-block;
+          padding: 4px 12px;
+          border-radius: 10px;
+          font-weight: 500;
+          font-size: 13px;
+          text-align: center;
+        }
+
+        .role-badge.manager {
+          background-color: #ccf4f1;
+          color: #009688;
+        }
+
+        .role-badge.staff {
+          background-color: #fff4cc; 
+          color: #f5a623;
+        }
+
+        .role-badge.low {
+          background-color: #e8f5e9;
+          color: #388e3c;
+        }
+
+        .status-badge {
+          display: inline-block;
+          padding: 4px 12px;
+          border-radius: 10px;
+          font-weight: 500;
+          font-size: 13px;
+          text-align: center;
+        }
+
+        .status-badge.complete {
+          background-color: #ccf4f1;
+          color: #009688;
+        }
+
+        .status-badge.wait {
+          background-color: #fff4cc; 
+          color: #f5a623;
+        }
+
+        .status-badge.run {
+          background-color: #cef7d1;
+          color: #2e9734;
+        }
+
+
     </style>
 </head>
 <body>
@@ -733,7 +787,7 @@
     <!-- Navigation -->
     <nav>
         <div class="nav-container">
-            <div class="logo" ><span><img style="width: 80px;" src="/images/logo.png" alt=""></span>MANAGERMENT DELIVERY</div>
+            <div class="logo" ><span><img style="width: 80px;" src="/images/logo.png" alt=""></span><a href="/home">MANAGERMENT DELIVERY</a></div>
             <ul class="nav-menu" id="navMenu">
                 <li class="home"><a href="#">Home</a></li>
                 <li class="delivery"><a href="#delivery">Delivery</a></li>
@@ -825,7 +879,7 @@
             <thead>
               <tr>
                 <th colspan="1" style="text-align: left; font-size: 20px; padding-bottom: 10px; text-transform: uppercase;">Model Spec</th>
-                <th colspan="2"><input class="searchText" type="text" name="searchText" id="searchText" placeholder="Search all"></th>
+                <th colspan="2"><input class="searchText" type="text" name="searchText" id="searchText" placeholder="Search All"></th>
                 <th colspan="1" style="text-align: right;"><button class="add-spec">Add Model</button></th>
                 <th colspan="1" style="text-align: right;"><button class="import" id="importButton">Import File</button></th>   
                 <th colspan="1" style="text-align: right;"><button class="export" id="exportButton">Export File</button></th>   
@@ -973,11 +1027,14 @@
           const monthlyData = await monthlyResponse.json();
           // Monthly chart with Highcharts
           Highcharts.chart('monthlyChart', {
+             accessibility: {
+              enabled: false
+            },
             chart: {
               type: 'spline',
               backgroundColor: 'transparent',
               height: 300
-            },
+            },            
             responsive: {
               rules: [{
                 condition: {
@@ -1034,7 +1091,7 @@
             }],
             credits: {
               enabled: false
-            }
+            }            
           });
 
           // Fetch status count data
@@ -1047,6 +1104,9 @@
 
           // Status chart with Highcharts
           Highcharts.chart('orderChart', {
+            accessibility: {
+              enabled: false
+            },
             chart: {
               type: 'pie',
               backgroundColor: 'transparent'
@@ -1142,7 +1202,9 @@
               <td>${stt++}</td>
               <td class="username">${user.user_name}</td>
               <td class="password">${user.password}</td>
-              <td class="role">${user.role}</td>
+              <td class="role">
+                <span class="role-badge ${user.role.toLowerCase()}">${user.role}</span>
+              </td>
               <td class="factory">${user.factory}</td>
               <td>
                 <button class="edit-user" data-id="${user.id}">Edit</button>
@@ -1563,7 +1625,7 @@
           alert('Model name is required.');
           modelNameInput.focus();
           return;
-        }       
+        }
 
         const newModel = { 
           model_type: modelType, 
@@ -1814,7 +1876,7 @@
               <td class="model-name">${delivery.type || ''}</td>
               <td class="model-name">${delivery.target || ''}</td>
               <td class="model-name">${delivery.quantity || ''}</td>
-              <td class="model-name">${delivery.status || ''}</td>
+              <td class="model-name"><span class="status-badge ${delivery.status.toLowerCase()}">${delivery.status || ''}</span></td>
               <td class="model-name">${dayjs(delivery.complete_time).format('YYYY-MM-DD HH:mm:ss') || ''}</td>
               <td class="model-name">${dayjs(delivery.shipment_date).format('YYYY-MM-DD HH:mm:ss') || ''}</td>
               <td class="model-name">${delivery.shipping_method || ''}</td>
@@ -2089,9 +2151,9 @@
           const welcome = document.getElementById('welcome');
           const user = JSON.parse(localStorage.getItem('user'));
           if (user.role === 'MANAGER') {
-            welcome.textContent = `Welcome Manager back, ${user.username || 'Admin'}`;
+            welcome.textContent = `Welcome Manager Back, ${user.username || 'Admin'}`;
           } else {
-            welcome.textContent = 'Welcome staff back, Admin';
+            welcome.textContent = 'Welcome Staff Back, Admin';
           }
           // Initialize overview metrics and charts
           await initOverview();

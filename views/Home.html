@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Managerment Delivery - Trang chủ</title>
+    <link rel="icon" href="/images/logoweb.jpg" type="image/x-icon">
+    <title>Managerment Delivery - Home</title>
     <style>
         * {
             margin: 0;
@@ -378,7 +379,7 @@
                 <li class="home"><a href="">Home</a></li>
                 <li class="delivery" ><a href="#delivery">Delivery</a></li>
                 <li class="history" ><a href="#history">History</a></li>
-                <li class="admin" ><a href="#admin">Admin</a></li>
+                <li class="admin" id="admin"><a href="#admin">Admin</a></li>
                 <li class="logout">
                     <a href="#">
                     <span>
@@ -478,7 +479,7 @@
 
             case 'admin':
               const user = JSON.parse(localStorage.getItem('user'));
-              console.log('User Role:', user.role); // Debug line
+              console.log('User Role:', user.role);
               if (user.role === 'MANAGER') {
                 window.location.href = '/admin';
               } else {

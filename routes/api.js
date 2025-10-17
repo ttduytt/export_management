@@ -1,7 +1,6 @@
 import express from "express";
 const router = express.Router();
 import pool from "../config/dbconfig.js";
-import { formatDate } from "../public/js/utils.js";
 
 // user
 router.get("/users", async (req, res) => {
@@ -17,13 +16,22 @@ router.get("/users", async (req, res) => {
     if (conn) conn.release();
   }
 });
+
 //add user
 router.post("/users", async (req, res) => {
   let conn;
   const { user_name, password, role, factory } = req.body;
   try {
     conn = await pool.getConnection();
-    await conn.query(
+    // check duplicate username
+    const existing = await conn.query(
+      "SELECT * FROM user WHERE user_name = ?",
+      [user_name]
+    );
+    if (existing.length > 0) {
+      return res.status(409).json({ message: "Username already exists" });
+    }
+    let result = await conn.query(
       "INSERT INTO user (user_name, password, role, factory) VALUES (?, ?, ?, ?)",
       [user_name, password, role, factory]
     );
@@ -123,6 +131,14 @@ router.post("/models", async (req, res) => {
     req.body;
   try {
     conn = await pool.getConnection();
+    // check duplicate mobis_code
+    const existing = await conn.query(
+      "SELECT * FROM delivery_spec WHERE mobis_code = ?",
+      [mobis_code]
+    );
+    if (existing.length > 0) {
+      return res.status(409).json({ message: "Mobis code already exists" });
+    }
     let result = await conn.query(
       "INSERT INTO delivery_spec (model_type, mobis_code, partron_code, model_name, event_user) VALUES (?, ?, ?, ?, ?)",
       [model_type, mobis_code, partron_code, model_name, event_user]
@@ -142,7 +158,6 @@ router.put("/models/:id", async (req, res) => {
   const modelId = req.params.id;
   const { model_type, mobis_code, partron_code, model_name, event_user } =
     req.body;
-
   try {
     conn = await pool.getConnection();
 
@@ -153,12 +168,18 @@ router.put("/models/:id", async (req, res) => {
     if (existing.length === 0) {
       return res.status(404).json({ message: "Model spec not found" });
     }
-
+    // check duplicate mobis_code
+    const duplicateCheck = await conn.query(
+      "SELECT * FROM delivery_spec WHERE mobis_code = ? AND id != ?",
+      [mobis_code, modelId]
+    );
+    if (duplicateCheck.length > 0) {
+      return res.status(400).json({ message: "Mobis code already exists" });
+    }
     const result = await conn.query(
       "UPDATE delivery_spec SET model_type = ?, mobis_code = ?, partron_code = ?, model_name = ?, event_user = ? WHERE id = ?",
       [model_type, mobis_code, partron_code, model_name, event_user, modelId]
     );
-
     if (result.affectedRows > 0) {
       res.json({ message: `Model spec ${modelId} updated successfully` });
     } else {
@@ -654,7 +675,7 @@ router.post("/api/login", async (req, res) => {
 });
 
 router.get("/api/getoverview", async (req, res) => {
-  const factory = req.query.factory || "V0";
+  const factory = req.query.factory;
   try {
     if (factory == "V0") {
       const totalExportRowsV0 = await pool.query(`
