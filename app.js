@@ -1,25 +1,32 @@
-const express = require("express");
-const path = require("path");
-const apiRouter = require("./routes/api");
+// app.js (ESM version)
+import express from "express";
+import path from "path";
+import dotenv from "dotenv";
+import apiRouter from "./routes/api.js";
+import router from "./routes/index.js";
+import { fileURLToPath } from "url";
 
-require("dotenv").config();
+// Cấu hình __dirname vì trong ESM không có sẵn
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const router = require("./routes/index");
+// Load biến môi trường
+dotenv.config();
 
 const app = express();
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 
-// api
+// API routes
 app.use("/exportmanagement", apiRouter);
 
-// router
+// Main router
 app.use("/", router);
 
-// 🔹 Chạy server ở cổng .env hoặc 3000
+// Chạy server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`✅ Server is running on http://localhost:${PORT}`);
 });
 
-module.exports = app;
+export default app;

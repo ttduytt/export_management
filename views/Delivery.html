@@ -17,10 +17,6 @@
             line-height: 1.6;
             color: #333;
             background-color: #040818;
-            background-image:
-              linear-gradient(to right, rgba(75, 85, 99, 0.4) 1px, transparent 1px),
-              linear-gradient(to bottom, rgba(75, 85, 99, 0.4) 1px, transparent 1px);
-            background-size: 40px 40px, 40px 40px, 100% 100%;
         }
         /* Navigation */
         nav {
@@ -124,7 +120,6 @@
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             overflow: hidden;
-            border: 1px solid #e5e5e5;
             margin: 40px;
         }
 
@@ -133,8 +128,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 16px 24px;
-            border-bottom: 1px solid #e5e5e5;
-            background: #060c21;
+            background: #3b4689;
         }
 
         .toolbar-left {
@@ -144,7 +138,7 @@
 
         .btn {
             padding: 8px 16px;
-            background: #060c21;
+            background: #3b4689;
             border-radius: 6px;
             cursor: pointer;
             font-size: 14px;
@@ -171,12 +165,11 @@
         }
 
         .btn:hover {
-        outline: 2px solid #383645;
+        background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
         }
 
         .btn.active {
-            background: #060c21;
-            outline: 2px solid #383645;
+            background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
         }
 
         .search-box {
@@ -186,7 +179,7 @@
 
         .search-box input {
             padding-left: 20px;
-            width: 300px;
+            width: 700px;
             height: 32px;
             font-size: 14px;
             border-radius: 6px;
@@ -231,6 +224,7 @@
         .table-header {
         font-weight: bold;
         border-bottom: 2px solid #2a2a3a;
+        background-color: #3b4689;
         color: #b5b5c5;
         }
 
@@ -309,6 +303,7 @@
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
             padding: 24px;
+            background-color: #1e2044;
         }
 
         .grid-view.active {
@@ -317,7 +312,6 @@
 
         .card {
             background: #060c21;
-            border: 1px solid #e5e5e5;
             border-radius: 12px;
             padding: 20px;
             transition: all 0.2s;
