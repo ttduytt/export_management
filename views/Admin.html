@@ -1878,7 +1878,7 @@
               <td class="model-name">${delivery.quantity || ''}</td>
               <td class="model-name"><span class="status-badge ${delivery.status.toLowerCase()}">${delivery.status || ''}</span></td>
               <td class="model-name">${dayjs(delivery.complete_time).format('YYYY-MM-DD HH:mm:ss') || ''}</td>
-              <td class="model-name">${dayjs(delivery.shipment_date).format('YYYY-MM-DD HH:mm:ss') || ''}</td>
+              <td class="model-name">${dayjs(delivery.shipment_date).format('YYYY-MM-DD') || ''}</td>
               <td class="model-name">${delivery.shipping_method || ''}</td>
               <td>
                 <button class="delete-model" data-model-id="${delivery.model_id}" data-factory="${factorySelect.value}">Delete</button>
