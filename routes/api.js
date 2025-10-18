@@ -283,12 +283,11 @@ router.get("/delivery/:factory", async (req, res) => {
 
   try {
     conn = await pool.getConnection();
-    factory === "V0"
-      ? (sqlquery = "SELECT * FROM delivery_v0 ORDER BY create_at DESC")
-      : (sqlquery = "SELECT * FROM delivery_v5 ORDER BY create_at DESC");
-    // if (factory !== "V0" && factory !== "V5") {
-    //   sqlquery = "SELECT * FROM delivery_v0 union all select * from delivery_v5";
-    // }
+    if (factory === "v0") {
+      sqlquery = "SELECT * FROM delivery_v0 ORDER BY create_at DESC LIMIT 100";
+    } else {
+      sqlquery = "SELECT * FROM delivery_v5 ORDER BY create_at DESC LIMIT 100";
+    }
     const rows = await conn.query(sqlquery);
     res.json(rows);
   } catch (err) {
@@ -344,7 +343,8 @@ router.get("/qr/:factory/:mobiscode/:type", async (req, res) => {
     const tableName = factory === "v0" ? "delivery_v0" : "delivery_v5";
 
     const delivery = await conn.query(
-      `SELECT * FROM ${tableName} WHERE mobis_code = ? AND type = ? AND status != 'Complete'`,
+      `SELECT * FROM ${tableName} WHERE mobis_code = ? AND type = ? AND status != 'Complete'
+      ORDER BY ABS(TIMESTAMPDIFF(SECOND, shipment_date, CURDATE())) ASC,CASE WHEN shipping_method = 'SEA' THEN 0 ELSE 1 END LIMIT 1;`,
       [mobiscode, type]
     );
 
@@ -437,7 +437,7 @@ router.post("/delivery/import", async (req, res) => {
      AND type = ?`,
         [
           delivery.mobiscode,
-          delivery.targetquantity,
+          delivery.target,
           delivery.shipmentdate,
           delivery.shippingmethod,
           delivery.type,
@@ -477,7 +477,7 @@ router.post("/delivery/import", async (req, res) => {
         delivery.mobiscode,
         delivery.modelname,
         delivery.type,
-        delivery.targetquantity,
+        delivery.target,
         "Wait",
         delivery.quantity,
         delivery.shippingmethod,
@@ -500,15 +500,16 @@ router.post("/delivery/import", async (req, res) => {
 
 router.put("/delivery/update/quantity", async (req, res) => {
   const { username, factory, delivery, qr } = req.body;
+  const tableName = factory === "v0" ? "delivery_v0" : "delivery_v5";
   let conn;
   conn = await pool.getConnection();
   await conn.beginTransaction();
 
   try {
-    const queryUpdateRestStatus = `UPDATE delivery_${factory} SET status = 'Wait' WHERE status = 'Run' `;
+    const queryUpdateRestStatus = `UPDATE ${tableName} SET status = 'Wait' WHERE status = 'Run' `;
     await conn.query(queryUpdateRestStatus);
 
-    const query = `UPDATE delivery_${factory} SET status = ?, quantity = ?, complete_time = ? WHERE model_id = ?`;
+    const query = `UPDATE ${tableName} SET status = ?, quantity = ?, complete_time = ? WHERE model_id = ?`;
     await conn.query(query, [
       delivery.status,
       delivery.quantity,
@@ -622,12 +623,13 @@ router.get("/qr/getvalue", async (req, res) => {
   const conn = await pool.getConnection();
   const factory = req.query.factory;
   const qrvalue = req.query.qrvalue;
+  const tableName =
+    factory === "v0" ? "delivery_history_v0" : "delivery_history_v5";
 
   try {
-    let data = await conn.query(
-      `SELECT * FROM delivery_history_${factory} WHERE qr = ?`,
-      [qrvalue]
-    );
+    let data = await conn.query(`SELECT * FROM ${tableName} WHERE qr = ?`, [
+      qrvalue,
+    ]);
 
     data = JSON.parse(
       JSON.stringify(data, (_, value) =>

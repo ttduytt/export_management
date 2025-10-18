@@ -5,12 +5,14 @@ const listBtn = document.getElementById("listBtn");
 const gridView = document.getElementById("gridView");
 const listView = document.getElementById("listView");
 const tableHeader = document.getElementById("tableHeader");
-const searchInput = document.getElementById("searchInput");
+const searchInput = document.querySelector(".searchInput");
 const importBtn = document.querySelector(".btnImport");
 const excelInput = document.getElementById("excelInput");
+const cbbFactory = document.querySelector(".factory");
 import { formatDate } from "../js/utils.js";
 
-const data = [];
+let data = [];
+const user = JSON.parse(sessionStorage.getItem("user"));
 const requiredColumns = [
   "MobisCode",
   "ModelName",
@@ -23,18 +25,35 @@ const requiredColumns = [
   "ShipmentDate",
 ];
 
-const user = JSON.parse(localStorage.getItem("user"));
-
-function getAll() {
-  fetch("/exportmanagement/delivery/v0")
-    .then((response) => response.json())
-    .then((result) => {
-      data.push(...result);
-      renderList();
-      renderGrid();
-    })
-    .catch((error) => console.error("Error fetching data:", error));
+if (user.factory.toLowerCase() == "v4") {
+  importBtn.classList.add("visible");
+} else {
+  searchInput.classList.add("visible");
+  cbbFactory.value = user.factory;
+  cbbFactory.disabled = true;
 }
+
+let factorySelected = cbbFactory.value.toLowerCase();
+
+cbbFactory.addEventListener("change", async () => {
+  factorySelected = cbbFactory.value.toLowerCase();
+  await getAll();
+});
+
+async function getAll() {
+  try {
+    const response = await fetch(
+      `/exportmanagement/delivery/${factorySelected}`
+    );
+    const result = await response.json();
+    data = [...result];
+    renderList();
+    renderGrid();
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+}
+
 function validateRow(row, rowIndex) {
   for (const [key, value] of Object.entries(row)) {
     if (value === null || value === undefined || value === "") {
@@ -45,7 +64,7 @@ function validateRow(row, rowIndex) {
     switch (key) {
       case "targetquantity": {
         const num = Number(value);
-        if (isNaN(num) || num <= 0) {
+        if (Number.isNaN(num) || num <= 0) {
           throw new Error(
             `Lỗi tại dòng ${
               rowIndex + 2
@@ -58,7 +77,7 @@ function validateRow(row, rowIndex) {
 
       case "quantity": {
         const num = Number(value);
-        if (isNaN(num) || num < 0) {
+        if (Number.isNaN(num) || num < 0) {
           throw new Error(
             `Lỗi tại dòng ${
               rowIndex + 2
@@ -73,7 +92,7 @@ function validateRow(row, rowIndex) {
         // Xử lý số Excel date
         if (typeof value === "number") {
           const excelDate = new Date(Date.UTC(1899, 11, 30 + value));
-          if (isNaN(excelDate.getTime())) {
+          if (Number.isNaN(excelDate.getTime())) {
             throw new Error(
               `Lỗi tại dòng ${
                 rowIndex + 2
@@ -334,7 +353,6 @@ function validateExcelFile(file) {
         rows.forEach((row, index) => {
           const keySignature = [
             row.mobiscode,
-            row.target,
             row.shipmentdate,
             row.shippingmethod,
             row.type,
@@ -380,21 +398,23 @@ function renderList() {
         : "";
 
       return `
-        <div  style=" background-color: green; opacity: 0.5;" class="table-row">
-          <div></div>
-          <div>${item.mobis_code}</div>
-          <div>${item.model_name}</div>
-          <div>${item.type}</div>
-          <div><span class="status-badge status-${item.status.toLowerCase()}">${
+  <div class="table-row ${
+    item.status.toLowerCase() === "run" ? "running" : ""
+  }">
+    <div></div>
+    <div>${item.mobis_code}</div>
+    <div>${item.model_name}</div>
+    <div>${item.type}</div>
+    <div><span class="status-badge ${item.status.toLowerCase()}">${
         item.status
       }</span></div>
-          <div>${item.target}</div>
-          <div>${item.quantity}</div>
-          <div>${completeDate}</div>
-          <div>${shipmentDate}</div>
-          <div>${item.shipping_method}</div>
-        </div>
-      `;
+    <div>${item.target}</div>
+    <div>${item.quantity}</div>
+    <div>${completeDate}</div>
+    <div>${shipmentDate}</div>
+    <div>${item.shipping_method}</div>
+  </div>
+`;
     })
     .join("");
 }
@@ -410,21 +430,23 @@ function renderGrid() {
         : "";
 
       return `
-        <div class="card">
-          <div class="card-header">
-              <strong>${item.model_name}</strong>
-          </div>
-          <div class="card-body">
-              <div><strong>Mobis Code:</strong> ${item.mobis_code}</div>
-              <div><strong>Type:</strong> ${item.type}</div>
-              <div><strong>Target:</strong> ${item.target}</div>
-              <div><strong>Quantity:</strong> ${item.quantity}</div>
-              <div><strong>Status:</strong> ${item.status}</div>
-              <div><strong>Complete Time:</strong> ${completeDate}</div>
-              <div><strong>Shipment Date:</strong> ${shipmentDate}</div>
-              <div><strong>Shipping method:</strong> ${item.shipping_method}</div>
-          </div>
-        </div>
+         <div class="card ${item.status === "Run" ? "running" : ""}">
+    <div class="card-header">
+        <strong>${item.model_name}</strong>
+    </div>
+    <div class="card-body">
+        <div><strong>Mobis Code:</strong> ${item.mobis_code}</div>
+        <div><strong>Type:</strong> ${item.type}</div>
+        <div><strong>Target:</strong> ${item.target}</div>
+        <div><strong>Quantity:</strong> ${item.quantity}</div>
+        <strong>Status:</strong> <div class="status-badge ${item.status.toLowerCase()}"> ${
+        item.status
+      }</div>
+        <div><strong>Complete Time:</strong> ${completeDate}</div>
+        <div><strong>Shipment Date:</strong> ${shipmentDate}</div>
+        <div><strong>Shipping method:</strong> ${item.shipping_method}</div>
+    </div>
+  </div>
       `;
     })
     .join("");
@@ -451,9 +473,11 @@ excelInput.addEventListener("change", async () => {
     const rows = await validateExcelFile(file);
     console.log("Dữ liệu hợp lệ:", rows);
 
-    await addDeliveryAndHistory("v0", rows);
+    await addDeliveryAndHistory(factorySelected, rows);
   } catch (err) {
     alert("Lỗi: " + err.message);
+  } finally {
+    excelInput.value = "";
   }
 });
 
@@ -487,7 +511,9 @@ async function checkQrExist(factory, qr) {
 async function findDelivery(qrData) {
   try {
     const response = await fetch(
-      `exportmanagement/qr/v0/${qrData.mobiscode}/${qrData.type}`
+      `exportmanagement/qr/${user.factory.toLowerCase()}/${qrData.mobiscode}/${
+        qrData.type
+      }`
     );
     const data = await response.json();
     return data;
@@ -575,7 +601,7 @@ searchInput.addEventListener("keydown", async (e) => {
       const qrValue = searchInput.value.trim();
       if (!qrValue) return;
 
-      const isQrExist = await checkQrExist("v0", qrValue);
+      const isQrExist = await checkQrExist(user.factory.toLowerCase(), qrValue);
 
       if (isQrExist) {
         alert("Mã QR đã tồn tại");
@@ -611,11 +637,16 @@ searchInput.addEventListener("keydown", async (e) => {
 
       const response = await updateDelivery(
         user.username,
-        "v0",
+        user.factory.toLowerCase(),
         delivery,
         qrValue
       );
-      alert(response.message);
+      if (response.status !== 200) {
+        alert(response.message);
+        return;
+      }
+      searchInput.value = "";
+      await getAll();
     } catch (error) {
       alert(error);
       searchInput.value = "";
@@ -623,6 +654,6 @@ searchInput.addEventListener("keydown", async (e) => {
   }
 });
 
-getAll();
+await getAll();
 renderList();
 renderGrid();

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,6 +19,7 @@
             color: #333;
             background-color: #040818;
         }
+
         /* Navigation */
         nav {
             background: rgba(6, 12, 34, 0.95);
@@ -118,7 +120,7 @@
         .container {
             background: #060c21;
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             margin: 40px;
         }
@@ -162,10 +164,15 @@
             transition: all 0.2s;
             color: white;
             border: none;
+            visibility: hidden;
+        }
+
+        .btnImport.visible {
+            visibility: visible;
         }
 
         .btn:hover {
-        background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+            background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
         }
 
         .btn.active {
@@ -181,8 +188,20 @@
             padding-left: 20px;
             width: 700px;
             height: 32px;
+            border: none;
             font-size: 14px;
-            border-radius: 6px;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .search-box input::placeholder {
+            color: #d1d5db;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .search-icon {
@@ -203,44 +222,72 @@
 
         .table-header,
         .table-row {
-        display: grid;
-        grid-template-columns: 
-            0.2fr  
-            1.2fr  
-            1.5fr  
-            0.8fr
-            1fr  
-            1fr   
-            1fr    
-            1.2fr 
-            1.2fr  
-            1.2fr; 
-        align-items: center;
-        text-align: center;
-        padding: 10px 0;
-        width: 100%;
+            display: grid;
+            grid-template-columns: 0.2fr 1.2fr 1.5fr 0.8fr 1fr 1fr 1fr 1.2fr 1.2fr 1.2fr;
+            align-items: center;
+            text-align: center;
+            padding: 10px 0;
+            width: 100%;
         }
 
         .table-header {
-        font-weight: bold;
-        border-bottom: 2px solid #2a2a3a;
-        background-color: #3b4689;
-        color: #b5b5c5;
+            font-weight: bold;
+            border-bottom: 2px solid #2a2a3a;
+            background-color: #3b4689;
+            color: #b5b5c5;
         }
 
         .table-row {
-        border-bottom: 1px solid #2a2a3a;
-        color: #e3e2e9;
-        transition: background 0.2s;
+            border-bottom: 1px solid #2a2a3a;
+            color: #e3e2e9;
+            transition: background 0.2s;
+            position: relative;
         }
 
         .table-row:hover {
-        background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.05);
         }
-
 
         .table-row.selected {
             background: #f0f7ff;
+        }
+
+        /* Hiệu ứng border gradient cho dòng có status 'Run' */
+        .table-row.running {
+            position: relative;
+            background: linear-gradient(#060c21, #060c21) padding-box,
+                linear-gradient(90deg,
+                    #00fff0 0%,
+                    #00d4ff 25%,
+                    #0084ff 50%,
+                    #00d4ff 75%,
+                    #00fff0 100%) border-box;
+            border: 2px solid transparent;
+            border-radius: 4px;
+            animation: borderMove 3s linear infinite;
+            background-size: 200% 100%;
+        }
+
+        .table-row.running:hover {
+            background: linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05)) padding-box,
+                linear-gradient(90deg,
+                    #00fff0 0%,
+                    #00d4ff 25%,
+                    #0084ff 50%,
+                    #00d4ff 75%,
+                    #00fff0 100%) border-box;
+            color: black;
+            border: 2px solid transparent;
+        }
+
+        @keyframes borderMove {
+            0% {
+                background-position: 0% 0%;
+            }
+
+            100% {
+                background-position: 200% 0%;
+            }
         }
 
         .checkbox {
@@ -311,18 +358,50 @@
         }
 
         .card {
+            position: relative;
             background: #060c21;
             border-radius: 12px;
             padding: 20px;
             transition: all 0.2s;
+            overflow: hidden;
         }
 
+        .card.running {
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Tạo lớp border xoay */
+        .card.running::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent,
+                    transparent,
+                    transparent,
+                    #00d4ff);
+            animation: rotate 4s linear infinite;
+        }
+
+        .card.running::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            background: #060c21;
+            border-radius: 11px;
+            z-index: 1;
+        }
+
+
         .card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             transform: translateY(-2px);
         }
 
         .card-header {
+            position: relative;
+            z-index: 2;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -332,6 +411,8 @@
         }
 
         .card-body {
+            position: relative;
+            z-index: 2;
             font-size: 14px;
             color: #e3e2e9;
         }
@@ -348,6 +429,31 @@
             margin-right: 26px;
         }
 
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .status-badge.complete {
+            background-color: #ccf4f1;
+            color: #009688;
+        }
+
+        .status-badge.wait {
+            background-color: #fff4cc;
+            color: #f5a623;
+        }
+
+        .status-badge.run {
+            background-color: #cef7d1;
+            color: #2e9734;
+        }
+
         .list-view.active {
             display: block;
         }
@@ -356,25 +462,56 @@
             display: none;
         }
 
+        .searchInput {
+            visibility: hidden;
+        }
+
+        .searchInput.visible {
+            visibility: visible;
+        }
+
+        .factory {
+            background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.1s ease;
+            appearance: none;
+            /* ẩn mũi tên mặc định */
+            outline: none;
+        }
+
+        .factory option {
+            color: black;
+        }
+
+
+
         /* Footer */
         footer {
-          background: #040818b7;
-          color: white;
-          font-size: 12px;
-          text-align: center;
-          padding: 20px 20px;
-          position: fixed;
-          bottom: 0;
-          right: 0;
-          text-align: right;
-          left: auto;
-          width: 100%;
+            background: #040818b7;
+            color: white;
+            font-size: 12px;
+            text-align: center;
+            padding: 20px 20px;
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            text-align: right;
+            left: auto;
+            width: 100%;
         }
+
         /* Responsive */
         @media (max-width: 768px) {
             .hamburger {
                 display: flex;
             }
+
             .nav-menu {
                 position: fixed;
                 left: -100%;
@@ -384,7 +521,7 @@
                 width: 100%;
                 text-align: center;
                 transition: 0.3s;
-                box-shadow: 0 10px 27px rgba(0,0,0,0.05);
+                box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
             }
 
             .nav-menu.active {
@@ -398,136 +535,142 @@
             .nav-menu li a {
                 padding: 20px;
             }
-          
+
         }
-      
-
-
-    
     </style>
 </head>
+
 <body>
     <div class="all">
-    <!-- Navigation -->
-    <nav>
-        <div class="nav-container">
-            <div class="logo" ><span><img style="width: 80px;" src="/images/logo.png" alt=""></span>MANAGERMENT DELIVERY</div>
-            <ul class="nav-menu" id="navMenu">
-                <li><a href="#" class="active">Home</a></li>
-                <li class="delivery"><a href="#delivery">Delivery</a></li>
-                <li class="history"><a href="#history">History</a></li>
-                <li class="admin"><a href="#admin">Admin</a></li>
-                <li class="logout"><a><span><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out-icon lucide-log-out"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg></span></a></li>
-            </ul>
-        </div>
-    </nav>
-
-    <div class="container">
-        <div class="toolbar">
-            <div class="toolbar-left">
-                <button class="btn active" id="gridBtn">
-                    <span>⊞</span> Grid
-                </button>
-                <button class="btn" id="listBtn">
-                    <span>☰</span> List
-                </button>
-                <button class="btn">
-                    Sort by <span>▼</span>
-                </button>
-                <button class="btnImport"> 
-                    Import
-                </button>
-                <!-- input file ẩn -->
-                <input type="file" id="excelInput" accept=".xlsx,.xls" style="display:none;">
+        <!-- Navigation -->
+        <nav>
+            <div class="nav-container">
+                <div class="logo"><span><img style="width: 80px;" src="/images/logo.png" alt=""></span>MANAGERMENT
+                    DELIVERY</div>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="#" class="active">Home</a></li>
+                    <li class="delivery"><a href="#delivery">Delivery</a></li>
+                    <li class="history"><a href="#history">History</a></li>
+                    <li class="admin"><a href="#admin">Admin</a></li>
+                    <li class="logout"><a><span><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="lucide lucide-log-out-icon lucide-log-out">
+                                    <path d="m16 17 5-5-5-5" />
+                                    <path d="M21 12H9" />
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                </svg></span></a></li>
+                </ul>
             </div>
-            <div class="search-box">
-                <input type="text" placeholder="Scan QR" id="searchInput">
+        </nav>
+
+        <div class="container">
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <button class="btn active" id="listBtn">
+                        <span>☰</span> List
+                    </button>
+                    <button class="btn" id="gridBtn">
+                        <span>⊞</span> Grid
+                    </button>
+                    <select id="factorySelect" class="factory">
+                        <option value="V0">V0</option>
+                        <option value="V5">V5</option>
+                    </select>
+                    <button class="btnImport">
+                        Import
+                    </button>
+                    <!-- input file ẩn -->
+                    <input type="file" id="excelInput" accept=".xlsx,.xls" style="display:none;">
+                </div>
+                <div class="search-box">
+                    <input class="searchInput" type="text" placeholder="Scan QR">
+                </div>
+            </div>
+
+            <div class="table-header" id="tableHeader">
+                <div></div>
+                <div>Mobis Code</div>
+                <div>Model Name</div>
+                <div>Type</div>
+                <div>Status</div>
+                <div>Target</div>
+                <div>Quantity</div>
+                <div>Complete Time</div>
+                <div>Shipment Date</div>
+                <div>Shipping Method</div>
+            </div>
+
+            <div id="listView" class="list-view active">
+                <!-- List items will be inserted here -->
+            </div>
+
+            <div id="gridView" class="grid-view hidden">
+                <!-- Grid cards will be inserted here -->
             </div>
         </div>
 
-        <div class="table-header" id="tableHeader">
-        <div></div>
-        <div>Mobis Code</div>
-        <div>Model Name</div>
-        <div>Type</div>
-        <div>Status</div>
-        <div>Target</div>
-        <div>Quantity</div>
-        <div>Complete Time</div>
-        <div>Shipment Date</div>
-        <div>Shipping Method</div>
-        </div>
-
-        <div id="listView" class="list-view hidden">
-            <!-- List items will be inserted here -->
-        </div>
-
-        <div id="gridView" class="grid-view active">
-            <!-- Grid cards will be inserted here -->
-        </div>
-    </div>
-    
         <!-- Footer -->
-    <footer>
-        <p>&copy; 2025 Copyright for Partron VN</p>
-    </footer>
-    <script>
-        
-        const navLinks = document.querySelectorAll('.nav-menu a');
+        <footer>
+            <p>&copy; 2025 Copyright for Partron VN</p>
+        </footer>
+        <script>
 
-      // Khôi phục menu active
-      const savedMenu = sessionStorage.getItem('activeMenu');
-      if (savedMenu) {
-        navLinks.forEach(link => link.classList.remove('active'));
-        const target = document.querySelector(`.${savedMenu} a`);
-        if (target) target.classList.add('active');
-      }
-      // Lắng nghe click cho toàn bộ menu
-      navLinks.forEach(link => {
-        link.addEventListener('click', e => {
-          e.preventDefault();
-          const parentClass = link.parentElement.classList[0]; 
-          navLinks.forEach(l => l.classList.remove('active'));
-          link.classList.add('active');
-          sessionStorage.setItem('activeMenu', parentClass);
+            const navLinks = document.querySelectorAll('.nav-menu a');
 
-          // Xử lý hành động theo từng menu
-          switch (parentClass) {
-            case 'home':
-              window.location.href = '/home';
-              break;
+            // Khôi phục menu active
+            const savedMenu = sessionStorage.getItem('activeMenu');
+            if (savedMenu) {
+                navLinks.forEach(link => link.classList.remove('active'));
+                const target = document.querySelector(`.${savedMenu} a`);
+                if (target) target.classList.add('active');
+            }
+            // Lắng nghe click cho toàn bộ menu
+            navLinks.forEach(link => {
+                link.addEventListener('click', e => {
+                    e.preventDefault();
+                    const parentClass = link.parentElement.classList[0];
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    sessionStorage.setItem('activeMenu', parentClass);
 
-            case 'logout':
-              if (confirm('Are you sure you want to logout?')) {
-                sessionStorage.clear();
-                localStorage.clear();
-                window.location.href = '/';
-              }
-              break;
+                    // Xử lý hành động theo từng menu
+                    switch (parentClass) {
+                        case 'home':
+                            window.location.href = '/home';
+                            break;
 
-            case 'delivery':
-              window.location.href = '/delivery';
-              break;
+                        case 'logout':
+                            if (confirm('Are you sure you want to logout?')) {
+                                sessionStorage.clear();
+                                localStorage.clear();
+                                window.location.href = '/';
+                            }
+                            break;
 
-            case 'history':
-              window.location.href = '/deliveryHistory';
-              break;
+                        case 'delivery':
+                            window.location.href = '/delivery';
+                            break;
 
-            case 'admin':
-              const user = JSON.parse(localStorage.getItem('user'));
-              if (user.role === 'MANAGER') {
-                window.location.href = '/admin';
-              } else {
-                alert('Access denied. Admins only.');
-              }
-              break;
-            default:
-              console.log('Unknown menu item:', parentClass);
-              break;
-          }
-        });
-        });       
-    </script>
-    <script type="module" src="/js/delivery.js"></script>
+                        case 'history':
+                            window.location.href = '/deliveryHistory';
+                            break;
+
+                        case 'admin':
+                            const user = JSON.parse(localStorage.getItem('user'));
+                            if (user.role === 'MANAGER') {
+                                window.location.href = '/admin';
+                            } else {
+                                alert('Access denied. Admins only.');
+                            }
+                            break;
+                        default:
+                            console.log('Unknown menu item:', parentClass);
+                            break;
+                    }
+                });
+            });       
+        </script>
+        <script type="module" src="/js/delivery.js"></script>
 </body>
+
 </html>
