@@ -33,6 +33,7 @@
         }
 
         .nav-container {
+            max-width: 1400px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
@@ -56,7 +57,7 @@
             gap: 12px;
         }
 
-        .logo img {
+         .logo img {
             transition: transform 0.3s ease;
         }
 
@@ -440,18 +441,21 @@
         }
 
         .status-badge.complete {
-            background-color: #ccf4f1;
-            color: #009688;
+            background-color: rgba(0, 128, 0, 0.5);
+            color: white;
+            border: 1px solid #159957;
         }
 
         .status-badge.wait {
-            background-color: #fff4cc;
-            color: #f5a623;
+            background-color: rgba(255, 165, 0, 0.5);
+            color: white;
+            border: 1px solid #f5af19;
         }
 
         .status-badge.run {
-            background-color: #cef7d1;
-            color: #2e9734;
+            background-color: rgba(109, 213, 237, 0.5);
+            color: white;
+            border: 1px solid #0083B0;
         }
 
         .list-view.active {
@@ -493,17 +497,16 @@
 
         /* Footer */
         footer {
-            background: #040818b7;
-            color: white;
-            font-size: 12px;
-            text-align: center;
-            padding: 20px 20px;
-            position: fixed;
-            bottom: 0;
-            right: 0;
-            text-align: right;
-            left: auto;
-            width: 100%;
+          color: white;
+          font-size: 12px;
+          text-align: center;
+          padding: 20px 20px;
+          position: fixed;
+          bottom: 0;
+          right: 0;
+          text-align: right;
+          left: auto;
+          width: 100%;
         }
 
         /* Responsive */
@@ -543,25 +546,31 @@
 <body>
     <div class="all">
         <!-- Navigation -->
-        <nav>
-            <div class="nav-container">
-                <div class="logo"><span><img style="width: 80px;" src="/images/logo.png" alt=""></span>MANAGERMENT
-                    DELIVERY</div>
-                <ul class="nav-menu" id="navMenu">
-                    <li><a href="#" class="active">Home</a></li>
-                    <li class="delivery"><a href="#delivery">Delivery</a></li>
-                    <li class="history"><a href="#history">History</a></li>
-                    <li class="admin"><a href="#admin">Admin</a></li>
-                    <li class="logout"><a><span><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="lucide lucide-log-out-icon lucide-log-out">
-                                    <path d="m16 17 5-5-5-5" />
-                                    <path d="M21 12H9" />
-                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                                </svg></span></a></li>
-                </ul>
-            </div>
-        </nav>
+    <nav>
+        <div class="nav-container">
+            <div class="logo" ><span><img style="width: 80px;" src="/images/logo.png" alt=""></span>MANAGERMENT DELIVERY</div>
+            <ul class="nav-menu" id="navMenu">
+                <li class="home"><a href="#">Home</a></li>
+                <li class="delivery"><a href="#delivery">Delivery</a></li>
+                <li class="history"><a href="#history">History</a></li>
+                <li class="admin"><a href="#admin">Admin</a></li>
+                <li class="logout">
+                    <a href="#">
+                    <span>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="lucide lucide-log-out-icon lucide-log-out">
+                        <path d="m16 17 5-5-5-5"/>
+                        <path d="M21 12H9"/>
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        </svg>
+                    </span>
+                    </a>
+                </li>
+              </ul>
+        </div>
+    </nav>
 
         <div class="container">
             <div class="toolbar">
