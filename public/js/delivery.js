@@ -50,6 +50,7 @@ async function getAll() {
     renderList();
     renderGrid();
   } catch (error) {
+    alert("Lỗi khi lấy dữ liệu xuất hàng");
     console.error("Error fetching data:", error);
   }
 }
@@ -471,9 +472,9 @@ excelInput.addEventListener("change", async () => {
 
   try {
     const rows = await validateExcelFile(file);
-    console.log("Dữ liệu hợp lệ:", rows);
 
     await addDeliveryAndHistory(factorySelected, rows);
+    await getAll();
   } catch (err) {
     alert("Lỗi: " + err.message);
   } finally {
@@ -601,6 +602,8 @@ searchInput.addEventListener("keydown", async (e) => {
       const qrValue = searchInput.value.trim();
       if (!qrValue) return;
 
+      const qrData = getQrData(qrValue);
+
       const isQrExist = await checkQrExist(user.factory.toLowerCase(), qrValue);
 
       if (isQrExist) {
@@ -608,7 +611,6 @@ searchInput.addEventListener("keydown", async (e) => {
         return;
       }
 
-      const qrData = getQrData(qrValue);
       const delivery = await findDelivery(qrData);
 
       if (!delivery) {

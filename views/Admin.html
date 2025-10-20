@@ -1010,9 +1010,9 @@
         const performanceElem = document.getElementById('performance');
         const user = JSON.parse(localStorage.getItem('user'));
         const factory = user.factory || 'V4'; 
-        if (!document.getElementById('monthlyChart')) return;
-        if (!document.getElementById('orderChart')) return;
-
+        if (!document.getElementById('monthlyChart') || !document.getElementById('orderChart')) {
+          return;
+        }
         // Fetch overview data
           const overviewResponse = await fetch(`/exportmanagement/api/getoverview?factory=${(factory)}`, {
             method: "GET",

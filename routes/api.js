@@ -31,7 +31,7 @@ router.post("/users", async (req, res) => {
     if (existing.length > 0) {
       return res.status(409).json({ message: "Username already exists" });
     }
-    let result = await conn.query(
+    await conn.query(
       "INSERT INTO user (user_name, password, role, factory) VALUES (?, ?, ?, ?)",
       [user_name, password, role, factory]
     );
@@ -279,7 +279,7 @@ router.post("/models/importmodelspec", async (req, res) => {
 router.get("/delivery/history/:factory", async (req, res) => {
   let conn;
   const factory = req.params.factory;
-  const page = parseInt(req.query.page) || 1;
+  const page = Number.parseInt(req.query.page) || 1;
   const limit = 500;
   const offset = (page - 1) * limit;
   // Các tham số lọc
@@ -358,7 +358,7 @@ router.get("/delivery/history/:factory", async (req, res) => {
 // delivery
 router.get("/delivery/:factory", async (req, res) => {
   let conn;
-  const factory = req.params.factory;
+  const factory = req.params.factory.toLocaleLowerCase();
   let sqlquery;
 
   try {
