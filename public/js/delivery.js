@@ -13,17 +13,18 @@ import { formatDate } from "../js/utils.js";
 
 let data = [];
 const user = JSON.parse(sessionStorage.getItem("user"));
-const requiredColumns = [
-  "MobisCode",
-  "ModelName",
-  "ModelType",
-  "Target",
-  "Type",
-  "PartronCode",
-  "Quantity",
-  "ShippingMethod",
-  "ShipmentDate",
-];
+
+const columnMapping = {
+  "MOBIS-CODE": "mobiscode",
+  MODEL: "modelname",
+  분류: "modeltype",
+  수량: "target",
+  포장: "type",
+  "PARTRON ERP-CODE": "partroncode",
+  운송방식: "shippingmethod",
+  일자: "shipmentdate",
+  출하지: "factory",
+};
 
 if (user.factory.toLowerCase() == "v4") {
   importBtn.classList.add("visible");
@@ -53,6 +54,92 @@ async function getAll() {
     alert("Lỗi khi lấy dữ liệu xuất hàng");
     console.error("Error fetching data:", error);
   }
+}
+
+function validateShipmentDate(value, rowIndex) {
+  if (value === null || value === undefined || value === "") {
+    return false;
+  }
+
+  let dateObj = null;
+
+  // ✅ Trường hợp Excel serial number
+  if (typeof value === "number") {
+    dateObj = new Date(Date.UTC(1899, 11, 30 + value));
+  }
+  // ✅ Trường hợp Date object
+  else if (value instanceof Date) {
+    if (Number.isNaN(value.getTime())) {
+      return false;
+    }
+    dateObj = new Date(value.getFullYear(), value.getMonth(), value.getDate());
+  }
+  // ✅ Trường hợp chuỗi
+  else if (typeof value === "string") {
+    const str = value.trim();
+    const match = str.match(/^(\d{1,4})[\/\-](\d{1,2})[\/\-](\d{1,4})$/);
+    if (!match) {
+      return false; // Sai format bỏ qua
+    }
+
+    const part1 = parseInt(match[1]);
+    const part2 = parseInt(match[2]);
+    const part3 = parseInt(match[3]);
+    let day, month, year;
+
+    if (part1 > 1000) {
+      year = part1;
+      month = part2;
+      day = part3;
+    } else if (part3 > 1000) {
+      day = part1;
+      month = part2;
+      year = part3;
+    } else if (part1 > 12) {
+      day = part1;
+      month = part2;
+      year = part3;
+    } else {
+      day = part1;
+      month = part2;
+      year = part3;
+    }
+
+    dateObj = new Date(year, month - 1, day);
+  }
+
+  // Nếu không parse được
+  if (!dateObj || Number.isNaN(dateObj.getTime())) {
+    return false;
+  }
+
+  // ✅ Kiểm tra ngày hợp lệ tồn tại thực tế
+  const checkDate = new Date(
+    dateObj.getFullYear(),
+    dateObj.getMonth(),
+    dateObj.getDate()
+  );
+  if (
+    checkDate.getDate() !== dateObj.getDate() ||
+    checkDate.getMonth() !== dateObj.getMonth() ||
+    checkDate.getFullYear() !== dateObj.getFullYear()
+  ) {
+    return false;
+  }
+
+  // ✅ Kiểm tra < ngày hiện tại → bỏ qua
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (dateObj < today) {
+    return false;
+  }
+
+  // ✅ Format chuẩn yyyy-mm-dd
+  const y = dateObj.getFullYear();
+  const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+  const d = String(dateObj.getDate()).padStart(2, "0");
+
+  return `${y}-${m}-${d}`;
 }
 
 function validateRow(row, rowIndex) {
@@ -88,195 +175,6 @@ function validateRow(row, rowIndex) {
         row[key] = num;
         break;
       }
-
-      case "shipmentdate": {
-        // Xử lý số Excel date
-        if (typeof value === "number") {
-          const excelDate = new Date(Date.UTC(1899, 11, 30 + value));
-          if (Number.isNaN(excelDate.getTime())) {
-            throw new Error(
-              `Lỗi tại dòng ${
-                rowIndex + 2
-              }, cột "${key}": Ngày Excel không hợp lệ: "${value}"`
-            );
-          }
-
-          const day = excelDate.getUTCDate();
-          const month = excelDate.getUTCMonth() + 1;
-          const year = excelDate.getUTCFullYear();
-
-          // ✅ Kiểm tra ngày xuất hàng không nhỏ hơn ngày hiện tại
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          const compareDate = new Date(Date.UTC(year, month - 1, day));
-
-          if (compareDate < today) {
-            throw new Error(
-              `Lỗi tại dòng ${
-                rowIndex + 2
-              }, cột "${key}": Ngày xuất hàng (${day}/${month}/${year}) không được nhỏ hơn ngày hiện tại (${today.getDate()}/${
-                today.getMonth() + 1
-              }/${today.getFullYear()}).`
-            );
-          }
-
-          row[key] = `${year}-${String(month).padStart(2, "0")}-${String(
-            day
-          ).padStart(2, "0")}`;
-          break;
-        }
-
-        // Xử lý Date object
-        if (value instanceof Date) {
-          if (isNaN(value.getTime())) {
-            throw new Error(
-              `Lỗi tại dòng ${rowIndex + 2}, cột "${key}": Ngày không hợp lệ`
-            );
-          }
-
-          const day = value.getDate();
-          const month = value.getMonth() + 1;
-          const year = value.getFullYear();
-
-          // ✅ Kiểm tra ngày xuất hàng không nhỏ hơn ngày hiện tại
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          const compareDate = new Date(Date.UTC(year, month - 1, day));
-
-          if (compareDate < today) {
-            throw new Error(
-              `Lỗi tại dòng ${
-                rowIndex + 2
-              }, cột "${key}": Ngày xuất hàng (${day}/${month}/${year}) không được nhỏ hơn ngày hiện tại (${today.getDate()}/${
-                today.getMonth() + 1
-              }/${today.getFullYear()}).`
-            );
-          }
-
-          row[key] = `${year}-${String(month).padStart(2, "0")}-${String(
-            day
-          ).padStart(2, "0")}`;
-          break;
-        }
-
-        // Xử lý chuỗi
-        const str = String(value).trim();
-
-        const match = str.match(/^(\d{1,4})[\/\-](\d{1,2})[\/\-](\d{1,4})$/);
-        if (!match) {
-          throw new Error(
-            `Lỗi tại dòng ${
-              rowIndex + 2
-            }, cột "${key}": Định dạng ngày không hợp lệ: "${value}". ` +
-              `Chỉ chấp nhận: dd/mm/yyyy hoặc yyyy/mm/dd`
-          );
-        }
-
-        const part1 = parseInt(match[1]);
-        const part2 = parseInt(match[2]);
-        const part3 = parseInt(match[3]);
-
-        let day, month, year;
-
-        // Phân biệt dd/mm/yyyy vs yyyy/mm/dd
-        // Nếu part1 > 31 → chắc chắn là năm → format yyyy/mm/dd
-        if (part1 > 31) {
-          year = part1;
-          month = part2;
-          day = part3;
-        }
-        // Nếu part3 > 31 → chắc chắn là năm → format dd/mm/yyyy
-        else if (part3 > 31) {
-          day = part1;
-          month = part2;
-          year = part3;
-        }
-        // Nếu part1 > 12 và part1 <= 31 → chắc chắn là ngày → format dd/mm/yyyy
-        else if (part1 > 12) {
-          day = part1;
-          month = part2;
-          year = part3;
-        }
-        // Nếu part3 <= 31 và có 4 chữ số → format dd/mm/yyyy
-        else if (part3 >= 1000) {
-          day = part1;
-          month = part2;
-          year = part3;
-        }
-        // Nếu part1 có 4 chữ số → format yyyy/mm/dd
-        else if (part1 >= 1000) {
-          year = part1;
-          month = part2;
-          day = part3;
-        }
-        // Mặc định: dd/mm/yyyy (trường hợp애매: 11/10/2025)
-        else {
-          day = part1;
-          month = part2;
-          year = part3;
-        }
-
-        // Validate năm hợp lý
-        if (year < 1900 || year > 2100) {
-          throw new Error(
-            `Lỗi tại dòng ${
-              rowIndex + 2
-            }, cột "${key}": Năm không hợp lệ (${year}). Năm phải từ 1900-2100.`
-          );
-        }
-
-        // Validate tháng
-        if (month < 1 || month > 12) {
-          throw new Error(
-            `Lỗi tại dòng ${
-              rowIndex + 2
-            }, cột "${key}": Tháng không hợp lệ (${month}). Tháng phải từ 1-12.`
-          );
-        }
-
-        // Validate ngày
-        if (day < 1 || day > 31) {
-          throw new Error(
-            `Lỗi tại dòng ${
-              rowIndex + 2
-            }, cột "${key}": Ngày không hợp lệ (${day}). Ngày phải từ 1-31.`
-          );
-        }
-
-        // Kiểm tra ngày có tồn tại trong tháng đó
-        const date = new Date(year, month - 1, day);
-        if (
-          isNaN(date.getTime()) ||
-          date.getDate() !== day ||
-          date.getMonth() !== month - 1 ||
-          date.getFullYear() !== year
-        ) {
-          throw new Error(
-            `Lỗi tại dòng ${
-              rowIndex + 2
-            }, cột "${key}": Ngày không tồn tại: ${day}/${month}/${year}. ` +
-              `Tháng ${month} không có ngày ${day}.`
-          );
-        }
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // bỏ phần giờ để so sánh chỉ theo ngày
-        if (date < today) {
-          throw new Error(
-            `Lỗi tại dòng ${
-              rowIndex + 2
-            }, cột "${key}": Ngày xuất hàng (${day}/${month}/${year}) không được nhỏ hơn ngày hiện tại (${today.getDate()}/${
-              today.getMonth() + 1
-            }/${today.getFullYear()}).`
-          );
-        }
-
-        // Format về yyyy-mm-dd
-        row[key] = `${year}-${String(month).padStart(2, "0")}-${String(
-          day
-        ).padStart(2, "0")}`;
-        break;
-      }
       default:
         continue;
     }
@@ -287,24 +185,42 @@ function validateRow(row, rowIndex) {
   }
 }
 
-async function addDeliveryAndHistory(factory, rows) {
+async function addDeliveryAndHistory(rows) {
   try {
     const res = await fetch(`/exportmanagement/delivery/import`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         username: user.username,
-        factory: factory,
         deliveries: rows,
       }),
     });
 
     const result = await res.json();
-
     alert(result.message);
+    await getAll();
   } catch (err) {
     alert("Lỗi: " + err.message);
   }
+}
+
+function validateSheet(workbook) {
+  // Lấy tháng năm hiện tại
+  const now = new Date();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const year = now.getFullYear();
+  const currentValue = Number(`${year}${month}`);
+
+  // Tìm sheet có tên >= tháng năm hiện tại
+  const validSheets = workbook.SheetNames.filter((sheetName) => {
+    const parts = sheetName.split(".");
+    if (parts.length !== 2) return false;
+    const [sheetMonth, sheetYear] = parts;
+    const sheetValue = Number(`${sheetYear}${sheetMonth.padStart(2, "0")}`);
+    return sheetValue >= currentValue;
+  });
+
+  return validSheets;
 }
 
 function validateExcelFile(file) {
@@ -314,76 +230,128 @@ function validateExcelFile(file) {
     reader.onload = function (e) {
       try {
         const seen = new Set();
+        const validRows = [];
         const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, { type: "array" });
-        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
 
-        const sheetData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
-        const rawHeaders = sheetData[0];
+        const validSheets = validateSheet(workbook);
+        if (validSheets.length === 0) {
+          return reject(
+            new Error(
+              "Không tìm thấy sheet hợp lệ cho tháng hiện tại hoặc tương lai"
+            )
+          );
+        }
+        const requiredColumns = Object.keys(columnMapping);
+        for (const sheetName of validSheets) {
+          const sheet = workbook.Sheets[sheetName];
+          let headerRowIndex = null;
+          let headerRow = null;
 
-        const cleanHeaders = rawHeaders.map((h) =>
-          String(h || "")
-            .trim()
-            .replace(/\s+/g, "")
-            .toLowerCase()
-        );
-
-        const rows = XLSX.utils
-          .sheet_to_json(firstSheet, {
-            header: cleanHeaders,
-            range: 1,
+          const rawRows = XLSX.utils.sheet_to_json(sheet, {
+            header: 1,
             defval: "",
-          })
-          .filter((row) => {
-            return Object.values(row).some((v) => String(v).trim() !== "");
           });
 
-        if (rows.length < 1) {
-          return reject(new Error("⚠️ File rỗng hoặc không có dữ liệu"));
-        }
-
-        const headers = Object.keys(rows[0]).map((h) => h.toLowerCase());
-        const missing = requiredColumns.filter(
-          (col) => !headers.includes(col.toLowerCase())
-        );
-
-        if (missing.length > 0) {
-          return reject(new Error("⚠️ Thiếu cột: " + missing.join(", ")));
-        }
-
-        rows.forEach((row, index) => {
-          const keySignature = [
-            row.mobiscode,
-            row.shipmentdate,
-            row.shippingmethod,
-            row.type,
-          ]
-            .map((v) =>
-              String(v || "")
-                .trim()
-                .toLowerCase()
-            )
-            .join("|");
-
-          if (seen.has(keySignature)) {
-            throw new Error(
-              `Dòng ${
-                index + 2
-              } bị trùng trong file (Mobis Code, Target, Shipment Date, Shipping Method, Type)`
-            );
+          // Tìm dòng header chứa đủ các cột yêu cầu
+          for (let i = 0; i < rawRows.length; i++) {
+            const row = rawRows[i];
+            const matches = requiredColumns.every((col) => row.includes(col));
+            if (matches) {
+              headerRowIndex = i;
+              headerRow = row;
+              break;
+            }
           }
 
-          seen.add(keySignature);
-          validateRow(row, index);
-        });
+          if (headerRowIndex === -1) {
+            alert("Không tìm thấy dòng header phù hợp!");
+            return;
+          }
+          const filteredHeader = headerRow.filter((col) =>
+            requiredColumns.includes(col)
+          );
+          // 3. Lấy index các cột cần thiết trong Excel dựa vào filteredHeader
+          const columnIndexes = filteredHeader.map((col) =>
+            headerRow.indexOf(col)
+          );
 
-        resolve(rows); // Trả về mảng rows nếu hợp lệ
+          // Ánh xạ headerRow sang tên chuẩn
+          const mappedHeader = filteredHeader.map((col) => columnMapping[col]);
+
+          const rows = rawRows
+            .slice(headerRowIndex + 1)
+            .map((row) => {
+              const obj = {};
+              columnIndexes.forEach((colIndex, i) => {
+                const key = mappedHeader[i];
+                let value = row[colIndex] !== undefined ? row[colIndex] : "";
+
+                if (typeof value === "string") {
+                  value = value.trim();
+                }
+
+                obj[key] = value;
+              });
+              return obj;
+            })
+            // Lọc bỏ các dòng không có dữ liệu thực sự
+            .filter((row) =>
+              Object.values(row).some(
+                (v) => v !== "" && v !== null && v !== undefined
+              )
+            );
+
+          for (let index = 0; index < rows.length; index++) {
+            const row = rows[index];
+
+            // Tạo chữ ký xác định dòng trùng
+            const keySignature = [
+              row.mobiscode,
+              row.shipmentdate,
+              row.shippingmethod,
+              row.type,
+              row.factory,
+            ]
+              .map((v) =>
+                String(v || "")
+                  .trim()
+                  .toLowerCase()
+              )
+              .join("|");
+
+            if (seen.has(keySignature)) {
+              continue; // bỏ dòng trùng
+            }
+            seen.add(keySignature);
+
+            // Validate shipment date:
+            // - nếu sai định dạng => throw
+            // - nếu < ngày hiện tại => return false => bỏ dòng
+            const result = validateShipmentDate(row.shipmentdate, index);
+            if (result === false) {
+              continue; // shipmentdate < ngày hiện tại
+            }
+            row.shipmentdate = result;
+            row.quantity = 0;
+            validateRow(row, index);
+
+            // thêm vào danh sách hợp lệ
+            validRows.push(row);
+          }
+        }
+
+        if (validRows.length < 1) {
+          return reject(new Error("⚠️ File rỗng hoặc không có dữ liệu hợp lệ"));
+        }
+        resolve(validRows);
       } catch (err) {
-        reject(err);
+        reject(err instanceof Error ? err : new Error(String(err)));
       }
     };
 
-    reader.onerror = (err) => reject(err);
+    reader.onerror = (err) =>
+      reject(err instanceof Error ? err : new Error(String(err)));
     reader.readAsArrayBuffer(file);
   });
 }
@@ -473,8 +441,7 @@ excelInput.addEventListener("change", async () => {
   try {
     const rows = await validateExcelFile(file);
 
-    await addDeliveryAndHistory(factorySelected, rows);
-    await getAll();
+    await addDeliveryAndHistory(rows);
   } catch (err) {
     alert("Lỗi: " + err.message);
   } finally {

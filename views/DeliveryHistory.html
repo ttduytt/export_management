@@ -615,7 +615,7 @@
             <td class="type">${delivery.type || ''}</td>
             <td class="target">${delivery.target || ''}</td>
             <td class="quantity">${delivery.event_quantity || ''}</td>
-            <td class="shipment-date">${delivery.shipment_date ? dayjs(delivery.shipment_date).format('YYYY-MM-DD HH:mm:ss') : ''}</td>
+            <td class="shipment-date">${delivery.shipment_date ? dayjs(delivery.shipment_date).format('YYYY-MM-DD') : ''}</td>
             <td class="shipping-method">${delivery.shipping_method || ''}</td>
             <td class="event-user">${delivery.event_user || ''}</td>
             <td class="event-time">${delivery.event_time ? dayjs(delivery.event_time).format('YYYY-MM-DD HH:mm:ss') : ''}</td>

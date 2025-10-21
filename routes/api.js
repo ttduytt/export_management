@@ -477,7 +477,7 @@ router.delete("/delivery", async (req, res) => {
 });
 
 router.post("/delivery/import", async (req, res) => {
-  const { username, factory, deliveries } = req.body;
+  const { username, deliveries } = req.body;
   let conn;
 
   try {
@@ -485,6 +485,13 @@ router.post("/delivery/import", async (req, res) => {
     await conn.beginTransaction(); // khởi tạo transaction
 
     for (const [index, delivery] of deliveries.entries()) {
+      const factory = delivery.factory.toLowerCase();
+      if (!["v0", "v5"].includes(factory)) {
+        res.status(400).json({ message: `Tên xưởng không hợp lệ` });
+        return;
+      }
+      const tableDelivereyName = `delivery_${factory}`;
+      const tableHistoryName = `delivery_history_${factory}`;
       const isSpecExist = await conn.query(
         `SELECT COUNT(*) AS count
    FROM delivery_spec
@@ -502,14 +509,14 @@ router.post("/delivery/import", async (req, res) => {
 
       if (Number(isSpecExist[0].count) === 0) {
         res.status(400).json({
-          message: `Dữ liệu tiêu chuẩn tại dòng ${index + 2} không tồn tại`,
+          message: `Dữ liệu tiêu chuẩn của mobis code ${delivery.mobiscode} không tồn tại`,
         });
         return;
       }
 
       const isDeliveryExist = await conn.query(
         `SELECT COUNT(*) AS count
-   FROM delivery_${factory}
+   FROM ${tableHistoryName}
    WHERE mobis_code = ?
      AND target = ?
      AND shipment_date = ?
@@ -526,7 +533,7 @@ router.post("/delivery/import", async (req, res) => {
 
       if (Number(isDeliveryExist[0].count) != 0) {
         res.status(400).json({
-          message: `Thông tin xuất hàng tại dòng ${index + 2} đã tồn tại`,
+          message: `Thông tin xuất hàng của mobis code ${delivery.mobiscode} đã tồn tại`,
         });
         return;
       }
@@ -546,7 +553,7 @@ router.post("/delivery/import", async (req, res) => {
       ] = `${delivery.mobiscode}-${formattedDate}-${countModel}`;
       // Thêm vào bảng delivery
       const deliverySql = `
-        INSERT INTO ${factory === "v0" ? "delivery_v0" : "delivery_v5"}
+        INSERT INTO ${tableDelivereyName}
         (model_id, mobis_code, model_name, type, target, status,
          quantity, shipping_method, shipment_date)
         VALUES (?,?, ?, ?, ?, ?, ?, ?, ?)
