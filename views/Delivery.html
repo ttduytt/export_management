@@ -43,7 +43,7 @@
 
         .logo {
             color: white;
-            font-size: 24px;
+            font-size: 30px;
             font-weight: 700;
             padding: 20px 0;
             letter-spacing: 1px;
@@ -57,7 +57,7 @@
             gap: 12px;
         }
 
-         .logo img {
+        .logo img {
             transition: transform 0.3s ease;
         }
 
@@ -134,6 +134,11 @@
             background: #3b4689;
         }
 
+        .toolbar-right {
+            display: flex;
+            gap: 12px;
+        }
+
         .toolbar-left {
             display: flex;
             gap: 12px;
@@ -169,8 +174,9 @@
         }
 
         .btnImport:hover {
-            background: linear-gradient(90deg, #0f2027, #203a43, #2c5364);
-            color: #fff; /* Đảm bảo chữ rõ nếu cần */
+            background: linear-gradient(90deg, #2193b0, #6dd5ed);
+            color: #fff;
+            /* Đảm bảo chữ rõ nếu cần */
             transition: background 0.3s ease-in-out;
         }
 
@@ -504,16 +510,16 @@
 
         /* Footer */
         footer {
-          color: white;
-          font-size: 12px;
-          text-align: center;
-          padding: 20px 20px;
-          position: fixed;
-          bottom: 0;
-          right: 0;
-          text-align: right;
-          left: auto;
-          width: 100%;
+            color: white;
+            font-size: 12px;
+            text-align: center;
+            padding: 20px 20px;
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            text-align: right;
+            left: auto;
+            width: 100%;
         }
 
         /* Responsive */
@@ -553,54 +559,62 @@
 <body>
     <div class="all">
         <!-- Navigation -->
-    <nav>
-        <div class="nav-container">
-            <div class="logo" ><span><img style="width: 80px;" src="/images/logo.png" alt=""></span>MANAGERMENT DELIVERY</div>
-            <ul class="nav-menu" id="navMenu">
-                <li class="home"><a href="#">Home</a></li>
-                <li class="delivery"><a href="#delivery">Delivery</a></li>
-                <li class="history"><a href="#history">History</a></li>
-                <li class="admin"><a href="#admin">Admin</a></li>
-                <li class="logout">
-                    <a href="#">
-                    <span>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="lucide lucide-log-out-icon lucide-log-out">
-                        <path d="m16 17 5-5-5-5"/>
-                        <path d="M21 12H9"/>
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                        </svg>
-                    </span>
-                    </a>
-                </li>
-              </ul>
-        </div>
-    </nav>
+        <nav>
+            <div class="nav-container">
+                <div class="logo"><span><img style="width: 80px;" src="/images/logo.png" alt=""></span>MANAGERMENT
+                    DELIVERY</div>
+                <ul class="nav-menu" id="navMenu">
+                    <li class="home"><a href="#">Home</a></li>
+                    <li class="delivery"><a href="#delivery">Delivery</a></li>
+                    <li class="history"><a href="#history">History</a></li>
+                    <li class="admin"><a href="#admin">Admin</a></li>
+                    <li class="logout">
+                        <a href="#">
+                            <span>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="lucide lucide-log-out-icon lucide-log-out">
+                                    <path d="m16 17 5-5-5-5" />
+                                    <path d="M21 12H9" />
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                </svg>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
 
         <div class="container">
             <div class="toolbar">
                 <div class="toolbar-left">
+                    <select id="factorySelect" class="factory">
+                        <option value="V0">V0</option>
+                        <option value="V5">V5</option>
+                    </select>
+                    <button class="btnImport">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-import-icon lucide-import">
+                            <path d="M12 3v12" />
+                            <path d="m8 11 4 4 4-4" />
+                            <path d="M8 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4" />
+                        </svg>
+                        Import
+                    </button>
+                    <div class="search-box">
+                        <input class="searchInput" type="text" placeholder="Scan QR">
+                    </div>
+                    <!-- input file ẩn -->
+                    <input type="file" id="excelInput" accept=".xlsx,.xls" style="display:none;">
+                </div>
+                <div class="toolbar-right">
                     <button class="btn active" id="listBtn">
                         <span>☰</span> List
                     </button>
                     <button class="btn" id="gridBtn">
                         <span>⊞</span> Grid
                     </button>
-                    <select id="factorySelect" class="factory">
-                        <option value="V0">V0</option>
-                        <option value="V5">V5</option>
-                    </select>
-                    <button class="btnImport">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-import-icon lucide-import"><path d="M12 3v12"/><path d="m8 11 4 4 4-4"/><path d="M8 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4"/></svg>
-                        Import
-                    </button>
-                    <!-- input file ẩn -->
-                    <input type="file" id="excelInput" accept=".xlsx,.xls" style="display:none;">
-                </div>
-                <div class="search-box">
-                    <input class="searchInput" type="text" placeholder="Scan QR">
                 </div>
             </div>
 
