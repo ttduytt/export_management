@@ -1,0 +1,38 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Backend (Node.js)",
+      "program": "${workspaceFolder}/app.js",
+      "skipFiles": [
+        "<node_internals>/**/*.js",
+        "${workspaceFolder}/node_modules/**/*.js",
+        "**/dist/**/*.js",
+        "**/build/**/*.js",
+        "**/coverage/**/*.js",
+        "**/logs/**/*.js",
+        "**/public/**/*.js",
+        "**/*.spec.js",
+        "**/*.test.js"
+      ],
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Debug Frontend (Chrome)",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/public",
+      "sourceMaps": true,
+      "skipFiles": [
+        "${workspaceFolder}/node_modules/**/*.js",
+        "<node_internals>/**/*.js"
+      ]
+    }
+  ]
+}

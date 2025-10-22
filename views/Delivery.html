@@ -1,1 +1,707 @@
-<p>delivery</p>
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/images/logoweb.jpg" type="image/x-icon">
+    <title>Managerment Delivery - Trang chủ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #040818;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(6, 12, 34, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+        }
+
+        .logo {
+            color: white;
+            font-size: 30px;
+            font-weight: 700;
+            padding: 20px 0;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #f4f4f4 0%, #e7d3fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo img {
+            transition: transform 0.3s ease;
+        }
+
+        .logo img:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .nav-menu li a {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            padding: 12px 28px;
+            display: block;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            font-weight: 500;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            border-radius: 8px;
+        }
+
+        .nav-menu li a::before {
+            content: '';
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%) scaleX(0);
+            width: 60%;
+            height: 2px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-menu li a:hover {
+            background: rgba(102, 126, 234, 0.15);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-menu li a:hover::before {
+            transform: translateX(-50%) scaleX(1);
+        }
+
+        .nav-menu li a.active {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-menu li a.active::before {
+            transform: translateX(-50%) scaleX(1);
+        }
+
+        /* css table */
+        .container {
+            background: #060c21;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 40px;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: #3b4689;
+        }
+
+        .toolbar-right {
+            display: flex;
+            gap: 12px;
+        }
+
+        .toolbar-left {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            background: #3b4689;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            color: #e3e2e9;
+            border: none;
+        }
+
+        .btnImport {
+            padding: 8px 16px;
+            background: #8f8ca3;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            color: white;
+            border: none;
+            visibility: hidden;
+        }
+
+        .btnImport:hover {
+            background: linear-gradient(90deg, #2193b0, #6dd5ed);
+            color: #fff;
+            /* Đảm bảo chữ rõ nếu cần */
+            transition: background 0.3s ease-in-out;
+        }
+
+
+        .btnImport.visible {
+            visibility: visible;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+        }
+
+        .btn.active {
+            background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+        }
+
+        .search-box {
+            position: relative;
+            display: inline-block;
+        }
+
+        .search-box input {
+            padding-left: 20px;
+            width: 700px;
+            height: 32px;
+            border: none;
+            font-size: 14px;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .search-box input::placeholder {
+            color: #d1d5db;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            fill: #888;
+            pointer-events: none;
+        }
+
+        /* List View */
+        .list-view {
+            display: block;
+        }
+
+        .table-header,
+        .table-row {
+            display: grid;
+            grid-template-columns: 0.2fr 1.2fr 1.5fr 0.8fr 1fr 1fr 1fr 1.2fr 1.2fr 1.2fr;
+            align-items: center;
+            text-align: center;
+            padding: 10px 0;
+            width: 100%;
+        }
+
+        .table-header {
+            font-weight: bold;
+            border-bottom: 2px solid #2a2a3a;
+            background-color: #3b4689;
+            color: #b5b5c5;
+        }
+
+        .table-row {
+            border-bottom: 1px solid #2a2a3a;
+            color: #e3e2e9;
+            transition: background 0.2s;
+            position: relative;
+        }
+
+        .table-row:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .table-row.selected {
+            background: #f0f7ff;
+        }
+
+        /* Hiệu ứng border gradient cho dòng có status 'Run' */
+        .table-row.running {
+            position: relative;
+            background: linear-gradient(#060c21, #060c21) padding-box,
+                linear-gradient(90deg,
+                    #00fff0 0%,
+                    #00d4ff 25%,
+                    #0084ff 50%,
+                    #00d4ff 75%,
+                    #00fff0 100%) border-box;
+            border: 2px solid transparent;
+            border-radius: 4px;
+            animation: borderMove 3s linear infinite;
+            background-size: 200% 100%;
+        }
+
+        .table-row.running:hover {
+            background: linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05)) padding-box,
+                linear-gradient(90deg,
+                    #00fff0 0%,
+                    #00d4ff 25%,
+                    #0084ff 50%,
+                    #00d4ff 75%,
+                    #00fff0 100%) border-box;
+            color: black;
+            border: 2px solid transparent;
+        }
+
+        @keyframes borderMove {
+            0% {
+                background-position: 0% 0%;
+            }
+
+            100% {
+                background-position: 200% 0%;
+            }
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: white;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-admin {
+            background: #e8f0fe;
+            color: #1967d2;
+        }
+
+        .status-creator {
+            background: #e8f0fe;
+            color: #1967d2;
+        }
+
+        .status-general {
+            background: #e6f4ea;
+            color: #137333;
+        }
+
+        /* Grid View */
+        .grid-view {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 24px;
+            background-color: #1e2044;
+        }
+
+        .grid-view.active {
+            display: grid;
+        }
+
+        .card {
+            position: relative;
+            background: #060c21;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s;
+            overflow: hidden;
+        }
+
+        .card.running {
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Tạo lớp border xoay */
+        .card.running::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent,
+                    transparent,
+                    transparent,
+                    #00d4ff);
+            animation: rotate 4s linear infinite;
+        }
+
+        .card.running::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            background: #060c21;
+            border-radius: 11px;
+            z-index: 1;
+        }
+
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            color: #e3e2e9;
+        }
+
+        .card-body {
+            position: relative;
+            z-index: 2;
+            font-size: 14px;
+            color: #e3e2e9;
+        }
+
+        .card-body div {
+            margin-bottom: 8px;
+        }
+
+        .card-body strong {
+            color: #e3e2e9;
+            display: inline-block;
+            width: 100px;
+            white-space: nowrap;
+            margin-right: 26px;
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .status-badge.complete {
+            background-color: rgba(0, 128, 0, 0.5);
+            color: white;
+            border: 1px solid #159957;
+        }
+
+        .status-badge.wait {
+            background-color: rgba(255, 165, 0, 0.5);
+            color: white;
+            border: 1px solid #f5af19;
+        }
+
+        .status-badge.run {
+            background-color: rgba(109, 213, 237, 0.5);
+            color: white;
+            border: 1px solid #0083B0;
+        }
+
+        .list-view.active {
+            display: block;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .searchInput {
+            visibility: hidden;
+        }
+
+        .searchInput.visible {
+            visibility: visible;
+        }
+
+        .factory {
+            background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.1s ease;
+            appearance: none;
+            /* ẩn mũi tên mặc định */
+            outline: none;
+        }
+
+        .factory option {
+            color: black;
+        }
+
+
+
+        /* Footer */
+        footer {
+            color: white;
+            font-size: 12px;
+            text-align: center;
+            padding: 20px 20px;
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            text-align: right;
+            left: auto;
+            width: 100%;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-menu {
+                position: fixed;
+                left: -100%;
+                top: 60px;
+                flex-direction: column;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                width: 100%;
+                text-align: center;
+                transition: 0.3s;
+                box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .nav-menu li {
+                margin: 0;
+            }
+
+            .nav-menu li a {
+                padding: 20px;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+    <div class="all">
+        <!-- Navigation -->
+        <nav>
+            <div class="nav-container">
+                <div class="logo"><span><img style="width: 80px;" src="/images/logo.png" alt=""></span>MANAGERMENT
+                    DELIVERY</div>
+                <ul class="nav-menu" id="navMenu">
+                    <li class="home"><a href="#">Home</a></li>
+                    <li class="delivery"><a href="#delivery">Delivery</a></li>
+                    <li class="history"><a href="#history">History</a></li>
+                    <li class="admin"><a href="#admin">Admin</a></li>
+                    <li class="logout">
+                        <a href="#">
+                            <span>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="lucide lucide-log-out-icon lucide-log-out">
+                                    <path d="m16 17 5-5-5-5" />
+                                    <path d="M21 12H9" />
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                </svg>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="container">
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <select id="factorySelect" class="factory">
+                        <option value="V0">V0</option>
+                        <option value="V5">V5</option>
+                    </select>
+                    <button class="btnImport">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-import-icon lucide-import">
+                            <path d="M12 3v12" />
+                            <path d="m8 11 4 4 4-4" />
+                            <path d="M8 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4" />
+                        </svg>
+                        Import
+                    </button>
+                    <div class="search-box">
+                        <input class="searchInput" type="text" placeholder="Scan QR">
+                    </div>
+                    <!-- input file ẩn -->
+                    <input type="file" id="excelInput" accept=".xlsx,.xls" style="display:none;">
+                </div>
+                <div class="toolbar-right">
+                    <button class="btn active" id="listBtn">
+                        <span>☰</span> List
+                    </button>
+                    <button class="btn" id="gridBtn">
+                        <span>⊞</span> Grid
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-header" id="tableHeader">
+                <div></div>
+                <div>Mobis Code</div>
+                <div>Model Name</div>
+                <div>Type</div>
+                <div>Status</div>
+                <div>Target</div>
+                <div>Quantity</div>
+                <div>Complete Time</div>
+                <div>Shipment Date</div>
+                <div>Shipping Method</div>
+            </div>
+
+            <div id="listView" class="list-view active">
+                <!-- List items will be inserted here -->
+            </div>
+
+            <div id="gridView" class="grid-view hidden">
+                <!-- Grid cards will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>&copy; 2025 Copyright for Partron VN</p>
+        </footer>
+        <script>
+
+            const navLinks = document.querySelectorAll('.nav-menu a');
+
+            // Khôi phục menu active
+            const savedMenu = sessionStorage.getItem('activeMenu');
+            if (savedMenu) {
+                navLinks.forEach(link => link.classList.remove('active'));
+                const target = document.querySelector(`.${savedMenu} a`);
+                if (target) target.classList.add('active');
+            }
+            // Lắng nghe click cho toàn bộ menu
+            navLinks.forEach(link => {
+                link.addEventListener('click', e => {
+                    e.preventDefault();
+                    const parentClass = link.parentElement.classList[0];
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    sessionStorage.setItem('activeMenu', parentClass);
+
+                    // Xử lý hành động theo từng menu
+                    switch (parentClass) {
+                        case 'home':
+                            window.location.href = '/home';
+                            break;
+
+                        case 'logout':
+                            if (confirm('Are you sure you want to logout?')) {
+                                sessionStorage.clear();
+                                localStorage.clear();
+                                window.location.href = '/';
+                            }
+                            break;
+
+                        case 'delivery':
+                            window.location.href = '/delivery';
+                            break;
+
+                        case 'history':
+                            window.location.href = '/deliveryHistory';
+                            break;
+
+                        case 'admin':
+                            const user = JSON.parse(localStorage.getItem('user'));
+                            if (user.role === 'MANAGER') {
+                                window.location.href = '/admin';
+                            } else {
+                                alert('Access denied. Admins only.');
+                            }
+                            break;
+                        default:
+                            console.log('Unknown menu item:', parentClass);
+                            break;
+                    }
+                });
+            });       
+        </script>
+        <script type="module" src="/js/delivery.js"></script>
+</body>
+
+</html>
