@@ -12,8 +12,11 @@ const cbbFactory = document.querySelector(".factory");
 import { formatDate } from "../js/utils.js";
 
 let data = [];
-const user = JSON.parse(sessionStorage.getItem("user"));
-
+const user = JSON.parse(localStorage.getItem("user"));
+if (!user) {
+  alert("Unauthorized! Please log in.");
+  window.location.href = "/";
+}
 const columnMapping = {
   "MOBIS-CODE": "mobiscode",
   MODEL: "modelname",
