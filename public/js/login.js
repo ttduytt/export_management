@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const form = document.querySelector("#loginForm");
   const submitBtn = document.querySelector("#submitBtn");
   const forgotBtn = document.querySelector("#forgotBtn");
-    forgotBtn.addEventListener("click", (e) => {
+  forgotBtn.addEventListener("click", (e) => {
     e.preventDefault(); // chặn chuyển trang
     alert("Please contact IT to retrieve your password!");
   });
@@ -25,8 +25,24 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
 
       if (data.success) {
-        sessionStorage.setItem("user", JSON.stringify({ username: data.username, password: data.password, role: data.role, factory: data.factory }));
-        localStorage.setItem("user", JSON.stringify({ username: data.username, password: data.password, role: data.role, factory: data.factory }));
+        sessionStorage.setItem(
+          "user",
+          JSON.stringify({
+            username: data.username,
+            password: data.password,
+            role: data.role,
+            factory: data.factory,
+          })
+        );
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            username: data.username,
+            password: data.password,
+            role: data.role,
+            factory: data.factory,
+          })
+        );
         window.location.href = "/home";
       } else {
         alert("Incorrect username or password!", data.message);
