@@ -360,7 +360,17 @@ function validateExcelFile(file) {
 }
 
 function renderList() {
-  listView.innerHTML = data
+  // Sort data: status "run" first, then others
+  const sortedData = [...data].sort((a, b) => {
+    const aIsRun = a.status.toLowerCase() === "run";
+    const bIsRun = b.status.toLowerCase() === "run";
+    
+    if (aIsRun && !bIsRun) return -1;
+    if (!aIsRun && bIsRun) return 1;
+    return 0;
+  });
+
+  listView.innerHTML = sortedData
     .map((item) => {
       const completeDate = item.complete_time
         ? new Date(item.complete_time).toLocaleDateString("vi-VN")
@@ -392,7 +402,17 @@ function renderList() {
 }
 
 function renderGrid() {
-  gridView.innerHTML = data
+  // Sort data: status "run" first, then others
+  const sortedData = [...data].sort((a, b) => {
+    const aIsRun = a.status.toLowerCase() === "run";
+    const bIsRun = b.status.toLowerCase() === "run";
+    
+    if (aIsRun && !bIsRun) return -1;
+    if (!aIsRun && bIsRun) return 1;
+    return 0;
+  });
+
+  gridView.innerHTML = sortedData
     .map((item) => {
       const completeDate = item.complete_time
         ? new Date(item.complete_time).toLocaleDateString("vi-VN")
