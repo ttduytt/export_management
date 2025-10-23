@@ -700,13 +700,6 @@
                     }
                 });
             });       
-            // check auth
-            const user = JSON.parse(localStorage.getItem('user'));
-            if (!user || !user.token) {
-            alert("Unauthorized! Please log in.");
-            window.location.href = '/';
-            return;
-            }
         </script>
         <script type="module" src="/js/delivery.js"></script>
 </body>
