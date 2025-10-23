@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("user", JSON.stringify({ username: data.username, password: data.password, role: data.role, factory: data.factory }));
         window.location.href = "/home";
       } else {
-        alert("Incorrect username or password!");
+        alert("Incorrect username or password!", data.message);
       }
     } catch (err) {
       alert("Server connection error!", err);

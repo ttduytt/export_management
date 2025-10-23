@@ -510,7 +510,13 @@
 
         const specTableBody = document.getElementById('DeliveryTableBody');
         specTableBody.innerHTML = '';
-
+        // check auth
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user || !user.token) {
+          alert("Unauthorized! Please log in.");
+          window.location.href = '/';
+          return;
+        }
         // Call api with filters
         const url = `/exportmanagement/delivery/history/${factorySelect.value}?page=${page}` +
           `&search=${encodeURIComponent(searchTextDelivery.value.trim())}` +
