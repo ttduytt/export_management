@@ -675,11 +675,13 @@ router.post("/api/login", async (req, res) => {
         factory: user.factory,
       });
     } else {
-      res.status(401).json({ success: false, message: "An error while login" });
+      res
+        .status(401)
+        .json({ success: false, message: "Incorrect username or password!" });
     }
   } catch (err) {
     console.error("DB error:", err);
-    res.status(500).json({ error: "Database error" + err.message });
+    res.status(500).json({ message: "Database error" });
   }
 });
 

@@ -12,8 +12,11 @@ const cbbFactory = document.querySelector(".factory");
 import { formatDate } from "../js/utils.js";
 
 let data = [];
-const user = JSON.parse(sessionStorage.getItem("user"));
-
+const user = JSON.parse(localStorage.getItem("user"));
+if (!user) {
+  alert("Unauthorized! Please log in.");
+  window.location.href = "/";
+}
 const columnMapping = {
   "MOBIS-CODE": "mobiscode",
   MODEL: "modelname",
@@ -357,7 +360,17 @@ function validateExcelFile(file) {
 }
 
 function renderList() {
-  listView.innerHTML = data
+  // Sort data: status "run" first, then others
+  const sortedData = [...data].sort((a, b) => {
+    const aIsRun = a.status.toLowerCase() === "run";
+    const bIsRun = b.status.toLowerCase() === "run";
+    
+    if (aIsRun && !bIsRun) return -1;
+    if (!aIsRun && bIsRun) return 1;
+    return 0;
+  });
+
+  listView.innerHTML = sortedData
     .map((item) => {
       const completeDate = item.complete_time
         ? new Date(item.complete_time).toLocaleDateString("vi-VN")
@@ -389,7 +402,17 @@ function renderList() {
 }
 
 function renderGrid() {
-  gridView.innerHTML = data
+  // Sort data: status "run" first, then others
+  const sortedData = [...data].sort((a, b) => {
+    const aIsRun = a.status.toLowerCase() === "run";
+    const bIsRun = b.status.toLowerCase() === "run";
+    
+    if (aIsRun && !bIsRun) return -1;
+    if (!aIsRun && bIsRun) return 1;
+    return 0;
+  });
+
+  gridView.innerHTML = sortedData
     .map((item) => {
       const completeDate = item.complete_time
         ? new Date(item.complete_time).toLocaleDateString("vi-VN")

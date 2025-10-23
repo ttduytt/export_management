@@ -365,7 +365,7 @@
     <!-- Navigation -->
     <nav>
         <div class="nav-container">
-            <div class="logo" ><span><img style="width: 80px;" src="/images/logo.png" alt=""></span>MANAGERMENT DELIVERY</div>
+            <div class="logo" ><span><img style="width: 80px;" src="/images/logo.png" alt=""></span><a href="/home">MANAGERMENT DELIVERY</a></div>
             <ul class="nav-menu" id="navMenu">
                 <li class="home"><a href="#">Home</a></li>
                 <li class="delivery"><a href="#delivery">Delivery</a></li>
@@ -510,6 +510,13 @@
 
         const specTableBody = document.getElementById('DeliveryTableBody');
         specTableBody.innerHTML = '';
+        //check auth
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) {
+          alert("Unauthorized! Please log in.");
+          window.location.href = '/';
+          return;
+        }
 
         // Call api with filters
         const url = `/exportmanagement/delivery/history/${factorySelect.value}?page=${page}` +
