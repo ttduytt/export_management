@@ -1,5 +1,7 @@
-require("dotenv").config();
-const mariadb = require("mariadb");
+import dotenv from "dotenv";
+import mariadb from "mariadb";
+
+dotenv.config();
 
 const pool = mariadb.createPool({
   host: process.env.DB_HOST,
@@ -10,4 +12,4 @@ const pool = mariadb.createPool({
   connectionLimit: 5,
 });
 
-module.exports = pool;
+export default pool;
