@@ -1,392 +1,426 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="/images/logoweb.jpg" type="image/x-icon">
-    <title>Managerment Delivery - History</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #040818;
-        }
-        /* Navigation */
-        nav {
-            background: rgba(6, 12, 34, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 0;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(102, 126, 234, 0.3);
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/images/logoweb.jpg" type="image/x-icon">
+  <title>Managerment Delivery - History</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 40px;
-        }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #040818;
+      height: 100vh;
+      overflow: hidden;
+    }
 
-        .logo {
-            color: white;
-            font-size: 30px;
-            font-weight: 700;
-            padding: 20px 0;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            background: linear-gradient(135deg, #f4f4f4 0%, #e7d3fc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+    /* Navigation */
+    nav {
+      background: rgba(6, 12, 34, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 0;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(102, 126, 234, 0.3);
+    }
 
-        .logo img {
-            transition: transform 0.3s ease;
-        }
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 40px;
+    }
 
-        .logo img:hover {
-            transform: scale(1.05);
-        }
+    .logo {
+      color: white;
+      font-size: 30px;
+      font-weight: 700;
+      padding: 20px 0;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #f4f4f4 0%, #e7d3fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            gap: 8px;
-            align-items: center;
-        }
+    .logo img {
+      transition: transform 0.3s ease;
+    }
 
-        .nav-menu li a {
-            color: rgba(255, 255, 255, 0.85);
-            text-decoration: none;
-            padding: 12px 28px;
-            display: block;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            font-weight: 500;
-            font-size: 15px;
-            letter-spacing: 0.5px;
-            border-radius: 8px;
-        }
+    .logo img:hover {
+      transform: scale(1.05);
+    }
 
-        .nav-menu li a::before {
-            content: '';
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%) scaleX(0);
-            width: 60%;
-            height: 2px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            transition: transform 0.3s ease;
-        }
+    .nav-menu {
+      display: flex;
+      list-style: none;
+      gap: 8px;
+      align-items: center;
+    }
 
-        .nav-menu li a:hover {
-            background: rgba(102, 126, 234, 0.15);
-            color: white;
-            transform: translateY(-2px);
-        }
+    .nav-menu li a {
+      color: rgba(255, 255, 255, 0.85);
+      text-decoration: none;
+      padding: 12px 28px;
+      display: block;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      font-weight: 500;
+      font-size: 15px;
+      letter-spacing: 0.5px;
+      border-radius: 8px;
+    }
 
-        .nav-menu li a:hover::before {
-            transform: translateX(-50%) scaleX(1);
-        }
+    .nav-menu li a::before {
+      content: '';
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%) scaleX(0);
+      width: 60%;
+      height: 2px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      transition: transform 0.3s ease;
+    }
 
-        .nav-menu li a.active {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
+    .nav-menu li a:hover {
+      background: rgba(102, 126, 234, 0.15);
+      color: white;
+      transform: translateY(-2px);
+    }
 
-        .nav-menu li a.active::before {
-            transform: translateX(-50%) scaleX(1);
-        }
-        /* Footer */
-        footer {
-          background: #040818b7;
-          color: white;
-          font-size: 12px;
-          text-align: center;
-          padding: 20px 20px;
-          position: fixed;
-          bottom: 0;
-          right: 0;
-          text-align: right;
-          left: auto;
-          width: 100%;
-        }
-        .container {
-          display: flex;
-          height: calc(100vh - 100px);
-          color: white;
-          width: 100%;
-        }
-        /* Cột bên trái */
-        .content-left {
-          display: flex;
-          flex-direction: column;
-          justify-content: center; 
-          text-align: center;
-          margin: 40px;
-        }
+    .nav-menu li a:hover::before {
+      transform: translateX(-50%) scaleX(1);
+    }
 
+    .nav-menu li a.active {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
 
-/* Thay thế phần CSS của .management-delivery */
-.management-delivery {
-  flex: 1;
-  width: 100%;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
-  overflow-x: auto; /* Thêm scroll ngang */
-  overflow-y: hidden;
-  display: flex;
-  flex-direction: column;
-}
+    .nav-menu li a.active::before {
+      transform: translateX(-50%) scaleX(1);
+    }
 
-.management-delivery table {
-  border-collapse: collapse;
-  border: none;
-  background: transparent;
-  table-layout: fixed;
-  width: 100%;
-}
+    /* Footer */
+    footer {
+      color: white;
+      font-size: 12px;
+      text-align: center;
+      padding: 20px 20px;
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      text-align: right;
+      left: auto;
+      width: 100%;
+    }
 
-.management-delivery thead,
-.management-delivery tbody {
-  display: block;
-  width: 100%;
-}
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 100px);
+      color: white;
+      width: 100%;
+    }
+
+    .content-left {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      margin: 20px 40px;
+      overflow: hidden;
+    }
 
 
-.filter-row{
-  display: flex;
-  justify-content: space-between;
-  border-bottom: 1px solid rgba(229, 231, 235, 0.3);
-}
+    .management-delivery {
+      flex: 1;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Thay đổi table */
+    .management-delivery table {
+      border-collapse: collapse;
+      border: none;
+      background: transparent;
+      table-layout: fixed;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Thay đổi thead */
+    .management-delivery thead {
+      background: rgba(102, 126, 234, 0.4);
+      color: #fff;
+      font-weight: 600;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
+    .management-delivery tbody {
+      flex: 1;
+      display: block;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
 
 
-.management-delivery thead .tableHead,
-.management-delivery tbody tr {
-  display: grid;
-  grid-template-columns:
-    40px                          /* STT */
-    minmax(180px, 180px)         /* Model Id (cố định tối thiểu) */
-    minmax(250px, 250px)         /* QR (cố định tối thiểu) */
-    repeat(9, minmax(0, 1fr));   /* Cột còn lại chia đều không bị tràn */
-}
-
-.management-delivery tbody {
-  display: block;
-  overflow-y: auto;
-  overflow-x: hidden;
-  max-height: 580px;
-}
-
-/* Header cố định */
-.management-delivery thead {
-  background: rgba(102, 126, 234, 0.4);
-  color: #fff;
-  font-weight: 600;
-  text-transform: uppercase;
-  position: sticky;
-  top: 0;
-  z-index: 5;
-}
-
-/* Căn giữa & padding chuẩn */
-.management-delivery th,
-.management-delivery td {
-  padding: 12px 8px;
-  text-align: center;
-  font-size: 11px;
-  color: white;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-/* Cột QR căn trái */
-.management-delivery th:nth-child(3),
-.management-delivery td:nth-child(3) {
-  padding-left: 12px;
-}
-
-/* Cột Model Name căn trái */
-.management-delivery th:nth-child(5),
-.management-delivery td:nth-child(5) {
-  padding-left: 12px;
-}
-
-.management-delivery tr:last-child td {
-  border-bottom: none;
-}
-
-/* Custom scrollbar cho tbody (vertical) */
-.management-delivery tbody::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-.management-delivery tbody::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-}
-
-.management-delivery tbody::-webkit-scrollbar-thumb {
-  background: rgba(102, 126, 234, 0.6);
-  border-radius: 4px;
-}
-
-.management-delivery tbody::-webkit-scrollbar-thumb:hover {
-  background: rgba(102, 126, 234, 0.8);
-}
-
-/* Custom scrollbar cho container (horizontal) */
-.management-delivery::-webkit-scrollbar {
-  height: 8px;
-}
-
-.management-delivery::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-}
-
-.management-delivery::-webkit-scrollbar-thumb {
-  background: rgba(102, 126, 234, 0.6);
-  border-radius: 4px;
-}
-
-.management-delivery::-webkit-scrollbar-thumb:hover {
-  background: rgba(102, 126, 234, 0.8);
-}
+    .filter-row {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(229, 231, 235, 0.3);
+      padding: 16px 12px;
+    }
 
 
-        #factorySelect {
-          padding: 6px 8px;
-          border-radius: 4px;
-          border: none;
-          background: rgba(255, 255, 255, 0.1);
-          color: white;
-          font-size: 14px;
-        }
-        #factorySelect:focus {
-          outline: none;
-          background: rgba(255, 255, 255, 0.2);
-        }
-        #factorySelect option {
-          background-color: #2b2b2bb7; 
-          color: white;
-        }
-        #clearFilters {
-          background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
-          border: none;
-          color: white;
-          padding: 8px 16px;
-          border-radius: 4px;
-          cursor: pointer;
-          font-size: 14px;
-          transition: all 0.3s ease;
-        }
-        #clearFilters:hover {
-          background: linear-gradient(135deg, #05855c 0%, #225ad3 100%);
-        }
-        .date-filter {
-          padding: 6px 8px;
-          border-radius: 4px;
-          border: none;
-          background: rgba(255, 255, 255, 0.1);
-          color: white;
-          font-size: 14px;
-          display: inline;
-        }
-        input[type="date"]::-webkit-calendar-picker-indicator {
-          filter: invert(1);
-        }
-        .searchText{
-          padding: 8px 12px;
-          border-radius: 4px;
-          border: none;
-          max-width: 300px;
-          min-width: 240px;
-          background: rgba(255, 255, 255, 0.1);
-          color: white;
-        }
-        .searchText::placeholder{
-          color: #d1d5db;
-        }
-        .searchText:focus{
-          outline: none;
-          background: rgba(255, 255, 255, 0.2);
-        }
-        .pagination {
-          display: flex;
-          justify-content: center;
-          padding: 12px 0;
-          gap: 12px;
-        }
-        .pagination button {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          border: none;
-          color: white;
-          padding: 8px 16px;
-          border-radius: 4px;
-          cursor: pointer;
-          font-size: 14px;
-          transition: all 0.3s ease;
-        }
-        .pagination button:hover {
-          background: linear-gradient(135deg, #556cd6 0%, #653d9e 100%);
-        }
-        .pagination button:disabled {
-          background: rgba(102, 126, 234, 0.3);
-          cursor: not-allowed;
-          opacity: 0.5;
-        }
-        .pagination button:disabled:hover {
-          background: rgba(102, 126, 234, 0.3);
-        }
-    </style>
+    .management-delivery thead .tableHead,
+    .management-delivery tbody tr {
+      display: grid;
+      grid-template-columns:
+        40px minmax(180px, 180px) minmax(250px, 250px) repeat(9, minmax(0, 1fr));
+
+    }
+
+    .management-delivery tbody {
+      display: block;
+      overflow-y: auto;
+      overflow-x: hidden;
+      max-height: 580px;
+    }
+
+    /* Header cố định */
+    .management-delivery thead {
+      background: rgba(102, 126, 234, 0.4);
+      color: #fff;
+      font-weight: 600;
+      text-transform: uppercase;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    /* Căn giữa & padding chuẩn */
+    .management-delivery th,
+    .management-delivery td {
+      padding: 12px 8px;
+      text-align: center;
+      font-size: 11px;
+      color: white;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    /* Cột QR căn trái */
+    .management-delivery th:nth-child(3),
+    .management-delivery td:nth-child(3) {
+      padding-left: 12px;
+    }
+
+    /* Cột Model Name căn trái */
+    .management-delivery th:nth-child(5),
+    .management-delivery td:nth-child(5) {
+      padding-left: 12px;
+    }
+
+    .management-delivery tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Custom scrollbar cho tbody (vertical) */
+    .management-delivery tbody::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    .management-delivery tbody::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+
+    .management-delivery tbody::-webkit-scrollbar-thumb {
+      background: rgba(102, 126, 234, 0.6);
+      border-radius: 4px;
+    }
+
+    .management-delivery tbody::-webkit-scrollbar-thumb:hover {
+      background: rgba(102, 126, 234, 0.8);
+    }
+
+    /* Custom scrollbar cho container (horizontal) */
+    .management-delivery::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .management-delivery::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+
+    .management-delivery::-webkit-scrollbar-thumb {
+      background: rgba(102, 126, 234, 0.6);
+      border-radius: 4px;
+    }
+
+    .management-delivery::-webkit-scrollbar-thumb:hover {
+      background: rgba(102, 126, 234, 0.8);
+    }
+
+
+    #factorySelect {
+      padding: 6px 8px;
+      border-radius: 4px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 14px;
+    }
+
+    #factorySelect:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    #factorySelect option {
+      background-color: #2b2b2bb7;
+      color: white;
+    }
+
+    #clearFilters {
+      background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    #clearFilters:hover {
+      background: linear-gradient(135deg, #05855c 0%, #225ad3 100%);
+    }
+
+    .date-filter {
+      padding: 6px 8px;
+      border-radius: 4px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 14px;
+      display: inline;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+    }
+
+    .searchText {
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: none;
+      max-width: 300px;
+      min-width: 240px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .searchText::placeholder {
+      color: #d1d5db;
+    }
+
+    .searchText:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      padding: 12px 0;
+      gap: 12px;
+      flex-shrink: 0;
+      /* THÊM */
+    }
+
+    .pagination button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .pagination button:hover {
+      background: linear-gradient(135deg, #556cd6 0%, #653d9e 100%);
+    }
+
+    .pagination button:disabled {
+      background: rgba(102, 126, 234, 0.3);
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .pagination button:disabled:hover {
+      background: rgba(102, 126, 234, 0.3);
+    }
+  </style>
 </head>
+
 <body>
-    <div class="all">
+  <div class="all">
     <!-- Navigation -->
     <nav>
-        <div class="nav-container">
-            <div class="logo" ><span><img style="width: 80px;" src="/images/logo.png" alt=""></span><a href="/home">MANAGERMENT DELIVERY</a></div>
-            <ul class="nav-menu" id="navMenu">
-                <li class="home"><a href="#">Home</a></li>
-                <li class="delivery"><a href="#delivery">Delivery</a></li>
-                <li class="history"><a href="#history">History</a></li>
-                <li class="admin"><a href="#admin">Admin</a></li>
-                <li class="logout">
-                    <a href="#">
-                    <span>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="lucide lucide-log-out-icon lucide-log-out">
-                        <path d="m16 17 5-5-5-5"/>
-                        <path d="M21 12H9"/>
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                        </svg>
-                    </span>
-                    </a>
-                </li>
-              </ul>
-        </div>
+      <div class="nav-container">
+        <div class="logo"><span><img style="width: 80px;" src="/images/logo.png" alt=""></span><a
+            href="/home">MANAGERMENT DELIVERY</a></div>
+        <ul class="nav-menu" id="navMenu">
+          <li class="home"><a href="#">Home</a></li>
+          <li class="delivery"><a href="#delivery">Delivery</a></li>
+          <li class="history"><a href="#history">History</a></li>
+          <li class="admin"><a href="#admin">Admin</a></li>
+          <li class="logout">
+            <a href="#">
+              <span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out-icon lucide-log-out">
+                  <path d="m16 17 5-5-5-5" />
+                  <path d="M21 12H9" />
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                </svg>
+              </span>
+            </a>
+          </li>
+        </ul>
+      </div>
     </nav>
     <div class="container">
       <div class="content-left">
@@ -394,8 +428,11 @@
           <table>
             <thead>
               <tr class="filter-row">
-                <th colspan="1" style="text-align: left; font-size: 18px; padding-bottom: 10px; text-transform: uppercase;">Delivery History</th>
-                <th colspan="2"><input class="searchText" type="text" name="searchTextDelivery" id="searchTextDelivery" placeholder="Search Mobis Code, Model Name"></th>
+                <th colspan="1"
+                  style="text-align: left; font-size: 18px; padding-bottom: 10px; text-transform: uppercase;">Delivery
+                  History</th>
+                <th colspan="2"><input class="searchText" type="text" name="searchTextDelivery" id="searchTextDelivery"
+                    placeholder="Search Mobis Code, Model Name"></th>
                 <th colspan="2">
                   <span>Factory:</span>
                   <select name="factory" id="factorySelect">
@@ -403,12 +440,21 @@
                     <option value="V5">V5</option>
                   </select>
                 </th>
-               <th style="display: flex;">
-                 <div class="date"><input type="date" id="deliveryDateFrom" class="date-filter" name="deliveryDateFrom"></div>
-                 <div style="margin: 0 10px;"><span>~</span></div>
-                 <div  class="date"><input type="date" id="deliveryDateTo" class="date-filter" name="deliveryDateTo"></div>
-               </th>
-                <th colspan="1"><button id="clearFilters"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-ccw-icon lucide-refresh-ccw"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button></th>
+                <th style="display: flex;">
+                  <div class="date"><input type="date" id="deliveryDateFrom" class="date-filter"
+                      name="deliveryDateFrom"></div>
+                  <div style="margin: 0 10px;"><span>~</span></div>
+                  <div class="date"><input type="date" id="deliveryDateTo" class="date-filter" name="deliveryDateTo">
+                  </div>
+                </th>
+                <th colspan="1"><button id="clearFilters"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="lucide lucide-refresh-ccw-icon lucide-refresh-ccw">
+                      <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                      <path d="M3 3v5h5" />
+                      <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+                      <path d="M16 16h5v5" />
+                    </svg></button></th>
               </tr>
               <tr class="tableHead">
                 <th>STT</th>
@@ -431,21 +477,32 @@
         </div>
         <div class="pagination">
           <button id="prevPage">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-arrow-left-icon lucide-arrow-left">
+              <path d="m12 19-7-7 7-7" />
+              <path d="M19 12H5" />
+            </svg>
           </button>
           <button id="nextPage">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right-icon lucide-arrow-right"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-          </button></div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-arrow-right-icon lucide-arrow-right">
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
-        <!-- Footer -->
+    <!-- Footer -->
     <footer>
-        <p>&copy; 2025 Copyright for Partron VN</p>
+      <p>&copy; 2025 Copyright for Partron VN</p>
     </footer>
     <script src="/js/dayjs.min.js"></script>
     <script>
-        
-        const navLinks = document.querySelectorAll('.nav-menu a');
+
+      const navLinks = document.querySelectorAll('.nav-menu a');
 
       // Khôi phục menu active
       const savedMenu = sessionStorage.getItem('activeMenu');
@@ -458,7 +515,7 @@
       navLinks.forEach(link => {
         link.addEventListener('click', e => {
           e.preventDefault();
-          const parentClass = link.parentElement.classList[0]; 
+          const parentClass = link.parentElement.classList[0];
           navLinks.forEach(l => l.classList.remove('active'));
           link.classList.add('active');
           sessionStorage.setItem('activeMenu', parentClass);
@@ -498,9 +555,9 @@
               break;
           }
         });
-        });         
+      });
       // initialize delivery data
-      async function initDelivery(page = 1){
+      async function initDelivery(page = 1) {
         const searchTextDelivery = document.getElementById('searchTextDelivery');
         const factorySelect = document.getElementById('factorySelect');
         const searchDateFrom = document.getElementById('deliveryDateFrom');
@@ -636,11 +693,12 @@
           await initDelivery(1);
         } catch (err) {
           console.error("Error fetching data:", err);
-          
+
         }
-      });       
- 
-    
+      });
+
+
     </script>
 </body>
+
 </html>

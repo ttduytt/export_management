@@ -364,7 +364,7 @@ function renderList() {
   const sortedData = [...data].sort((a, b) => {
     const aIsRun = a.status.toLowerCase() === "run";
     const bIsRun = b.status.toLowerCase() === "run";
-    
+
     if (aIsRun && !bIsRun) return -1;
     if (!aIsRun && bIsRun) return 1;
     return 0;
@@ -406,7 +406,7 @@ function renderGrid() {
   const sortedData = [...data].sort((a, b) => {
     const aIsRun = a.status.toLowerCase() === "run";
     const bIsRun = b.status.toLowerCase() === "run";
-    
+
     if (aIsRun && !bIsRun) return -1;
     if (!aIsRun && bIsRun) return 1;
     return 0;

@@ -18,6 +18,7 @@
             line-height: 1.6;
             color: #333;
             background-color: #040818;
+            overflow-x: hidden;
         }
 
         /* Navigation */
@@ -124,6 +125,9 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             margin: 40px;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 160px);
         }
 
         .toolbar {
@@ -132,6 +136,7 @@
             align-items: center;
             padding: 16px 24px;
             background: #3b4689;
+            flex-shrink: 0;
         }
 
         .toolbar-right {
@@ -176,7 +181,6 @@
         .btnImport:hover {
             background: linear-gradient(90deg, #2193b0, #6dd5ed);
             color: #fff;
-            /* Đảm bảo chữ rõ nếu cần */
             transition: background 0.3s ease-in-out;
         }
 
@@ -230,8 +234,28 @@
         }
 
         /* List View */
-        .list-view {
-            display: block;
+.list-view {
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+    display: none; 
+}
+
+        .list-view::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .list-view::-webkit-scrollbar-track {
+            background: #060c21;
+        }
+
+        .list-view::-webkit-scrollbar-thumb {
+            background: #3b4689;
+            border-radius: 4px;
+        }
+
+        .list-view::-webkit-scrollbar-thumb:hover {
+            background: #4a56a0;
         }
 
         .table-header,
@@ -245,10 +269,19 @@
         }
 
         .table-header {
+            display: grid;
+            grid-template-columns: 0.2fr 1.2fr 1.5fr 0.8fr 1fr 1fr 1fr 1.2fr 1.2fr 1.2fr;
+            align-items: center;
+            text-align: center;
+            padding: 10px 0;
+            width: 100%;
             font-weight: bold;
-            border-bottom: 2px solid #2a2a3a;
             background-color: #3b4689;
             color: #fff;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         .table-row {
@@ -359,17 +392,37 @@
         }
 
         /* Grid View */
-        .grid-view {
-            display: none;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            padding: 24px;
-            background-color: #1e2044;
-        }
+.grid-view {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 24px;
+    background-color: #1e2044;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+    display: none; 
+}
 
         .grid-view.active {
             display: grid;
         }
+
+        .grid-view::-webkit-scrollbar {
+    width: 8px;
+}
+
+.grid-view::-webkit-scrollbar-track {
+    background: #1e2044;
+}
+
+.grid-view::-webkit-scrollbar-thumb {
+    background: #3b4689;
+    border-radius: 4px;
+}
+
+.grid-view::-webkit-scrollbar-thumb:hover {
+    background: #4a56a0;
+}
 
         .card {
             position: relative;
@@ -377,12 +430,13 @@
             border-radius: 12px;
             padding: 20px;
             transition: all 0.2s;
-            overflow: hidden;
         }
 
-        .card.running {
-            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
-        }
+.card.running {
+    box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+    overflow: hidden; /* CHỈ thêm overflow: hidden cho card running */
+}
+
 
         /* Tạo lớp border xoay */
         .card.running::before {
@@ -397,6 +451,7 @@
                     transparent,
                     #00d4ff);
             animation: rotate 4s linear infinite;
+             z-index: 0;
         }
 
         .card.running::after {
@@ -561,7 +616,8 @@
         <!-- Navigation -->
         <nav>
             <div class="nav-container">
-                <div class="logo" ><span><img style="width: 80px;" src="/images/logo.png" alt=""></span><a href="/home">MANAGERMENT DELIVERY</a></div>
+                <div class="logo"><span><img style="width: 80px;" src="/images/logo.png" alt=""></span><a
+                        href="/home">MANAGERMENT DELIVERY</a></div>
                 <ul class="nav-menu" id="navMenu">
                     <li class="home"><a href="#">Home</a></li>
                     <li class="delivery"><a href="#delivery">Delivery</a></li>
@@ -634,9 +690,9 @@
                 <!-- List items will be inserted here -->
             </div>
 
-            <div id="gridView" class="grid-view hidden">
-                <!-- Grid cards will be inserted here -->
-            </div>
+<div id="gridView" class="grid-view">
+    <!-- Grid cards will be inserted here -->
+</div>
         </div>
 
         <!-- Footer -->
