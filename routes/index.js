@@ -1,26 +1,31 @@
-const express = require("express");
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const router = express.Router();
-const path = require("path");
 
 /* GET home page. */
-router.get("/", function (req, res, next) {
+router.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../views/Login.html"));
 });
 
-router.get("/home", function (req, res, next) {
+router.get("/home", (req, res) => {
   res.sendFile(path.join(__dirname, "../views/Home.html"));
 });
 
-router.get("/delivery", function (req, res, next) {
+router.get("/delivery", (req, res) => {
   res.sendFile(path.join(__dirname, "../views/Delivery.html"));
 });
 
-router.get("/deliveryHistory", function (req, res, next) {
+router.get("/deliveryHistory", (req, res) => {
   res.sendFile(path.join(__dirname, "../views/DeliveryHistory.html"));
 });
 
-router.get("/admin", function (req, res, next) {
+router.get("/admin", (req, res) => {
   res.sendFile(path.join(__dirname, "../views/Admin.html"));
 });
 
-module.exports = router;
+export default router;
