@@ -521,6 +521,18 @@
             left: auto;
             width: 100%;
         }
+        .btn-fullscreen {
+            background: none;        /* bỏ màu nền trắng */
+            border: none;            /* bỏ viền xám */
+            cursor: pointer;         /* hiển thị con trỏ bàn tay */
+            color: white;            /* đổi màu icon (vì SVG dùng stroke=currentColor) */
+            padding: 4px;
+            }
+
+            .btn-fullscreen:hover {
+            opacity: 0.8;            /* hiệu ứng hover nhẹ */
+            }
+
 
         /* Responsive */
         @media (max-width: 768px) {
@@ -641,7 +653,7 @@
 
         <!-- Footer -->
         <footer>
-            <p>&copy; 2025 Copyright for Partron VN</p>
+            <button class="btn-fullscreen" id="btn-mode"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-expand-icon lucide-expand"><path d="m15 15 6 6"/><path d="m15 9 6-6"/><path d="M21 16v5h-5"/><path d="M21 8V3h-5"/><path d="M3 16v5h5"/><path d="m3 21 6-6"/><path d="M3 8V3h5"/><path d="M9 9 3 3"/></svg></button>
         </footer>
         <script>
 
@@ -699,6 +711,17 @@
                     }
                 });
             });       
+            btnMode = document.getElementById('btn-mode');
+            btnMode.addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen();
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                }
+            });
+        
         </script>
         <script type="module" src="/js/delivery.js"></script>
 </body>
