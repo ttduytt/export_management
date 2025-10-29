@@ -21,6 +21,171 @@
             overflow-x: hidden;
         }
 
+        /* Light mode */
+        body.light-theme {
+            background-color: white;
+            color: #e3e2e9;
+        }
+
+        /* nav */
+        body.light-theme nav {
+            background: linear-gradient(to right, #667db6, #0082c8, #0082c8, #667db6);
+        }
+
+        body.light-theme .nav-menu li a.active {
+            background: #2a8f9e;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+
+        body.light-theme .nav-menu li a:hover {
+            background: #2a8f9e;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        body.light-theme .nav-menu li a {
+            color: white;
+        }
+
+        body.light-theme .logo a {
+            color: white;
+        }
+
+        body.light-theme .nav-menu li a::before {
+            background: #6dd5ed;
+        }
+
+
+        /* content*/
+        body.light-theme .container {
+            background-color: white;
+            border: 1px solid #ccc;
+        }
+
+        body.light-theme .table-header {
+            background-color: #2980b9;
+            color: white;
+        }
+
+        body.light-theme .table-row {
+            border-bottom: 1px solid #ccc;
+            color: #333;
+            font-weight: 500;
+        }
+
+        body.light-theme .grid-view {
+            background-color: white;
+        }
+
+        body.light-theme .card {
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        body.light-theme .card:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+        }
+
+
+        body.light-theme .table-row.running {
+            position: relative;
+            background: linear-gradient(white, white) padding-box,
+                linear-gradient(90deg,
+                    #00fff0 0%,
+                    #00d4ff 25%,
+                    #0084ff 50%,
+                    #00d4ff 75%,
+                    #00fff0 100%) border-box;
+            border: 2px solid transparent;
+            border-radius: 4px;
+            animation: borderMove 3s linear infinite;
+            background-size: 200% 100%;
+        }
+
+        body.light-theme .table-row.running:hover {
+            background: linear-gradient(rgba(42, 143, 158, 0.05), rgba(42, 143, 158, 0.05)) padding-box,
+                linear-gradient(90deg,
+                    #00fff0 0%,
+                    #00d4ff 25%,
+                    #0084ff 50%,
+                    #00d4ff 75%,
+                    #00fff0 100%) border-box;
+            border: 2px solid transparent;
+        }
+
+        /* Sửa lại CSS cho light mode - card running */
+        body.light-theme .card.running::after {
+            background: white;
+            border-radius: 11px;
+        }
+
+
+        body.light-theme .card-header {
+            color: black;
+        }
+
+        body.light-theme .card-body {
+            color: black;
+        }
+
+        body.light-theme .card-body strong {
+            color: black;
+        }
+
+        body.light-theme .card-body span {
+            color: black;
+        }
+
+
+        body.light-theme .status-badge.complete {
+            background-color: rgba(0, 128, 0, 0.3);
+            color: #43955e;
+            border: 1px solid #43955e;
+        }
+
+        body.light-theme .status-badge.wait {
+            background-color: rgba(255, 165, 0, 0.5);
+            color: orange;
+            border: 1px solid #f5af19;
+        }
+
+        body.light-theme .status-badge.run {
+            background-color: rgba(109, 213, 237, 0.5);
+            color: #2193b0;
+            border: 1px solid #0083B0;
+        }
+
+        body.light-theme .grid-view::-webkit-scrollbar-track {
+            background: #f5f7fa;
+        }
+
+        body.light-theme .grid-view::-webkit-scrollbar-thumb {
+            background: #c0c0c0;
+        }
+
+        body.light-theme .grid-view::-webkit-scrollbar-thumb:hover {
+            background: #a0a0a0;
+        }
+
+        body.light-theme .list-view::-webkit-scrollbar-track {
+            background: #f0f0f0;
+        }
+
+        body.light-theme .list-view::-webkit-scrollbar-thumb {
+            background: #c0c0c0;
+        }
+
+        body.light-theme .list-view::-webkit-scrollbar-thumb:hover {
+            background: #a0a0a0;
+        }
+
+        /* content */
+        body.light-theme .toolbar {
+            background-color: #2980B9;
+        }
+
         /* Navigation */
         nav {
             background: rgba(6, 12, 34, 0.95);
@@ -51,11 +216,15 @@
             text-transform: uppercase;
             background: linear-gradient(135deg, #f4f4f4 0%, #e7d3fc 100%);
             -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
             background-clip: text;
             display: flex;
             align-items: center;
             gap: 12px;
+        }
+
+        .logo a {
+            color: white;
+            text-decoration: none;
         }
 
         .logo img {
@@ -116,6 +285,102 @@
 
         .nav-menu li a.active::before {
             transform: translateX(-50%) scaleX(1);
+        }
+
+        /* From Uiverse.io by JustCode14 */
+        /* The switch - the box around the slider */
+        .switch {
+            font-size: 17px;
+            position: relative;
+            display: inline-block;
+            width: 4em;
+            height: 2.2em;
+            border-radius: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Hide default HTML checkbox */
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        /* The slider */
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #2a2a2a;
+            transition: 0.4s;
+            border-radius: 30px;
+            overflow: hidden;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 1.2em;
+            width: 1.2em;
+            border-radius: 20px;
+            left: 0.5em;
+            bottom: 0.5em;
+            transition: 0.4s;
+            transition-timing-function: cubic-bezier(0.81, -0.04, 0.38, 1.5);
+            box-shadow: inset 8px -4px 0px 0px #fff;
+        }
+
+        .switch input:checked+.slider {
+            background-color: #00a6ff;
+        }
+
+        .switch input:checked+.slider:before {
+            transform: translateX(1.8em);
+            box-shadow: inset 15px -4px 0px 15px #ffcf48;
+        }
+
+        .star {
+            background-color: #fff;
+            border-radius: 50%;
+            position: absolute;
+            width: 5px;
+            transition: all 0.4s;
+            height: 5px;
+        }
+
+        .star_1 {
+            left: 2.5em;
+            top: 0.5em;
+        }
+
+        .star_2 {
+            left: 2.2em;
+            top: 1.2em;
+        }
+
+        .star_3 {
+            left: 3em;
+            top: 0.9em;
+        }
+
+        .switch input:checked~.slider .star {
+            opacity: 0;
+        }
+
+        .cloud {
+            width: 3.5em;
+            position: absolute;
+            bottom: -1.4em;
+            left: -1.1em;
+            opacity: 0;
+            transition: all 0.4s;
+        }
+
+        .switch input:checked~.slider .cloud {
+            opacity: 1;
         }
 
         /* css table */
@@ -234,12 +499,12 @@
         }
 
         /* List View */
-.list-view {
-    overflow-y: auto;
-    overflow-x: hidden;
-    flex: 1;
-    display: none; 
-}
+        .list-view {
+            overflow-y: auto;
+            overflow-x: hidden;
+            flex: 1;
+            display: none;
+        }
 
         .list-view::-webkit-scrollbar {
             width: 8px;
@@ -261,7 +526,7 @@
         .table-header,
         .table-row {
             display: grid;
-            grid-template-columns: 0.2fr 1.2fr 1.5fr 0.8fr 1fr 1fr 1fr 1.2fr 1.2fr 1.2fr;
+            grid-template-columns: 0.4fr 1.2fr 1.5fr 0.8fr 1fr 1fr 1fr 1.2fr 1.2fr 1.2fr;
             align-items: center;
             text-align: center;
             padding: 10px 0;
@@ -270,7 +535,7 @@
 
         .table-header {
             display: grid;
-            grid-template-columns: 0.2fr 1.2fr 1.5fr 0.8fr 1fr 1fr 1fr 1.2fr 1.2fr 1.2fr;
+            grid-template-columns: 0.4fr 1.2fr 1.5fr 0.8fr 1fr 1fr 1fr 1.2fr 1.2fr 1.2fr;
             align-items: center;
             text-align: center;
             padding: 10px 0;
@@ -392,37 +657,37 @@
         }
 
         /* Grid View */
-.grid-view {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    padding: 24px;
-    background-color: #1e2044;
-    overflow-y: auto;
-    overflow-x: hidden;
-    flex: 1;
-    display: none; 
-}
+        .grid-view {
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 24px;
+            background-color: #1e2044;
+            overflow-y: auto;
+            overflow-x: hidden;
+            flex: 1;
+            display: none;
+        }
 
         .grid-view.active {
             display: grid;
         }
 
         .grid-view::-webkit-scrollbar {
-    width: 8px;
-}
+            width: 8px;
+        }
 
-.grid-view::-webkit-scrollbar-track {
-    background: #1e2044;
-}
+        .grid-view::-webkit-scrollbar-track {
+            background: #1e2044;
+        }
 
-.grid-view::-webkit-scrollbar-thumb {
-    background: #3b4689;
-    border-radius: 4px;
-}
+        .grid-view::-webkit-scrollbar-thumb {
+            background: #3b4689;
+            border-radius: 4px;
+        }
 
-.grid-view::-webkit-scrollbar-thumb:hover {
-    background: #4a56a0;
-}
+        .grid-view::-webkit-scrollbar-thumb:hover {
+            background: #4a56a0;
+        }
 
         .card {
             position: relative;
@@ -432,10 +697,11 @@
             transition: all 0.2s;
         }
 
-.card.running {
-    box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
-    overflow: hidden; /* CHỈ thêm overflow: hidden cho card running */
-}
+        .card.running {
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+            overflow: hidden;
+            /* CHỈ thêm overflow: hidden cho card running */
+        }
 
 
         /* Tạo lớp border xoay */
@@ -451,7 +717,7 @@
                     transparent,
                     #00d4ff);
             animation: rotate 4s linear infinite;
-             z-index: 0;
+            z-index: 0;
         }
 
         .card.running::after {
@@ -567,12 +833,12 @@
         footer {
             color: white;
             font-size: 12px;
-            text-align: center;
+            text-align: right;
+            background-color: transparent;
             padding: 20px 20px;
             position: fixed;
             bottom: 0;
             right: 0;
-            text-align: right;
             left: auto;
             width: 100%;
         }
@@ -617,7 +883,7 @@
         <nav>
             <div class="nav-container">
                 <div class="logo"><span><img style="width: 80px;" src="/images/logo.png" alt=""></span><a
-                        href="/home">MANAGERMENT DELIVERY</a></div>
+                        href="#home">MANAGERMENT DELIVERY</a></div>
                 <ul class="nav-menu" id="navMenu">
                     <li class="home"><a href="#">Home</a></li>
                     <li class="delivery"><a href="#delivery">Delivery</a></li>
@@ -637,6 +903,20 @@
                         </a>
                     </li>
                 </ul>
+                <label class="switch">
+                    <input checked="true" id="checkbox" type="checkbox" />
+                    <span class="slider">
+                        <div class="star star_1"></div>
+                        <div class="star star_2"></div>
+                        <div class="star star_3"></div>
+                        <svg viewBox="0 0 16 16" class="cloud_1 cloud">
+                            <path transform="matrix(.77976 0 0 .78395-299.99-418.63)" fill="#fff"
+                                d="m391.84 540.91c-.421-.329-.949-.524-1.523-.524-1.351 0-2.451 1.084-2.485 2.435-1.395.526-2.388 1.88-2.388 3.466 0 1.874 1.385 3.423 3.182 3.667v.034h12.73v-.006c1.775-.104 3.182-1.584 3.182-3.395 0-1.747-1.309-3.186-2.994-3.379.007-.106.011-.214.011-.322 0-2.707-2.271-4.901-5.072-4.901-2.073 0-3.856 1.202-4.643 2.925">
+                            </path>
+                        </svg>
+                    </span>
+                </label>
+
             </div>
         </nav>
 
@@ -660,7 +940,6 @@
                     <div class="search-box">
                         <input class="searchInput" type="text" placeholder="Scan QR">
                     </div>
-                    <!-- input file ẩn -->
                     <input type="file" id="excelInput" accept=".xlsx,.xls" style="display:none;">
                 </div>
                 <div class="toolbar-right">
@@ -674,7 +953,7 @@
             </div>
 
             <div class="table-header" id="tableHeader">
-                <div></div>
+                <div>STT</div>
                 <div>Mobis Code</div>
                 <div>Model Name</div>
                 <div>Type</div>
@@ -690,9 +969,9 @@
                 <!-- List items will be inserted here -->
             </div>
 
-<div id="gridView" class="grid-view">
-    <!-- Grid cards will be inserted here -->
-</div>
+            <div id="gridView" class="grid-view">
+                <!-- Grid cards will be inserted here -->
+            </div>
         </div>
 
         <!-- Footer -->
@@ -700,8 +979,31 @@
             <p>&copy; 2025 Copyright for Partron VN</p>
         </footer>
         <script>
+            // Theme Toggle Logic
+            const themeToggle = document.getElementById('checkbox');
+            const body = document.body;
 
+            // Kiểm tra theme đã lưu
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                body.classList.add('light-theme');
+                themeToggle.checked = true;
+            } else {
+                themeToggle.checked = false;
+            }
+
+            themeToggle.addEventListener('change', (e) => {
+                body.classList.toggle('light-theme');
+                const isLight = body.classList.contains('light-theme');
+
+                // Lưu theme vào localStorage
+                localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            });
+
+
+            // Navigation Logic
             const navLinks = document.querySelectorAll('.nav-menu a');
+            const logoLink = document.querySelector('.logo a');
 
             // Khôi phục menu active
             const savedMenu = sessionStorage.getItem('activeMenu');
@@ -710,11 +1012,25 @@
                 const target = document.querySelector(`.${savedMenu} a`);
                 if (target) target.classList.add('active');
             }
+
+            logoLink.addEventListener('click', e => {
+                e.preventDefault();
+                navLinks.forEach(link => link.classList.remove('active'));
+                const homeLink = document.querySelector('.home a');
+                homeLink.classList.add('active');
+                sessionStorage.setItem('activeMenu', 'home');
+                window.location.href = '/home';
+            });
+
             // Lắng nghe click cho toàn bộ menu
             navLinks.forEach(link => {
                 link.addEventListener('click', e => {
                     e.preventDefault();
                     const parentClass = link.parentElement.classList[0];
+
+                    // Bỏ qua nếu là theme toggle
+                    if (parentClass === 'theme-toggle') return;
+
                     navLinks.forEach(l => l.classList.remove('active'));
                     link.classList.add('active');
                     sessionStorage.setItem('activeMenu', parentClass);
@@ -757,6 +1073,7 @@
             });       
         </script>
         <script type="module" src="/js/delivery.js"></script>
+    </div>
 </body>
 
 </html>

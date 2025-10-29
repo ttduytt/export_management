@@ -623,6 +623,8 @@ router.put("/delivery/update/quantity", async (req, res) => {
     console.error(error);
     if (conn) await conn.rollback();
     res.status(500).json({ message: "Cập nhật thất bại" });
+  } finally {
+    if (conn) conn.release();
   }
 });
 

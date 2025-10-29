@@ -22,6 +22,147 @@
       overflow: hidden;
     }
 
+    /* Light mode */
+    body.light-theme {
+      background-color: white;
+      color: #e3e2e9;
+    }
+
+    /* nav */
+    body.light-theme nav {
+      background: linear-gradient(to right, #667db6, #0082c8, #0082c8, #667db6);
+    }
+
+    body.light-theme .nav-menu li a.active {
+      background: #2a8f9e;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      color: white;
+    }
+
+    body.light-theme .nav-menu li a:hover {
+      background: #2a8f9e;
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    body.light-theme .nav-menu li a {
+      color: white;
+    }
+
+    body.light-theme .logo a {
+      color: white;
+    }
+
+    body.light-theme .nav-menu li a::before {
+      background: #6dd5ed;
+    }
+
+    /* Content */
+    body.light-theme .management-delivery {
+      background: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e5e7eb;
+    }
+
+    body.light-theme .management-delivery thead {
+      background: #f3f4f6;
+    }
+
+    body.light-theme .management-delivery th {
+      color: #374151;
+    }
+
+    body.light-theme .management-delivery td {
+      color: #1f2937;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    body.light-theme .management-delivery tr:hover {
+      background: #f9fafb;
+    }
+
+    /* Form Elements */
+    body.light-theme #factorySelect,
+    body.light-theme .date-filter,
+    body.light-theme .searchText {
+      background: white;
+      color: #1f2937;
+      border: 1px solid #d1d5db;
+    }
+
+    body.light-theme #factorySelect:focus,
+    body.light-theme .date-filter:focus,
+    body.light-theme .searchText:focus {
+      background: white;
+      border-color: #2a8f9e;
+      outline: none;
+    }
+
+    body.light-theme #factorySelect option {
+      background-color: white;
+      color: #1f2937;
+    }
+
+    body.light-theme .searchText::placeholder {
+      color: #9ca3af;
+    }
+
+    body.light-theme input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(0);
+    }
+
+    /* Buttons */
+    body.light-theme #clearFilters {
+      background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+    }
+
+    body.light-theme #clearFilters:hover {
+      background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
+    }
+
+    body.light-theme .pagination button {
+      background: linear-gradient(135deg, #2a8f9e 0%, #0891b2 100%);
+    }
+
+    body.light-theme .pagination button:hover {
+      background: linear-gradient(135deg, #0e7490 0%, #0e7490 100%);
+    }
+
+    body.light-theme .pagination button:disabled {
+      background: #e5e7eb;
+      color: #9ca3af;
+    }
+
+    body.light-theme .pagination button:disabled:hover {
+      background: #e5e7eb;
+    }
+
+    /* Scrollbar */
+    body.light-theme .management-delivery tbody::-webkit-scrollbar-track {
+      background: #f3f4f6;
+    }
+
+    body.light-theme .management-delivery tbody::-webkit-scrollbar-thumb {
+      background: #d1d5db;
+    }
+
+    body.light-theme .management-delivery tbody::-webkit-scrollbar-thumb:hover {
+      background: #9ca3af;
+    }
+
+    body.light-theme .management-delivery::-webkit-scrollbar-track {
+      background: #f3f4f6;
+    }
+
+    body.light-theme .management-delivery::-webkit-scrollbar-thumb {
+      background: #d1d5db;
+    }
+
+    body.light-theme .management-delivery::-webkit-scrollbar-thumb:hover {
+      background: #9ca3af;
+    }
+
+
     /* Navigation */
     nav {
       background: rgba(6, 12, 34, 0.95);
@@ -119,6 +260,104 @@
       transform: translateX(-50%) scaleX(1);
     }
 
+
+    /* From Uiverse.io by JustCode14 */
+    /* The switch - the box around the slider */
+    .switch {
+      font-size: 17px;
+      position: relative;
+      display: inline-block;
+      width: 4em;
+      height: 2.2em;
+      border-radius: 30px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Hide default HTML checkbox */
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    /* The slider */
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #2a2a2a;
+      transition: 0.4s;
+      border-radius: 30px;
+      overflow: hidden;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 1.2em;
+      width: 1.2em;
+      border-radius: 20px;
+      left: 0.5em;
+      bottom: 0.5em;
+      transition: 0.4s;
+      transition-timing-function: cubic-bezier(0.81, -0.04, 0.38, 1.5);
+      box-shadow: inset 8px -4px 0px 0px #fff;
+    }
+
+    .switch input:checked+.slider {
+      background-color: #00a6ff;
+    }
+
+    .switch input:checked+.slider:before {
+      transform: translateX(1.8em);
+      box-shadow: inset 15px -4px 0px 15px #ffcf48;
+    }
+
+    .star {
+      background-color: #fff;
+      border-radius: 50%;
+      position: absolute;
+      width: 5px;
+      transition: all 0.4s;
+      height: 5px;
+    }
+
+    .star_1 {
+      left: 2.5em;
+      top: 0.5em;
+    }
+
+    .star_2 {
+      left: 2.2em;
+      top: 1.2em;
+    }
+
+    .star_3 {
+      left: 3em;
+      top: 0.9em;
+    }
+
+    .switch input:checked~.slider .star {
+      opacity: 0;
+    }
+
+    .cloud {
+      width: 3.5em;
+      position: absolute;
+      bottom: -1.4em;
+      left: -1.1em;
+      opacity: 0;
+      transition: all 0.4s;
+    }
+
+    .switch input:checked~.slider .cloud {
+      opacity: 1;
+    }
+
+
     /* Footer */
     footer {
       color: white;
@@ -128,7 +367,6 @@
       position: fixed;
       bottom: 0;
       right: 0;
-      text-align: right;
       left: auto;
       width: 100%;
     }
@@ -202,27 +440,10 @@
     .management-delivery tbody tr {
       display: grid;
       grid-template-columns:
-        40px minmax(180px, 180px) minmax(250px, 250px) repeat(9, minmax(0, 1fr));
+        40px minmax(180px, 180px) minmax(280px, 280px) repeat(9, minmax(0, 1fr));
 
     }
 
-    .management-delivery tbody {
-      display: block;
-      overflow-y: auto;
-      overflow-x: hidden;
-      max-height: 580px;
-    }
-
-    /* Header cố định */
-    .management-delivery thead {
-      background: rgba(102, 126, 234, 0.4);
-      color: #fff;
-      font-weight: 600;
-      text-transform: uppercase;
-      position: sticky;
-      top: 0;
-      z-index: 5;
-    }
 
     /* Căn giữa & padding chuẩn */
     .management-delivery th,
@@ -365,7 +586,6 @@
       padding: 12px 0;
       gap: 12px;
       flex-shrink: 0;
-      /* THÊM */
     }
 
     .pagination button {
@@ -401,7 +621,7 @@
     <nav>
       <div class="nav-container">
         <div class="logo"><span><img style="width: 80px;" src="/images/logo.png" alt=""></span><a
-            href="/home">MANAGERMENT DELIVERY</a></div>
+            href="#home">MANAGERMENT DELIVERY</a></div>
         <ul class="nav-menu" id="navMenu">
           <li class="home"><a href="#">Home</a></li>
           <li class="delivery"><a href="#delivery">Delivery</a></li>
@@ -420,6 +640,19 @@
             </a>
           </li>
         </ul>
+        <label class="switch">
+          <input checked="true" id="checkbox" type="checkbox" />
+          <span class="slider">
+            <div class="star star_1"></div>
+            <div class="star star_2"></div>
+            <div class="star star_3"></div>
+            <svg viewBox="0 0 16 16" class="cloud_1 cloud">
+              <path transform="matrix(.77976 0 0 .78395-299.99-418.63)" fill="#fff"
+                d="m391.84 540.91c-.421-.329-.949-.524-1.523-.524-1.351 0-2.451 1.084-2.485 2.435-1.395.526-2.388 1.88-2.388 3.466 0 1.874 1.385 3.423 3.182 3.667v.034h12.73v-.006c1.775-.104 3.182-1.584 3.182-3.395 0-1.747-1.309-3.186-2.994-3.379.007-.106.011-.214.011-.322 0-2.707-2.271-4.901-5.072-4.901-2.073 0-3.856 1.202-4.643 2.925">
+              </path>
+            </svg>
+          </span>
+        </label>
       </div>
     </nav>
     <div class="container">
@@ -502,7 +735,31 @@
     <script src="/js/dayjs.min.js"></script>
     <script>
 
+
+
+      // Theme Toggle Logic
+      const themeToggle = document.getElementById('checkbox');
+      const body = document.body;
+
+      // Kiểm tra theme đã lưu
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'light') {
+        body.classList.add('light-theme');
+        themeToggle.checked = true;
+      } else {
+        themeToggle.checked = false;
+      }
+
+      themeToggle.addEventListener('change', (e) => {
+        body.classList.toggle('light-theme');
+        const isLight = body.classList.contains('light-theme');
+
+        // Lưu theme vào localStorage
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      });
+
       const navLinks = document.querySelectorAll('.nav-menu a');
+      const logoLink = document.querySelector('.logo a');
 
       // Khôi phục menu active
       const savedMenu = sessionStorage.getItem('activeMenu');
@@ -511,6 +768,16 @@
         const target = document.querySelector(`.${savedMenu} a`);
         if (target) target.classList.add('active');
       }
+
+      logoLink.addEventListener('click', e => {
+        e.preventDefault();
+        navLinks.forEach(link => link.classList.remove('active'));
+        const homeLink = document.querySelector('.home a');
+        homeLink.classList.add('active');
+        sessionStorage.setItem('activeMenu', 'home');
+        window.location.href = '/home';
+      });
+
       // Lắng nghe click cho toàn bộ menu
       navLinks.forEach(link => {
         link.addEventListener('click', e => {

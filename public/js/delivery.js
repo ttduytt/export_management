@@ -1,4 +1,4 @@
-import * as XLSX from "https://cdn.sheetjs.com/xlsx-latest/package/xlsx.mjs";
+import * as XLSX from "./xlsx.js";
 
 const gridBtn = document.getElementById("gridBtn");
 const listBtn = document.getElementById("listBtn");
@@ -15,7 +15,7 @@ let data = [];
 const user = JSON.parse(localStorage.getItem("user"));
 if (!user) {
   alert("Unauthorized! Please log in.");
-  window.location.href = "/";
+  globalThis.location.href = "/";
 }
 const columnMapping = {
   "MOBIS-CODE": "mobiscode",
@@ -371,7 +371,7 @@ function renderList() {
   });
 
   listView.innerHTML = sortedData
-    .map((item) => {
+    .map((item, index) => {
       const completeDate = item.complete_time
         ? new Date(item.complete_time).toLocaleDateString("vi-VN")
         : "";
@@ -383,7 +383,7 @@ function renderList() {
   <div class="table-row ${
     item.status.toLowerCase() === "run" ? "running" : ""
   }">
-    <div></div>
+    <div>${index + 1}</div>
     <div>${item.mobis_code}</div>
     <div>${item.model_name}</div>
     <div>${item.type}</div>

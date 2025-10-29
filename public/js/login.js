@@ -2,12 +2,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const form = document.querySelector("#loginForm");
   const submitBtn = document.querySelector("#submitBtn");
   const forgotBtn = document.querySelector("#forgotBtn");
+
+  // Xử lý quên mật khẩu
   forgotBtn.addEventListener("click", (e) => {
-    e.preventDefault(); // chặn chuyển trang
+    e.preventDefault();
     alert("Please contact IT to retrieve your password!");
   });
-  submitBtn.addEventListener("click", async (e) => {
-    e.preventDefault(); // chặn chuyển trang
+
+  // Hàm xử lý login dùng chung
+  async function handleLogin(e) {
+    e.preventDefault(); // chặn reload hoặc chuyển trang mặc định
+
     const username = form.querySelector("input[name='username']").value.trim();
     const password = form.querySelector("input[name='password']").value.trim();
 
@@ -15,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Please enter your username and password!");
       return;
     }
+
     try {
       const res = await fetch("/exportmanagement/api/login", {
         method: "POST",
@@ -25,30 +31,25 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
 
       if (data.success) {
-        sessionStorage.setItem(
-          "user",
-          JSON.stringify({
-            username: data.username,
-            password: data.password,
-            role: data.role,
-            factory: data.factory,
-          })
-        );
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            username: data.username,
-            password: data.password,
-            role: data.role,
-            factory: data.factory,
-          })
-        );
+        const userData = {
+          username: data.username,
+          password: data.password,
+          role: data.role,
+          factory: data.factory,
+        };
+        sessionStorage.setItem("user", JSON.stringify(userData));
+        localStorage.setItem("user", JSON.stringify(userData));
+
         window.location.href = "/home";
       } else {
-        alert("Incorrect username or password!", data.message);
+        alert("Incorrect username or password!");
       }
     } catch (err) {
-      alert("Server connection error!", err);
+      alert("Server connection error!");
     }
-  });
+  }
+
+  // Gọi cùng hàm khi nhấn nút hoặc nhấn Enter
+  submitBtn.addEventListener("click", handleLogin);
+  form.addEventListener("submit", handleLogin);
 });

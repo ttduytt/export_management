@@ -1,819 +1,1242 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="/images/logoweb.jpg" type="image/x-icon">
-    <script src="/js/highcharts.js"></script>
-    <title>Managerment Delivery - Admin Dashboard</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/images/logoweb.jpg" type="image/x-icon">
+  <script src="/js/highcharts.js"></script>
+  <title>Managerment Delivery - Admin Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #040818;
-        }
-        /* Navigation */
-        nav {
-            background: rgba(6, 12, 34, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 0;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(102, 126, 234, 0.3);
-        }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #040818;
+    }
 
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 40px;
-        }
+    /* Light mode */
+    body.light-theme {
+      background-color: white;
+      color: #e3e2e9;
+    }
 
-        .logo {
-            color: white;
-            font-size: 30px;
-            font-weight: 700;
-            padding: 20px 0;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            background: linear-gradient(135deg, #f4f4f4 0%, #e7d3fc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+    /* nav */
+    body.light-theme nav {
+      background: linear-gradient(to right, #667db6, #0082c8, #0082c8, #667db6);
+    }
 
-        .logo img {
-            transition: transform 0.3s ease;
-        }
+    body.light-theme .nav-menu li a.active {
+      background: #2a8f9e;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      color: white;
+    }
 
-        .logo img:hover {
-            transform: scale(1.05);
-        }
+    body.light-theme .nav-menu li a:hover {
+      background: #2a8f9e;
+      color: white;
+      transform: translateY(-2px);
+    }
 
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            gap: 8px;
-            align-items: center;
-        }
+    body.light-theme .nav-menu li a {
+      color: white;
+    }
 
-        .nav-menu li a {
-            color: rgba(255, 255, 255, 0.85);
-            text-decoration: none;
-            padding: 12px 28px;
-            display: block;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            font-weight: 500;
-            font-size: 15px;
-            letter-spacing: 0.5px;
-            border-radius: 8px;
-        }
+    body.light-theme .logo a {
+      color: white;
+    }
 
-        .nav-menu li a::before {
-            content: '';
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%) scaleX(0);
-            width: 60%;
-            height: 2px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            transition: transform 0.3s ease;
-        }
+    body.light-theme .nav-menu li a::before {
+      background: #6dd5ed;
+    }
 
-        .nav-menu li a:hover {
-            background: rgba(102, 126, 234, 0.15);
-            color: white;
-            transform: translateY(-2px);
-        }
+    /* Container */
+    body.light-theme .container {
+      color: #1f2937;
+    }
 
-        .nav-menu li a:hover::before {
-            transform: translateX(-50%) scaleX(1);
-        }
+    /* Welcome Card */
+    body.light-theme .welcome-card {
+      background: linear-gradient(135deg, #e0e7ff 0%, #dbeafe 100%);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
 
-        .nav-menu li a.active {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
+    body.light-theme .welcome-text h2 {
+      color: #1f2937;
+    }
 
-        .nav-menu li a.active::before {
-            transform: translateX(-50%) scaleX(1);
-        }
-        /* Footer */
-        footer {
-          color: white;
-          font-size: 12px;
-          text-align: center;
-          padding: 20px 20px;
-          position: fixed;
-          bottom: 0;
-          right: 0;
-          text-align: right;
-          left: auto;
-          width: 100%;
-        }
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hamburger {
-                display: flex;
-            }
-            .nav-menu {
-                position: fixed;
-                left: -100%;
-                top: 60px;
-                flex-direction: column;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                width: 100%;
-                text-align: center;
-                transition: 0.3s;
-                box-shadow: 0 10px 27px rgba(0,0,0,0.05);
-            }
+    body.light-theme .stats strong,
+    body.light-theme .stats span {
+      color: #1f2937;
+    }
 
-            .nav-menu.active {
-                left: 0;
-            }
+    body.light-theme .divider {
+      background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+    }
 
-            .nav-menu li {
-                margin: 0;
-            }
+    /* Chart Cards */
+    body.light-theme .chart-card {
+      background: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e5e7eb;
+    }
 
-            .nav-menu li a {
-                padding: 20px;
-            }
-          
-        }
-        .container {
-          display: flex;
-          /* height: calc(100vh - 140px); */
-          color: white;
-          margin-top: 16px;
-        }
-        .logout span{
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .typing-sub svg {
-          color: #4ade80;
-          flex-shrink: 0;
-        }
-        .top-row{
-          gap: 20px;
-          width: 40%;
-          height: 100%;
-          flex: 1;
-          color: white;
-          flex-wrap: wrap;
-          margin: 0 0 0 20px;
-          /* background-color: #2d2a2a; */
-        }
-        .bottom-row{
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-          width: 40%;
-          flex: 1;
-          color: white;
-          flex-wrap: wrap;
-          margin: 0 20px 0 0;
-          padding-left: 24px;
-        }
-        .welcome-card {
-          width: 100.7%;
-          display: flex;
-          height: 200px;
-          justify-content: space-between;
-          align-items: center;
-          background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
-          border-radius: 8px;
-          padding: 30px 20px;
-        }
-        .welcome-left {
-          display: flex;
-          align-items: center;
-          gap: 20px;
-        }
-        .welcome-text h2 {
-          font-size: 20px;
-          color: #fff;
-          margin-bottom: 20px;
-        }
+    body.light-theme .chart-header h3 {
+      color: #1f2937;
+    }
 
-        .stats {
-          display: flex;
-          align-items: center;
-          gap: 30px;
-        }
+    body.light-theme .chart-header p {
+      color: #6b7280;
+    }
 
-        .stats div {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-        }
+    /* Management Tables */
+    body.light-theme .management-user,
+    body.light-theme .management-delivery-spec,
+    body.light-theme .management-delivery {
+      background: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e5e7eb;
+    }
 
-        .stats strong {
-          font-size: 26px;
-          font-weight: 600;
-          color: #fff;
-        }
+    body.light-theme .management-user th,
+    body.light-theme .management-delivery-spec th,
+    body.light-theme .management-delivery th {
+      background: #f3f4f6;
+      color: #374151;
+    }
 
-        .stats span {
-          color: #fff;
-          font-size: 14px;
-        }
+    body.light-theme .management-user td,
+    body.light-theme .management-delivery-spec td,
+    body.light-theme .management-delivery td {
+      color: #1f2937;
+      border-bottom: 1px solid #e5e7eb;
+    }
 
-        .divider {
-          width: 1px;
-          height: 30px;
-          background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
-        }
-        .welcome-right img {
-          width: 340px;
-          height: auto;
-        }
-        .chart-row {
-          display: flex;
-          gap: 20px;
-          width: 100%;
-          margin: 10px 0;
-        }
+    body.light-theme .management-user tr:hover,
+    body.light-theme .management-delivery-spec tr:hover,
+    body.light-theme .management-delivery tr:hover {
+      background: #f9fafb;
+    }
 
-        .chart-card {
-          flex: 1;
-          background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
-          border-radius: 12px;
-          padding: 24px;
-          color: #ffff;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
+    body.light-theme .management-user thead,
+    body.light-theme .management-delivery-spec thead,
+    body.light-theme .management-delivery thead {
+      background: #f3f4f6;
+    }
 
-        .chart-header h3 {
-          font-size: 18px;
-          font-weight: 600;
-          color: #fff;
-          margin: 0 0 8px 0;
-        }
+    /* Scrollbars */
+    body.light-theme .management-user tbody::-webkit-scrollbar-track,
+    body.light-theme .management-delivery-spec tbody::-webkit-scrollbar-track,
+    body.light-theme .management-delivery tbody::-webkit-scrollbar-track {
+      background: #f3f4f6;
+    }
 
-        .chart-header p {
-          font-size: 14px;
-          color: #6b7280;
-          margin: 0 0 20px 0;
-        }
+    body.light-theme .management-user tbody::-webkit-scrollbar-thumb,
+    body.light-theme .management-delivery-spec tbody::-webkit-scrollbar-thumb,
+    body.light-theme .management-delivery tbody::-webkit-scrollbar-thumb {
+      background: #d1d5db;
+    }
 
-        .chart-container {
-          width: 100%;
-          height: 300px;
-          position: relative;
-        }
+    body.light-theme .management-user tbody::-webkit-scrollbar-thumb:hover,
+    body.light-theme .management-delivery-spec tbody::-webkit-scrollbar-thumb:hover,
+    body.light-theme .management-delivery tbody::-webkit-scrollbar-thumb:hover {
+      background: #9ca3af;
+    }
 
-        .chart-container div {
-          width: 100% !important;
-          height: 100% !important;
-        }
+    /* Form Elements */
+    body.light-theme #factorySelect,
+    body.light-theme .date-filter,
+    body.light-theme .searchText,
+    body.light-theme .edit-input {
+      background: white;
+      color: #1f2937;
+      border: 1px solid #d1d5db;
+    }
 
-        .management-user{
-          flex: 1;
-          width: 100%;
-          border-radius: 12px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-          background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
-          border-radius: 12px;
-          max-height: 300px;
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-        }
-        .management-user table {
-          border-collapse: collapse;
-          width: 100%;
-          border: none;
-          background: transparent;
-          flex: 1;
-        }
-        
-        .management-user .table-container {
-          flex: 1;
-          overflow-y: auto;
-          max-height: 300px;
-        }
-        
-        .management-user .table-header {
-          background: rgba(102, 126, 234, 0.3);
-          position: sticky;
-          top: 0;
-          z-index: 10;
-        }
+    body.light-theme #factorySelect:focus,
+    body.light-theme .date-filter:focus,
+    body.light-theme .searchText:focus,
+    body.light-theme .edit-input:focus {
+      background: white;
+      border-color: #2a8f9e;
+    }
 
-        .management-user th,
-        .management-user td {
-          padding: 12px 16px;
-          text-align: center;
-          border: none;
-          border-bottom: 1px solid #e5e7eb83;
-          font-size: 12px;
-        }
+    body.light-theme #factorySelect option {
+      background-color: white;
+      color: #1f2937;
+    }
 
-        .management-user th {
-          background: rgba(102, 126, 234, 0.4);
-          color: #fff;
-          font-weight: 600;
-          text-align: center;
-          position: sticky;
-          top: 0;
-          text-transform: uppercase;
-          z-index: 5;
-        }
+    body.light-theme .searchText::placeholder {
+      color: #9ca3af;
+    }
 
-        .management-user tbody {
-          display: block;
-          max-height: 200px;
-          overflow-y: auto;
-          overflow-x: hidden;
-        }
-        
-        .management-user thead {
-          display: block;
-        }
-        
-        .management-user tr {
-          display: table;
-          width: 100%;
-          table-layout: fixed;
-        }
+    body.light-theme input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(0);
+    }
 
-        /* Custom scrollbar for webkit browsers */
-        .management-user tbody::-webkit-scrollbar {
-          width: 8px;
-        }
+    /* Buttons */
+    body.light-theme .add-user,
+    body.light-theme .import,
+    body.light-theme .export,
+    body.light-theme .add-spec {
+      background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+    }
 
-        .management-user tbody::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 4px;
-        }
+    body.light-theme .add-user:hover,
+    body.light-theme .import:hover,
+    body.light-theme .export:hover,
+    body.light-theme .add-spec:hover {
+      background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
+    }
 
-        .management-user tbody::-webkit-scrollbar-thumb {
-          background: rgba(102, 126, 234, 0.6);
-          border-radius: 4px;
-        }
+    body.light-theme .edit-user,
+    body.light-theme .delete-user,
+    body.light-theme .edit-model,
+    body.light-theme .delete-model {
+      background: linear-gradient(135deg, #2a8f9e 0%, #0891b2 100%);
+    }
 
-        .management-user tbody::-webkit-scrollbar-thumb:hover {
-          background: rgba(102, 126, 234, 0.8);
-        }
+    body.light-theme .edit-user:hover,
+    body.light-theme .delete-user:hover,
+    body.light-theme .edit-model:hover,
+    body.light-theme .delete-model:hover {
+      background: linear-gradient(135deg, #0e7490 0%, #0e7490 100%);
+    }
 
-        .management-user tr:last-child td {
-          border-bottom: none;
-        }
+    body.light-theme #clearFilters {
+      background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+    }
 
-        .edit-user, .delete-user, .edit-model, .delete-model {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          border: none;
-          color: white;
-          padding: 6px 12px;
-          margin-right: 6px;
-          margin-bottom: 8px;
-          border-radius: 4px;
-          cursor: pointer;
-          font-size: 14px;
-          transition: all 0.3s ease;
-        }
-        .edit-user:hover, .delete-user:hover, .edit-model:hover, .delete-model:hover {
-          background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
-        }
-        .add-user {
-          background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
-          border: none;
-          color: white;
-          padding: 8px 16px;
-          border-radius: 4px;
-          cursor: pointer;
-          font-size: 14px;
-          transition: all 0.3s ease;
-        }
-        .add-user:hover {
-          background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
-        }
-        .management-delivery-spec {
-          flex: 1;
-          width: 100%;
-          border-radius: 12px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-          background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
-          border-radius: 12px;
-          max-height: 320px;
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-        }
-        .management-delivery-spec table {
-          border-collapse: collapse;
-          width: 100%;
-          border: none;
-          background: transparent;
-          flex: 1;
-        }
-        
-        .management-delivery-spec .table-container {
-          flex: 1;
-          overflow-y: auto;
-          max-height: 300px;
-        }
+    body.light-theme #clearFilters:hover {
+      background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
+    }
 
-        .management-delivery-spec .table-header {
-          background: rgba(102, 126, 234, 0.3);
-          position: sticky;
-          top: 0;
-          z-index: 10;
-        }
+    /* Status Badges */
+    body.light-theme .status-badge.complete {
+      background-color: #d1fae5;
+      color: #065f46;
+      border: 1px solid #10b981;
+    }
 
-        .management-delivery-spec th,
-        .management-delivery-spec td {
-          padding: 12px 16px;
-          text-align: center;
-          border: none;
-          border-bottom: 1px solid #e5e7eb83;
-          font-size: 12px;
-        }
+    body.light-theme .status-badge.wait {
+      background-color: #fef3c7;
+      color: #92400e;
+      border: 1px solid #f59e0b;
+    }
 
-        .management-delivery-spec th {
-          background: rgba(102, 126, 234, 0.4);
-          color: #fff;
-          font-weight: 600;
-          text-align: center;
-          position: sticky;
-          top: 0;
-          text-transform: uppercase;
-          z-index: 5;
-        }
+    body.light-theme .status-badge.run {
+      background-color: #dbeafe;
+      color: #1e40af;
+      border: 1px solid #3b82f6;
+    }
 
-        .management-delivery-spec tbody {
-          display: block;
-          max-height: 200px;
-          overflow-y: auto;
-          overflow-x: hidden;
-        }
-        
-        .management-delivery-spec thead {
-          display: block;
-        }
-        
-        .management-delivery-spec tr {
-          display: table;
-          width: 100%;
-          table-layout: fixed;
-        }
-          @media screen and (max-width: 1600px) {
-            .container {
-              flex-direction: column;
-              height: auto;
-            }
-            .top-row, .bottom-row {
-              width: 100%;
-              margin: 0 0 20px 0;
-            }
-            .welcome-card {
-              flex-direction: row;
-              height: auto;
-              text-align: center;
-            }
-            .welcome-right img {
-              width: 100%;
-              max-width: 350px;
-              margin-top: 20px;
-            }
-            .chart-row {
-              flex-direction: row;
-            }
-            .bottom-row{
-              padding-left: 0;
-            }
-            .management-delivery-spec, .management-user {
-              margin: 0;
-              padding: 0;
-            }
-            .management-user th,
-            .management-user td{
-              font-size: 14px;
-            }
-            .management-delivery-spec th,
-            .management-delivery-spec td{
-              font-size: 14px;
-            }
-            
-            .bottom-row3{
-              width: 100%;
-              margin: 0;
-              /* padding: 12px 0px 24px 0px; */
-            }
-            
-          }
+    /* Role Badges */
+    body.light-theme .role-badge.manager {
+      background-color: #d1fae5;
+      color: #065f46;
+      border: 1px solid #10b981;
+    }
 
-          @media screen and (min-width: 1700px){
-            .bottom-row3{
-              padding: 12px 20px 24px 20px;
-            }
-          }
-        /* Custom scrollbar for webkit browsers */
-        .management-delivery-spec tbody::-webkit-scrollbar {
-          width: 8px;
-        }
+    body.light-theme .role-badge.staff {
+      background-color: #fef3c7;
+      color: #92400e;
+      border: 1px solid #f59e0b;
+    }
 
-        .management-delivery-spec tbody::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 4px;
-        }
+    /* Footer */
+    body.light-theme footer {
+      color: #6b7280;
+      background: white;
+      border-top: 1px solid #e5e7eb;
+    }
 
-        .management-delivery-spec tbody::-webkit-scrollbar-thumb {
-          background: rgba(102, 126, 234, 0.6);
-          border-radius: 4px;
-        }
+    /* Mark (Highlight Search Results) */
+    body.light-theme mark {
+      background-color: #fef08a;
+      color: #854d0e;
+    }
 
-        .management-delivery-spec tbody::-webkit-scrollbar-thumb:hover {
-          background: rgba(102, 126, 234, 0.8);
-        }
+    body.light-theme .highcharts-title,
+    body.light-theme .highcharts-subtitle,
+    body.light-theme .highcharts-axis-labels text,
+    body.light-theme .highcharts-legend-item text,
+    body.light-theme .highcharts-data-label text,
+    body.light-theme .highcharts-label text {
+      fill: #1f2937 !important;
+    }
 
-        .management-delivery-spec tr:last-child td {
-          border-bottom: none;
-        }
-        .import, .export, .add-spec {
-          background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
-          border: none;
-          color: white;
-          padding: 8px 16px;
-          margin-right: 8px;
-          border-radius: 4px;
-          cursor: pointer;
-          font-size: 14px;
-          transition: all 0.3s ease;
-        }
-        .import:hover, .export:hover, .add-spec:hover {
-          background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
-        }
-        .searchText {
-          padding: 8px 12px;
-          border-radius: 4px;
-          border: none;
-          width: 100%;
-          max-width: 300px;
-          background: rgba(255, 255, 255, 0.1);
-          color: white;
-        }
-        .searchText::placeholder{
-          color: #d1d5db;
-        }
-        .searchText:focus{
-          outline: none;
-          background: rgba(255, 255, 255, 0.2);
-        }
+    body.light-theme .highcharts-axis-line,
+    body.light-theme .highcharts-tick {
+      stroke: #9ca3af !important;
+    }
 
-        .edit-input {
-          background: rgba(255, 255, 255, 0.9);
-          border: 1px solid #667eea;
-          border-radius: 4px;
-          padding: 6px 8px;
-          color: #333;
-          font-size: 12px;
-          width: 100%;
-          min-width: 80px;
-        }
+    body.light-theme .highcharts-grid-line {
+      stroke: #e5e7eb !important;
+    }
 
-        .edit-input:focus {
-          outline: none;
-          border-color: #764ba2;
-          background: white;
-        }
+    /* Navigation */
+    nav {
+      background: rgba(6, 12, 34, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 0;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(102, 126, 234, 0.3);
+    }
 
-        .bottom-row3{
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-          width: 100%;
-          color: white;          
-          margin: 0 20px 0 0;          
-          flex-wrap: wrap;        
-        }
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 40px;
+    }
 
-        .management-delivery {
-          flex: 1;
-          width: 100%;
-          border-radius: 12px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-          background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-        }
+    .logo {
+      color: white;
+      font-size: 30px;
+      font-weight: 700;
+      padding: 20px 0;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #f4f4f4 0%, #e7d3fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-        .management-delivery table {
-          border-collapse: collapse;
-          width: 100%;
-          table-layout: fixed;
-          border: none;
-          background: transparent;
-        }
-        .management-delivery thead,
-        .management-delivery tbody tr {
-          display: table;
-          width: 100%;
-          table-layout: fixed;
-        }
-        .management-delivery thead tr {
-        display: table;
-        width: calc(100% - 8px);
-        table-layout: fixed;
+    .logo img {
+      transition: transform 0.3s ease;
+    }
+
+    .logo img:hover {
+      transform: scale(1.05);
+    }
+
+    .nav-menu {
+      display: flex;
+      list-style: none;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .nav-menu li a {
+      color: rgba(255, 255, 255, 0.85);
+      text-decoration: none;
+      padding: 12px 28px;
+      display: block;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      font-weight: 500;
+      font-size: 15px;
+      letter-spacing: 0.5px;
+      border-radius: 8px;
+    }
+
+    .nav-menu li a::before {
+      content: '';
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%) scaleX(0);
+      width: 60%;
+      height: 2px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      transition: transform 0.3s ease;
+    }
+
+    .nav-menu li a:hover {
+      background: rgba(102, 126, 234, 0.15);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .nav-menu li a:hover::before {
+      transform: translateX(-50%) scaleX(1);
+    }
+
+    .nav-menu li a.active {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .nav-menu li a.active::before {
+      transform: translateX(-50%) scaleX(1);
+    }
+
+
+    /* From Uiverse.io by JustCode14 */
+    /* The switch - the box around the slider */
+    .switch {
+      font-size: 17px;
+      position: relative;
+      display: inline-block;
+      width: 4em;
+      height: 2.2em;
+      border-radius: 30px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Hide default HTML checkbox */
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    /* The slider */
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #2a2a2a;
+      transition: 0.4s;
+      border-radius: 30px;
+      overflow: hidden;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 1.2em;
+      width: 1.2em;
+      border-radius: 20px;
+      left: 0.5em;
+      bottom: 0.5em;
+      transition: 0.4s;
+      transition-timing-function: cubic-bezier(0.81, -0.04, 0.38, 1.5);
+      box-shadow: inset 8px -4px 0px 0px #fff;
+    }
+
+    .switch input:checked+.slider {
+      background-color: #00a6ff;
+    }
+
+    .switch input:checked+.slider:before {
+      transform: translateX(1.8em);
+      box-shadow: inset 15px -4px 0px 15px #ffcf48;
+    }
+
+    .star {
+      background-color: #fff;
+      border-radius: 50%;
+      position: absolute;
+      width: 5px;
+      transition: all 0.4s;
+      height: 5px;
+    }
+
+    .star_1 {
+      left: 2.5em;
+      top: 0.5em;
+    }
+
+    .star_2 {
+      left: 2.2em;
+      top: 1.2em;
+    }
+
+    .star_3 {
+      left: 3em;
+      top: 0.9em;
+    }
+
+    .switch input:checked~.slider .star {
+      opacity: 0;
+    }
+
+    .cloud {
+      width: 3.5em;
+      position: absolute;
+      bottom: -1.4em;
+      left: -1.1em;
+      opacity: 0;
+      transition: all 0.4s;
+    }
+
+    .switch input:checked~.slider .cloud {
+      opacity: 1;
+    }
+
+    /* Footer */
+    footer {
+      color: white;
+      font-size: 12px;
+      padding: 20px 20px;
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      text-align: right;
+      left: auto;
+      width: 100%;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hamburger {
+        display: flex;
       }
-        .management-delivery tbody {
-          display: block;
-          max-height: 200px;
-          overflow-y: auto;
-        }
 
-        /* Header cố định */
-        .management-delivery thead {
-          background: rgba(102, 126, 234, 0.4);
-          color: #fff;
-          font-weight: 600;
-          text-transform: uppercase;
-          position: sticky;
-          top: 0;
-          z-index: 5;
-        }
+      .nav-menu {
+        position: fixed;
+        left: -100%;
+        top: 60px;
+        flex-direction: column;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        width: 100%;
+        text-align: center;
+        transition: 0.3s;
+        box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
+      }
 
-        /* Căn giữa & padding chuẩn */
-        .management-delivery th,
-        .management-delivery td {
-          padding: 12px 16px;
-          text-align: center;
-          border-bottom: 1px solid rgba(229, 231, 235, 0.3);
-          font-size: 12px;
-          color: white;
-        }
+      .nav-menu.active {
+        left: 0;
+      }
 
-        .management-delivery tr:last-child td {
-          border-bottom: none;
-        }
-        /* Custom scrollbar for webkit browsers */
-        .management-delivery tbody::-webkit-scrollbar {
-          width: 8px;
-        }
+      .nav-menu li {
+        margin: 0;
+      }
 
-        .management-delivery tbody::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 4px;
-        }
+      .nav-menu li a {
+        padding: 20px;
+      }
 
-        .management-delivery tbody::-webkit-scrollbar-thumb {
-          background: rgba(102, 126, 234, 0.6);
-          border-radius: 4px;
-        }
+    }
 
-        .management-delivery tbody::-webkit-scrollbar-thumb:hover {
-          background: rgba(102, 126, 234, 0.8);
-        }
+    .container {
+      display: flex;
+      /* height: calc(100vh - 140px); */
+      color: white;
+      margin-top: 16px;
+    }
 
-        .management-delivery tr:last-child td {
-          border-bottom: none;
-        }
+    .logout span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-        #factorySelect {
-          padding: 6px 8px;
-          border-radius: 4px;
-          border: none;
-          background: rgba(255, 255, 255, 0.1);
-          color: white;
-          font-size: 14px;
-        }
-        #factorySelect:focus {
-          outline: none;
-          background: rgba(255, 255, 255, 0.2);
-        }
-        #factorySelect option {
-          background-color: #2b2b2bb7; 
-          color: white;
-        }
-        #clearFilters {
-          background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
-          border: none;
-          color: white;
-          padding: 8px 16px;
-          border-radius: 4px;
-          cursor: pointer;
-          font-size: 14px;
-          transition: all 0.3s ease;
-        }
-        #clearFilters:hover {
-          background: linear-gradient(135deg, #05855c 0%, #225ad3 100%);
-        }
-        .date-filter {
-          padding: 6px 8px;
-          border-radius: 4px;
-          border: none;
-          background: rgba(255, 255, 255, 0.1);
-          color: white;
-          font-size: 14px;
-        }
-        input[type="date"]::-webkit-calendar-picker-indicator {
-          filter: invert(1);
-        }
+    .typing-sub svg {
+      color: #4ade80;
+      flex-shrink: 0;
+    }
 
-        .role-badge {
-          display: inline-block;
-          padding: 4px 12px;
-          border-radius: 10px;
-          font-weight: 500;
-          font-size: 13px;
-          text-align: center;
-        }
+    .top-row {
+      gap: 20px;
+      width: 40%;
+      height: 100%;
+      flex: 1;
+      color: white;
+      flex-wrap: wrap;
+      margin: 0 0 0 20px;
+    }
 
-        .role-badge.manager {
-          background-color: rgba(0, 128, 0, 0.5);
-            color: white;
-            border: 1px solid #159957;
-        }
+    .bottom-row {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 40%;
+      flex: 1;
+      color: white;
+      flex-wrap: wrap;
+      margin: 0 20px 0 0;
+      padding-left: 24px;
+    }
 
-        .role-badge.staff {
-          background-color: rgba(255, 165, 0, 0.5);
-            color: white;
-            border: 1px solid #f5af19;
-        }
+    .welcome-card {
+      width: 100.7%;
+      display: flex;
+      height: 200px;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+      border-radius: 8px;
+      padding: 30px 20px;
+    }
 
-        .role-badge.low {
-          background-color: #e8f5e9;
-          color: #388e3c;
-        }
+    .welcome-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
 
-        .status-badge {
-          display: inline-block;
-          padding: 4px 12px;
-          border-radius: 10px;
-          font-weight: 500;
-          font-size: 13px;
-          text-align: center;
-        }
+    .welcome-text h2 {
+      font-size: 20px;
+      color: #fff;
+      margin-bottom: 20px;
+    }
 
-        .status-badge.complete {
-            background-color: rgba(0, 128, 0, 0.5);
-            color: white;
-            border: 1px solid #159957;
-        }
+    .stats {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
 
-        .status-badge.wait {
-            background-color: rgba(255, 165, 0, 0.5);
-            color: white;
-            border: 1px solid #f5af19;
-        }
+    .stats div {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
 
-        .status-badge.run {
-            background-color: rgba(109, 213, 237, 0.5);
-            color: white;
-            border: 1px solid #0083B0;
-        }
+    .stats strong {
+      font-size: 26px;
+      font-weight: 600;
+      color: #fff;
+    }
 
+    .stats span {
+      color: #fff;
+      font-size: 14px;
+    }
 
-    </style>
+    .divider {
+      width: 1px;
+      height: 30px;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+    }
+
+    .welcome-right img {
+      width: 340px;
+      height: auto;
+    }
+
+    .chart-row {
+      display: flex;
+      gap: 20px;
+      width: 100%;
+      margin: 10px 0;
+    }
+
+    .chart-card {
+      flex: 1;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+      border-radius: 12px;
+      padding: 24px;
+      color: #ffff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .chart-header h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #fff;
+      margin: 0 0 8px 0;
+    }
+
+    .chart-header p {
+      font-size: 14px;
+      color: #6b7280;
+      margin: 0 0 20px 0;
+    }
+
+    .chart-container {
+      width: 100%;
+      height: 300px;
+      position: relative;
+    }
+
+    .chart-container div {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .management-user {
+      flex: 1;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+      border-radius: 12px;
+      max-height: 300px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .management-user table {
+      border-collapse: collapse;
+      width: 100%;
+      border: none;
+      background: transparent;
+      flex: 1;
+    }
+
+    .management-user .table-container {
+      flex: 1;
+      overflow-y: auto;
+      max-height: 300px;
+    }
+
+    .management-user .table-header {
+      background: rgba(102, 126, 234, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .management-user th,
+    .management-user td {
+      padding: 12px 16px;
+      text-align: center;
+      border: none;
+      border-bottom: 1px solid #e5e7eb83;
+      font-size: 12px;
+    }
+
+    .management-user th {
+      background: rgba(102, 126, 234, 0.4);
+      color: #fff;
+      font-weight: 600;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      text-transform: uppercase;
+      z-index: 5;
+    }
+
+    .management-user tbody {
+      display: block;
+      max-height: 200px;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .management-user thead {
+      display: block;
+    }
+
+    .management-user tr {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    /* Custom scrollbar for webkit browsers */
+    .management-user tbody::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .management-user tbody::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+
+    .management-user tbody::-webkit-scrollbar-thumb {
+      background: rgba(102, 126, 234, 0.6);
+      border-radius: 4px;
+    }
+
+    .management-user tbody::-webkit-scrollbar-thumb:hover {
+      background: rgba(102, 126, 234, 0.8);
+    }
+
+    .management-user tr:last-child td {
+      border-bottom: none;
+    }
+
+    .edit-user,
+    .delete-user,
+    .edit-model,
+    .delete-model {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      margin-right: 6px;
+      margin-bottom: 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .edit-user:hover,
+    .delete-user:hover,
+    .edit-model:hover,
+    .delete-model:hover {
+      background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    }
+
+    .add-user {
+      background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .add-user:hover {
+      background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
+    }
+
+    .management-delivery-spec {
+      flex: 1;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+      border-radius: 12px;
+      max-height: 320px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .management-delivery-spec table {
+      border-collapse: collapse;
+      width: 100%;
+      border: none;
+      background: transparent;
+      flex: 1;
+    }
+
+    .management-delivery-spec .table-container {
+      flex: 1;
+      overflow-y: auto;
+      max-height: 300px;
+    }
+
+    .management-delivery-spec .table-header {
+      background: rgba(102, 126, 234, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .management-delivery-spec th,
+    .management-delivery-spec td {
+      padding: 12px 16px;
+      text-align: center;
+      border: none;
+      border-bottom: 1px solid #e5e7eb83;
+      font-size: 12px;
+    }
+
+    .management-delivery-spec th {
+      background: rgba(102, 126, 234, 0.4);
+      color: #fff;
+      font-weight: 600;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      text-transform: uppercase;
+      z-index: 5;
+    }
+
+    .management-delivery-spec tbody {
+      display: block;
+      max-height: 200px;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .management-delivery-spec thead {
+      display: block;
+    }
+
+    .management-delivery-spec tr {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    @media screen and (max-width: 1600px) {
+      .container {
+        flex-direction: column;
+        height: auto;
+      }
+
+      .top-row,
+      .bottom-row {
+        width: 100%;
+        margin: 0 0 20px 0;
+      }
+
+      .welcome-card {
+        flex-direction: row;
+        height: auto;
+        text-align: center;
+      }
+
+      .welcome-right img {
+        width: 100%;
+        max-width: 350px;
+        margin-top: 20px;
+      }
+
+      .chart-row {
+        flex-direction: row;
+      }
+
+      .bottom-row {
+        padding-left: 0;
+      }
+
+      .management-delivery-spec,
+      .management-user {
+        margin: 0;
+        padding: 0;
+      }
+
+      .management-user th,
+      .management-user td {
+        font-size: 14px;
+      }
+
+      .management-delivery-spec th,
+      .management-delivery-spec td {
+        font-size: 14px;
+      }
+
+      .bottom-row3 {
+        width: 100%;
+        margin: 0;
+        /* padding: 12px 0px 24px 0px; */
+      }
+
+    }
+
+    @media screen and (min-width: 1700px) {
+      .bottom-row3 {
+        padding: 12px 20px 24px 20px;
+      }
+    }
+
+    /* Custom scrollbar for webkit browsers */
+    .management-delivery-spec tbody::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .management-delivery-spec tbody::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+
+    .management-delivery-spec tbody::-webkit-scrollbar-thumb {
+      background: rgba(102, 126, 234, 0.6);
+      border-radius: 4px;
+    }
+
+    .management-delivery-spec tbody::-webkit-scrollbar-thumb:hover {
+      background: rgba(102, 126, 234, 0.8);
+    }
+
+    .management-delivery-spec tr:last-child td {
+      border-bottom: none;
+    }
+
+    .import,
+    .export,
+    .add-spec {
+      background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      margin-right: 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .import:hover,
+    .export:hover,
+    .add-spec:hover {
+      background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
+    }
+
+    .searchText {
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: none;
+      width: 100%;
+      max-width: 300px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .searchText::placeholder {
+      color: #d1d5db;
+    }
+
+    .searchText:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .edit-input {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid #667eea;
+      border-radius: 4px;
+      padding: 6px 8px;
+      color: #333;
+      font-size: 12px;
+      width: 100%;
+      min-width: 80px;
+    }
+
+    .edit-input:focus {
+      outline: none;
+      border-color: #764ba2;
+      background: white;
+    }
+
+    .bottom-row3 {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+      color: white;
+      margin: 0 20px 0 0;
+      flex-wrap: wrap;
+    }
+
+    .management-delivery {
+      flex: 1;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .management-delivery table {
+      border-collapse: collapse;
+      width: 100%;
+      table-layout: fixed;
+      border: none;
+      background: transparent;
+    }
+
+    .management-delivery thead,
+    .management-delivery tbody tr {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    .management-delivery thead tr {
+      display: table;
+      width: calc(100% - 8px);
+      table-layout: fixed;
+    }
+
+    .management-delivery tbody {
+      display: block;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    /* Header cố định */
+    .management-delivery thead {
+      background: rgba(102, 126, 234, 0.4);
+      color: #fff;
+      font-weight: 600;
+      text-transform: uppercase;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    /* Căn giữa & padding chuẩn */
+    .management-delivery th,
+    .management-delivery td {
+      padding: 12px 16px;
+      text-align: center;
+      border-bottom: 1px solid rgba(229, 231, 235, 0.3);
+      font-size: 12px;
+      color: white;
+    }
+
+    .management-delivery tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Custom scrollbar for webkit browsers */
+    .management-delivery tbody::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .management-delivery tbody::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+
+    .management-delivery tbody::-webkit-scrollbar-thumb {
+      background: rgba(102, 126, 234, 0.6);
+      border-radius: 4px;
+    }
+
+    .management-delivery tbody::-webkit-scrollbar-thumb:hover {
+      background: rgba(102, 126, 234, 0.8);
+    }
+
+    .management-delivery tr:last-child td {
+      border-bottom: none;
+    }
+
+    #factorySelect {
+      padding: 6px 8px;
+      border-radius: 4px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 14px;
+    }
+
+    #factorySelect:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    #factorySelect option {
+      background-color: #2b2b2bb7;
+      color: white;
+    }
+
+    #clearFilters {
+      background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    #clearFilters:hover {
+      background: linear-gradient(135deg, #05855c 0%, #225ad3 100%);
+    }
+
+    .date-filter {
+      padding: 6px 8px;
+      border-radius: 4px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 14px;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+    }
+
+    .role-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .role-badge.manager {
+      background-color: rgba(0, 128, 0, 0.5);
+      color: white;
+      border: 1px solid #159957;
+    }
+
+    .role-badge.staff {
+      background-color: rgba(255, 165, 0, 0.5);
+      color: white;
+      border: 1px solid #f5af19;
+    }
+
+    .role-badge.low {
+      background-color: #e8f5e9;
+      color: #388e3c;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .status-badge.complete {
+      background-color: rgba(0, 128, 0, 0.5);
+      color: white;
+      border: 1px solid #159957;
+    }
+
+    .status-badge.wait {
+      background-color: rgba(255, 165, 0, 0.5);
+      color: white;
+      border: 1px solid #f5af19;
+    }
+
+    .status-badge.run {
+      background-color: rgba(109, 213, 237, 0.5);
+      color: white;
+      border: 1px solid #0083B0;
+    }
+  </style>
 </head>
+
 <body>
-    <div class="all">
+  <div class="all">
     <!-- Navigation -->
     <nav>
-        <div class="nav-container">
-            <div class="logo" ><span><img style="width: 80px;" src="/images/logo.png" alt=""></span><a href="/home">MANAGERMENT DELIVERY</a></div>
-            <ul class="nav-menu" id="navMenu">
-                <li class="home"><a href="#">Home</a></li>
-                <li class="delivery"><a href="#delivery">Delivery</a></li>
-                <li class="history"><a href="#history">History</a></li>
-                <li class="admin"><a href="#admin">Admin</a></li>
-                <li class="logout">
-                    <a href="#">
-                    <span>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="lucide lucide-log-out-icon lucide-log-out">
-                        <path d="m16 17 5-5-5-5"/>
-                        <path d="M21 12H9"/>
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                        </svg>
-                    </span>
-                    </a>
-                </li>
-              </ul>
-        </div>
+      <div class="nav-container">
+        <div class="logo"><span><img style="width: 80px;" src="/images/logo.png" alt=""></span><a
+            href="#home">MANAGERMENT DELIVERY</a></div>
+        <ul class="nav-menu" id="navMenu">
+          <li class="home"><a href="#">Home</a></li>
+          <li class="delivery"><a href="#delivery">Delivery</a></li>
+          <li class="history"><a href="#history">History</a></li>
+          <li class="admin"><a href="#admin">Admin</a></li>
+          <li class="logout">
+            <a href="#">
+              <span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out-icon lucide-log-out">
+                  <path d="m16 17 5-5-5-5" />
+                  <path d="M21 12H9" />
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                </svg>
+              </span>
+            </a>
+          </li>
+        </ul>
+        <label class="switch">
+          <input checked="true" id="checkbox" type="checkbox" />
+          <span class="slider">
+            <div class="star star_1"></div>
+            <div class="star star_2"></div>
+            <div class="star star_3"></div>
+            <svg viewBox="0 0 16 16" class="cloud_1 cloud">
+              <path transform="matrix(.77976 0 0 .78395-299.99-418.63)" fill="#fff"
+                d="m391.84 540.91c-.421-.329-.949-.524-1.523-.524-1.351 0-2.451 1.084-2.485 2.435-1.395.526-2.388 1.88-2.388 3.466 0 1.874 1.385 3.423 3.182 3.667v.034h12.73v-.006c1.775-.104 3.182-1.584 3.182-3.395 0-1.747-1.309-3.186-2.994-3.379.007-.106.011-.214.011-.322 0-2.707-2.271-4.901-5.072-4.901-2.073 0-3.856 1.202-4.643 2.925">
+              </path>
+            </svg>
+          </span>
+        </label>
+      </div>
     </nav>
     <div class="container">
       <!-- Hàng 1: Overview & Charts -->
@@ -843,7 +1266,7 @@
               <div id="monthlyChart"></div>
             </div>
           </div>
-          
+
           <div class="chart-card">
             <div class="chart-header">
               <h3>Shipment Status</h3>
@@ -854,7 +1277,7 @@
             </div>
           </div>
         </div>
-        </div>
+      </div>
       <!-- Hàng 2: Management -->
       <div class="bottom-row">
         <!-- User Management Table -->
@@ -862,8 +1285,10 @@
           <table class="table-container">
             <thead>
               <tr>
-                <th colspan="3" style="text-align: left; font-size: 20px; padding-bottom: 10px; text-transform: uppercase;">User Management</th>
-                <th colspan="1" style="text-align: right;"><button class="add-user">Add User</button></th>              
+                <th colspan="3"
+                  style="text-align: left; font-size: 20px; padding-bottom: 10px; text-transform: uppercase;">User
+                  Management</th>
+                <th colspan="1" style="text-align: right;"><button class="add-user">Add User</button></th>
               </tr>
               <tr>
                 <th>STT</th>
@@ -883,11 +1308,16 @@
           <table>
             <thead>
               <tr>
-                <th colspan="1" style="text-align: left; font-size: 20px; padding-bottom: 10px; text-transform: uppercase;">Model Spec</th>
-                <th colspan="2"><input class="searchText" type="text" name="searchText" id="searchText" placeholder="Search All"></th>
+                <th colspan="1"
+                  style="text-align: left; font-size: 20px; padding-bottom: 10px; text-transform: uppercase;">Model Spec
+                </th>
+                <th colspan="2"><input class="searchText" type="text" name="searchText" id="searchText"
+                    placeholder="Search All"></th>
                 <th colspan="1" style="text-align: right;"><button class="add-spec">Add Model</button></th>
-                <th colspan="1" style="text-align: right;"><button class="import" id="importButton">Import File</button></th>   
-                <th colspan="1" style="text-align: right;"><button class="export" id="exportButton">Export File</button></th>   
+                <th colspan="1" style="text-align: right;"><button class="import" id="importButton">Import File</button>
+                </th>
+                <th colspan="1" style="text-align: right;"><button class="export" id="exportButton">Export File</button>
+                </th>
               </tr>
               <tr>
                 <th>STT</th>
@@ -902,67 +1332,110 @@
             </tbody>
           </table>
         </div>
-      </div>  
-    </div>    
-      <!-- Hàng 3: Delivery Management -->
-      <div class="bottom-row3">
-        <!-- Delivery Table -->
-        <div class="management-delivery">
-          <table>
-            <thead>
-              <tr>
-                <th colspan="1" style="text-align: left; font-size: 20px; padding-bottom: 10px; text-transform: uppercase;">Delivery</th>
-                <th colspan="3"><input class="searchText" type="text" name="searchTextDelivery" id="searchTextDelivery" placeholder="Search Model ID, Mobis Code, Model Name"></th>
-                <th colspan="3">
-                  <span>Factory:</span>
-                  <select name="factory" id="factorySelect">
-                    <option value="V0" selected>V0</option>
-                    <option value="V5">V5</option>
-                  </select>
-                </th>
-                <th colspan="2">From: <input type="date" id="deliveryDateFrom" class="date-filter" name="deliveryDateFrom"></th> 
-                <th colspan="2">To: <input type="date" id="deliveryDateTo" class="date-filter" name="deliveryDateTo"></th>
-                <th colspan="1"><button id="clearFilters"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-ccw-icon lucide-refresh-ccw"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button></th>
-              </tr>
-              <tr>
-                <th>STT</th>
-                <th>Model Id</th>
-                <th>Mobis Code</th>
-                <th>Model Name</th>
-                <th>Type</th>
-                <th>Target</th>
-                <th>Quantity</th>
-                <th>Status</th>
-                <th>Complete Time</th>
-                <th>Shipment Date</th>
-                <th>Shipping Method</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="DeliveryTableBody">
-            </tbody>
-          </table>
-        </div>
       </div>
-        <!-- Footer -->
+    </div>
+    <!-- Hàng 3: Delivery Management -->
+    <div class="bottom-row3">
+      <!-- Delivery Table -->
+      <div class="management-delivery">
+        <table>
+          <thead>
+            <tr>
+              <th colspan="1"
+                style="text-align: left; font-size: 20px; padding-bottom: 10px; text-transform: uppercase;">Delivery
+              </th>
+              <th colspan="3"><input class="searchText" type="text" name="searchTextDelivery" id="searchTextDelivery"
+                  placeholder="Search Model ID, Mobis Code, Model Name"></th>
+              <th colspan="3">
+                <span>Factory:</span>
+                <select name="factory" id="factorySelect">
+                  <option value="V0" selected>V0</option>
+                  <option value="V5">V5</option>
+                </select>
+              </th>
+              <th colspan="2">From: <input type="date" id="deliveryDateFrom" class="date-filter"
+                  name="deliveryDateFrom"></th>
+              <th colspan="2">To: <input type="date" id="deliveryDateTo" class="date-filter" name="deliveryDateTo"></th>
+              <th colspan="1"><button id="clearFilters"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-refresh-ccw-icon lucide-refresh-ccw">
+                    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
+                    <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+                    <path d="M16 16h5v5" />
+                  </svg></button></th>
+            </tr>
+            <tr>
+              <th>STT</th>
+              <th>Model Id</th>
+              <th>Mobis Code</th>
+              <th>Model Name</th>
+              <th>Type</th>
+              <th>Target</th>
+              <th>Quantity</th>
+              <th>Status</th>
+              <th>Complete Time</th>
+              <th>Shipment Date</th>
+              <th>Shipping Method</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="DeliveryTableBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Footer -->
     <footer>
-        <p>&copy; 2025 Copyright for Partron VN</p>
+      <p>&copy; 2025 Copyright for Partron VN</p>
     </footer>
     <script src="/js/dayjs.min.js"></script>
-    
+
     <script>
+
+      // Theme Toggle Logic
+      const themeToggle = document.getElementById('checkbox');
+      const body = document.body;
+
+      // Kiểm tra theme đã lưu
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'light') {
+        body.classList.add('light-theme');
+        themeToggle.checked = true;
+      } else {
+        themeToggle.checked = false;
+      }
+
+      themeToggle.addEventListener('change', (e) => {
+        body.classList.toggle('light-theme');
+        const isLight = body.classList.contains('light-theme');
+
+        // Lưu theme vào localStorage
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      });
+
       const navLinks = document.querySelectorAll('.nav-menu a');
       const savedMenu = sessionStorage.getItem('activeMenu');
+      const logoLink = document.querySelector('.logo a');
       if (savedMenu) {
         navLinks.forEach(link => link.classList.remove('active'));
         const target = document.querySelector(`.${savedMenu} a`);
         if (target) target.classList.add('active');
       }
+
+      logoLink.addEventListener('click', e => {
+        e.preventDefault();
+        navLinks.forEach(link => link.classList.remove('active'));
+        const homeLink = document.querySelector('.home a');
+        homeLink.classList.add('active');
+        sessionStorage.setItem('activeMenu', 'home');
+        window.location.href = '/home';
+      });
       // Lắng nghe click cho toàn bộ menu
       navLinks.forEach(link => {
         link.addEventListener('click', e => {
           e.preventDefault();
-          const parentClass = link.parentElement.classList[0]; 
+          const parentClass = link.parentElement.classList[0];
           navLinks.forEach(l => l.classList.remove('active'));
           link.classList.add('active');
           sessionStorage.setItem('activeMenu', parentClass);
@@ -1002,208 +1475,208 @@
               break;
           }
         });
-        });
-      
+      });
+
       //overview
       async function initOverview() {
         const totalInDayElem = document.getElementById('totalInDay');
         const performanceElem = document.getElementById('performance');
         const user = JSON.parse(localStorage.getItem('user'));
-        const factory = user.factory || 'V4'; 
+        const factory = user.factory || 'V4';
         if (!document.getElementById('monthlyChart') || !document.getElementById('orderChart')) {
           return;
         }
         // Fetch overview data
-          const overviewResponse = await fetch(`/exportmanagement/api/getoverview?factory=${(factory)}`, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" }
-          });
-          const overviewData = await overviewResponse.json();
-          console.log("Overview data:", overviewData);
-          
-          totalInDayElem.textContent = overviewData.totalExport || '0';
-          performanceElem.textContent = (overviewData.performanceInDay ? Math.round(overviewData.performanceInDay) + '%' : '0%');
+        const overviewResponse = await fetch(`/exportmanagement/api/getoverview?factory=${(factory)}`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        });
+        const overviewData = await overviewResponse.json();
+        console.log("Overview data:", overviewData);
 
-          // Fetch monthly performance data
-          const monthlyResponse = await fetch(`/exportmanagement/api/getmonthlyperformance?factory=${(factory)}`, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" }
-          });
-          const monthlyData = await monthlyResponse.json();
-          // Monthly chart with Highcharts
-          Highcharts.chart('monthlyChart', {
-             accessibility: {
-              enabled: false
-            },
-            chart: {
-              type: 'spline',
-              backgroundColor: 'transparent',
-              height: 300
-            },            
-            responsive: {
-              rules: [{
-                condition: {
-                  maxWidth: 500
-                },
-                chartOptions: {
-                  chart: {
-                    height: 300
-                  }
-                }
-              }]
-            },
-            title: {
-              text: null
-            },
-            xAxis: {
-              categories: monthlyData.months,
-              labels: {
-                style: {
-                  color: '#ffffff'
+        totalInDayElem.textContent = overviewData.totalExport || '0';
+        performanceElem.textContent = (overviewData.performanceInDay ? Math.round(overviewData.performanceInDay) + '%' : '0%');
+
+        // Fetch monthly performance data
+        const monthlyResponse = await fetch(`/exportmanagement/api/getmonthlyperformance?factory=${(factory)}`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        });
+        const monthlyData = await monthlyResponse.json();
+        // Monthly chart with Highcharts
+        Highcharts.chart('monthlyChart', {
+          accessibility: {
+            enabled: false
+          },
+          chart: {
+            type: 'spline',
+            backgroundColor: 'transparent',
+            height: 300
+          },
+          responsive: {
+            rules: [{
+              condition: {
+                maxWidth: 500
+              },
+              chartOptions: {
+                chart: {
+                  height: 300
                 }
               }
-            },
-            yAxis: {
-              title: {
-                text: 'Deliveries',
-                style: {
-                  color: '#ffffff'
-                }
-              },
-              labels: {
-                style: {
-                  color: '#ffffff'
-                }
-              },
-              gridLineColor: 'rgba(255, 255, 255, 0.1)'
-            },
-            legend: {
-              enabled: false
-            },
-            plotOptions: {
-              line: {
-                marker: {
-                  enabled: true,
-                  radius: 4
-                }
+            }]
+          },
+          title: {
+            text: null
+          },
+          xAxis: {
+            categories: monthlyData.months,
+            labels: {
+              style: {
+                color: '#ffffff'
+              }
+            }
+          },
+          yAxis: {
+            title: {
+              text: 'Deliveries',
+              style: {
+                color: '#ffffff'
               }
             },
-            series: [{
-              name: 'Total Deliveries',
-              data: monthlyData.totals,
-              color: '#007FFF',
-              lineWidth: 3
-            }],
-            credits: {
-              enabled: false
-            }            
-          });
-
-          // Fetch status count data
-          const statusResponse = await fetch(`/exportmanagement/api/getstatuscount?factory=${(factory)}`, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" }
-          });
-          const statusData = await statusResponse.json();
-          console.log("Status data:", statusData);
-
-          // Status chart with Highcharts
-          Highcharts.chart('orderChart', {
-            accessibility: {
-              enabled: false
+            labels: {
+              style: {
+                color: '#ffffff'
+              }
             },
-            chart: {
-              type: 'pie',
-              backgroundColor: 'transparent'
-            },
-            responsive: {
-              rules: [{
-                condition: {
-                  maxWidth: 500
-                },
-                chartOptions: {
-                  chart: {
-                    height: 300
-                  }
+            gridLineColor: 'rgba(255, 255, 255, 0.1)'
+          },
+          legend: {
+            enabled: false
+          },
+          plotOptions: {
+            line: {
+              marker: {
+                enabled: true,
+                radius: 4
+              }
+            }
+          },
+          series: [{
+            name: 'Total Deliveries',
+            data: monthlyData.totals,
+            color: '#007FFF',
+            lineWidth: 3
+          }],
+          credits: {
+            enabled: false
+          }
+        });
+
+        // Fetch status count data
+        const statusResponse = await fetch(`/exportmanagement/api/getstatuscount?factory=${(factory)}`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        });
+        const statusData = await statusResponse.json();
+        console.log("Status data:", statusData);
+
+        // Status chart with Highcharts
+        Highcharts.chart('orderChart', {
+          accessibility: {
+            enabled: false
+          },
+          chart: {
+            type: 'pie',
+            backgroundColor: 'transparent'
+          },
+          responsive: {
+            rules: [{
+              condition: {
+                maxWidth: 500
+              },
+              chartOptions: {
+                chart: {
+                  height: 300
                 }
-              }]
-            },
-            title: {
-              text: null
-            },
-            plotOptions: {
-              series: {
-               dataLabels: [{
+              }
+            }]
+          },
+          title: {
+            text: null
+          },
+          plotOptions: {
+            series: {
+              dataLabels: [{
                 enabled: true,
                 distance: 20,
                 format: '{point.name}',
                 style: {
-                    fontSize: '0.7em',
-                    color: 'white', textOutline: 'none'
+                  fontSize: '0.7em',
+                  color: 'white', textOutline: 'none'
                 }
-            }, {
+              }, {
                 enabled: true,
                 distance: -15,
                 format: '{point.percentage:.0f}%',
                 style: {
-                    fontSize: '0.7em',
-                    color: 'white', textOutline: 'none'
+                  fontSize: '0.7em',
+                  color: 'white', textOutline: 'none'
                 }
-            }],
+              }],
+            },
+            pie: {
+              innerSize: '60%',
+              dataLabels: {
+                enabled: false
               },
-              pie: {
-                innerSize: '60%',
-                dataLabels: {
-                  enabled: false
-                },
-                showInLegend: true
-              }
-            },
-            legend: {
-              align: 'center',
-              verticalAlign: 'bottom',
-              itemStyle: {
-                color: '#ffffff'
-              }
-            },
-            series: [{
-              name: 'Status',
-              data: [
-                {
-                  name: 'Complete',
-                  y: statusData.completed || 0,
-                  color: '#10b981'
-                },
-                {
-                  name: 'In Progress',
-                  y: statusData.inProgress || 0,
-                  color: '#f59e0b'
-                }
-              ]
-            }],
-            credits: {
-              enabled: false
+              showInLegend: true
             }
-          });
+          },
+          legend: {
+            align: 'center',
+            verticalAlign: 'bottom',
+            itemStyle: {
+              color: '#ffffff'
+            }
+          },
+          series: [{
+            name: 'Status',
+            data: [
+              {
+                name: 'Complete',
+                y: statusData.completed || 0,
+                color: '#10b981'
+              },
+              {
+                name: 'In Progress',
+                y: statusData.inProgress || 0,
+                color: '#f59e0b'
+              }
+            ]
+          }],
+          credits: {
+            enabled: false
+          }
+        });
       }
-      
+
       //User management table
-      async function initUserManagement(){
+      async function initUserManagement() {
         // Create user management table
-          const userTableBody = document.getElementById('userTableBody');
-          const usersResponse = await fetch("/exportmanagement/users", {
-            method: "GET",
-            headers: { "Content-Type": "application/json" }
-          });
-          const usersData = await usersResponse.json();
-          var stt = 1;
-          // Clear existing content
-          userTableBody.innerHTML = '';
-          
-          // Populate user management table
-          usersData.forEach(user => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
+        const userTableBody = document.getElementById('userTableBody');
+        const usersResponse = await fetch("/exportmanagement/users", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        });
+        const usersData = await usersResponse.json();
+        var stt = 1;
+        // Clear existing content
+        userTableBody.innerHTML = '';
+
+        // Populate user management table
+        usersData.forEach(user => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
               <td>${stt++}</td>
               <td class="username">${user.user_name}</td>
               <td class="password">${user.password}</td>
@@ -1216,21 +1689,21 @@
                 <button class="delete-user" data-id="${user.id}">Delete</button>
               </td>
             `;
-            userTableBody.appendChild(row);
-          });
-          userTableBody.removeEventListener('click', handleUserTableClick);
-          userTableBody.addEventListener('click', handleUserTableClick);
-          
-          // Setup Add User button listener
-          const addUserButton = document.querySelector('.add-user');
-          addUserButton.removeEventListener('click', handleAddUser);
-          addUserButton.addEventListener('click', handleAddUser);
+          userTableBody.appendChild(row);
+        });
+        userTableBody.removeEventListener('click', handleUserTableClick);
+        userTableBody.addEventListener('click', handleUserTableClick);
+
+        // Setup Add User button listener
+        const addUserButton = document.querySelector('.add-user');
+        addUserButton.removeEventListener('click', handleAddUser);
+        addUserButton.addEventListener('click', handleAddUser);
       }
 
       //even add user
       async function handleAddUser() {
         const userTableBody = document.getElementById('userTableBody');
-        
+
         // Check if there's already an add row
         const existingAddRow = userTableBody.querySelector('.add-new-row');
         if (existingAddRow) {
@@ -1326,11 +1799,11 @@
           return;
         }
 
-        const newUser = { 
-          user_name: username, 
-          password, 
-          role, 
-          factory 
+        const newUser = {
+          user_name: username,
+          password,
+          role,
+          factory
         };
 
         try {
@@ -1351,7 +1824,7 @@
           } else {
             const data = await res.json();
             alert('Error: ' + (data.message || 'Unknown error'));
-            
+
             // Re-enable save button
             saveButton.textContent = 'Save';
             saveButton.disabled = false;
@@ -1359,7 +1832,7 @@
         } catch (error) {
           console.error('Error adding user:', error);
           alert('Connection error: ' + error.message);
-          
+
           // Re-enable save button
           const saveButton = row.querySelector('.save-new-user');
           saveButton.textContent = 'Save';
@@ -1373,7 +1846,7 @@
           row.remove();
         }
       }
-      
+
       //even edit user and delete user
       async function handleUserTableClick(e) {
         const row = e.target.closest('tr');
@@ -1399,7 +1872,7 @@
                                   </select>`;
             e.target.textContent = 'Save';
             e.target.nextElementSibling.textContent = 'Cancel';
-          } 
+          }
           else if (e.target.textContent === 'Save') {
             // Get values from inputs
             const updatedUser = {
@@ -1462,31 +1935,31 @@
           }
         }
       }
-      
+
       //Spec management table
-      async function initSpecModel(){
-          const searchText = document.getElementById('searchText');   
-          // Spec management table
-          const specTableBody = document.getElementById('specTableBody');
-          
-          // Clear existing content first
-          specTableBody.innerHTML = '';
-          //export file csv
-          const exportButton = document.getElementById('exportButton');
-          exportButton.addEventListener('click', exportToCSV);
-          //import file csv
-          const importButton = document.getElementById('importButton');
-          importButton.addEventListener('click', importFromCSV);
-          const specsResponse = await fetch("/exportmanagement/models", {
-            method: "GET",
-            headers: { "Content-Type": "application/json" }
-          });
-          const specsData = await specsResponse.json();
-          var sttSpec = 1;
-          // Populate spec management table
-          specsData.forEach(spec => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
+      async function initSpecModel() {
+        const searchText = document.getElementById('searchText');
+        // Spec management table
+        const specTableBody = document.getElementById('specTableBody');
+
+        // Clear existing content first
+        specTableBody.innerHTML = '';
+        //export file csv
+        const exportButton = document.getElementById('exportButton');
+        exportButton.addEventListener('click', exportToCSV);
+        //import file csv
+        const importButton = document.getElementById('importButton');
+        importButton.addEventListener('click', importFromCSV);
+        const specsResponse = await fetch("/exportmanagement/models", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        });
+        const specsData = await specsResponse.json();
+        var sttSpec = 1;
+        // Populate spec management table
+        specsData.forEach(spec => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
               <td>${sttSpec++}</td>
               <td class="model-type">${spec.model_type || ''}</td>
               <td class="mobis-code">${spec.mobis_code || ''}</td>
@@ -1497,44 +1970,44 @@
                 <button class="delete-model" data-id="${spec.id}">Delete</button>
               </td>
             `;
-            specTableBody.appendChild(row);
-          });
-          
-          // Search functionality for spec table
-          searchText.addEventListener('input', function () {
-            const filter = this.value.trim().toLowerCase();
-            const rows = specTableBody.getElementsByTagName('tr');
+          specTableBody.appendChild(row);
+        });
 
-            Array.from(rows).forEach(row => {
-              const cells = row.getElementsByTagName('td');
-              let match = false;
-              const cellsToSearch = Array.from(cells).slice(0, -1);
+        // Search functionality for spec table
+        searchText.addEventListener('input', function () {
+          const filter = this.value.trim().toLowerCase();
+          const rows = specTableBody.getElementsByTagName('tr');
 
-              cellsToSearch.forEach(cell => {
-                const originalText = cell.getAttribute('data-original-text') || cell.textContent;
-                if (!cell.getAttribute('data-original-text')) {
-                  cell.setAttribute('data-original-text', originalText);
-                }
+          Array.from(rows).forEach(row => {
+            const cells = row.getElementsByTagName('td');
+            let match = false;
+            const cellsToSearch = Array.from(cells).slice(0, -1);
 
-                if (filter && originalText.toLowerCase().includes(filter)) {
-                  match = true;
-                  const regex = new RegExp(`(${filter})`, 'gi');
-                  cell.innerHTML = originalText.replace(regex, '<mark>$1</mark>');
-                } else {
-                  cell.innerHTML = originalText;
-                }
-              });
-              row.style.display = match || filter === '' ? '' : 'none';
+            cellsToSearch.forEach(cell => {
+              const originalText = cell.getAttribute('data-original-text') || cell.textContent;
+              if (!cell.getAttribute('data-original-text')) {
+                cell.setAttribute('data-original-text', originalText);
+              }
+
+              if (filter && originalText.toLowerCase().includes(filter)) {
+                match = true;
+                const regex = new RegExp(`(${filter})`, 'gi');
+                cell.innerHTML = originalText.replace(regex, '<mark>$1</mark>');
+              } else {
+                cell.innerHTML = originalText;
+              }
             });
+            row.style.display = match || filter === '' ? '' : 'none';
           });
-          
-          //add event edit, delete model spec
-          specTableBody.removeEventListener('click', handleModelTableClick);
-          specTableBody.addEventListener('click', handleModelTableClick);
-          // Setup Add model spec button listener
-          const addSpecButton = document.querySelector('.add-spec');
-          addSpecButton.removeEventListener('click', handleAddSpec);
-          addSpecButton.addEventListener('click', handleAddSpec);
+        });
+
+        //add event edit, delete model spec
+        specTableBody.removeEventListener('click', handleModelTableClick);
+        specTableBody.addEventListener('click', handleModelTableClick);
+        // Setup Add model spec button listener
+        const addSpecButton = document.querySelector('.add-spec');
+        addSpecButton.removeEventListener('click', handleAddSpec);
+        addSpecButton.addEventListener('click', handleAddSpec);
       }
 
       //even add model spec
@@ -1571,7 +2044,7 @@
         // Focus on model type input
         const modelTypeInput = newRow.querySelector('.model-type-input');
         modelTypeInput.focus();
-        
+
 
         // Add event listeners for save and cancel
         const saveButton = newRow.querySelector('.save-new-model');
@@ -1594,7 +2067,7 @@
           });
         });
       }
-      
+
       // Function to save new model spec
       async function saveNewModel(row) {
         const modelTypeInput = row.querySelector('.model-type-input');
@@ -1632,8 +2105,8 @@
           return;
         }
 
-        const newModel = { 
-          model_type: modelType, 
+        const newModel = {
+          model_type: modelType,
           mobis_code: mobisCode,
           partron_code: partronCode,
           model_name: modelName
@@ -1656,7 +2129,7 @@
           } else {
             const data = await res.json();
             alert('Error: ' + (data.message || 'Unknown error'));
-            
+
             // Re-enable save button
             saveButton.textContent = 'Save';
             saveButton.disabled = false;
@@ -1665,7 +2138,7 @@
         } catch (error) {
           console.error('Error adding model:', error);
           alert('Connection error: ' + error.message);
-          
+
           // Re-enable save button
           const saveButton = row.querySelector('.save-new-model');
           saveButton.textContent = 'Save';
@@ -1770,7 +2243,7 @@
           }
         }
       }
-      
+
       // Export data model spec to CSV file
       async function exportToCSV() {
         const specTableBody = document.getElementById('specTableBody');
@@ -1816,7 +2289,7 @@
           const reader = new FileReader();
           reader.onload = async (e) => {
             const text = e.target.result;
-            const lines = text.split('\n').slice(1); 
+            const lines = text.split('\n').slice(1);
             const newSpecs = [];
             const user = JSON.parse(localStorage.getItem('user')).username;
             for (const line of lines) {
@@ -1853,27 +2326,27 @@
           reader.readAsText(file);
         };
       }
-      
+
       //delivery table
-      async function initDelivery(){
-          const searchTextDelivery = document.getElementById('searchTextDelivery');
-          const factorySelect = document.getElementById('factorySelect');
-          const searchDateFrom = document.getElementById('deliveryDateFrom');
-          const searchDateTo = document.getElementById('deliveryDateTo');
-          // Spec management table
-          const specTableBody = document.getElementById('DeliveryTableBody');          
-          // Clear existing content first
-          specTableBody.innerHTML = '';
-          const deliveryResponse = await fetch(`/exportmanagement/delivery/${factorySelect.value}`, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" }
-          });
-          const deliveryData = await deliveryResponse.json();
-          var sttSpec = 1;
-          // Populate spec management table
-          deliveryData.forEach(delivery => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
+      async function initDelivery() {
+        const searchTextDelivery = document.getElementById('searchTextDelivery');
+        const factorySelect = document.getElementById('factorySelect');
+        const searchDateFrom = document.getElementById('deliveryDateFrom');
+        const searchDateTo = document.getElementById('deliveryDateTo');
+        // Spec management table
+        const specTableBody = document.getElementById('DeliveryTableBody');
+        // Clear existing content first
+        specTableBody.innerHTML = '';
+        const deliveryResponse = await fetch(`/exportmanagement/delivery/${factorySelect.value}`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        });
+        const deliveryData = await deliveryResponse.json();
+        var sttSpec = 1;
+        // Populate spec management table
+        deliveryData.forEach(delivery => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
               <td>${sttSpec++}</td>
               <td class="model-type">${delivery.model_id || ''}</td>
               <td class="mobis-code">${delivery.mobis_code || ''}</td>
@@ -1889,122 +2362,121 @@
                 <button class="delete-model" data-model-id="${delivery.model_id}" data-factory="${factorySelect.value}">Delete</button>
               </td>
             `;
-            specTableBody.appendChild(row);
-          });
-          
-          // Search functionality for delivery table
-          searchTextDelivery.removeEventListener('input', textSearchHandler);
-          searchTextDelivery.addEventListener('input', textSearchHandler);
-          
-          function textSearchHandler() {
-            const filter = searchTextDelivery.value.trim().toLowerCase();
-            const rows = specTableBody.getElementsByTagName('tr');
+          specTableBody.appendChild(row);
+        });
 
-            Array.from(rows).forEach(row => {
-              const cells = row.getElementsByTagName('td');
-              let match = false;
-              const cellsToSearch = [cells[1], cells[2], cells[3]];
+        // Search functionality for delivery table
+        searchTextDelivery.removeEventListener('input', textSearchHandler);
+        searchTextDelivery.addEventListener('input', textSearchHandler);
 
-              cellsToSearch.forEach(cell => {
-                const originalText = cell.getAttribute('data-original-text') || cell.textContent;
-                if (!cell.getAttribute('data-original-text')) {
-                  cell.setAttribute('data-original-text', originalText);
-                }
+        function textSearchHandler() {
+          const filter = searchTextDelivery.value.trim().toLowerCase();
+          const rows = specTableBody.getElementsByTagName('tr');
 
-                if (filter && originalText.toLowerCase().includes(filter)) {
-                  match = true;
-                  const regex = new RegExp(`(${filter})`, 'gi');
-                  cell.innerHTML = originalText.replace(regex, '<mark>$1</mark>');
-                } else {
-                  cell.innerHTML = originalText;
-                }
-              });
-              
-              // Áp dụng cả text filter và date filter
-              const textFilterPass = match || filter === '';
-              const dateFilterPass = checkDateFilter(row, searchDateFrom, searchDateTo);
-              
-              row.style.display = (textFilterPass && dateFilterPass) ? '' : 'none';
+          Array.from(rows).forEach(row => {
+            const cells = row.getElementsByTagName('td');
+            let match = false;
+            const cellsToSearch = [cells[1], cells[2], cells[3]];
+
+            cellsToSearch.forEach(cell => {
+              const originalText = cell.getAttribute('data-original-text') || cell.textContent;
+              if (!cell.getAttribute('data-original-text')) {
+                cell.setAttribute('data-original-text', originalText);
+              }
+
+              if (filter && originalText.toLowerCase().includes(filter)) {
+                match = true;
+                const regex = new RegExp(`(${filter})`, 'gi');
+                cell.innerHTML = originalText.replace(regex, '<mark>$1</mark>');
+              } else {
+                cell.innerHTML = originalText;
+              }
             });
+
+            // Áp dụng cả text filter và date filter
+            const textFilterPass = match || filter === '';
+            const dateFilterPass = checkDateFilter(row, searchDateFrom, searchDateTo);
+
+            row.style.display = (textFilterPass && dateFilterPass) ? '' : 'none';
+          });
+        }
+
+        function checkDateFilter(row, searchDateFrom, searchDateTo) {
+          const dateFrom = searchDateFrom.value
+            ? dayjs(searchDateFrom.value).startOf('day')
+            : null;
+          const dateTo = searchDateTo.value
+            ? dayjs(searchDateTo.value).endOf('day')
+            : null;
+
+          // Nếu không có date filter, return true
+          if (!dateFrom && !dateTo) {
+            return true;
           }
-          
-          function checkDateFilter(row, searchDateFrom, searchDateTo) {
-            const dateFrom = searchDateFrom.value
-              ? dayjs(searchDateFrom.value).startOf('day')
-              : null;
-            const dateTo = searchDateTo.value
-              ? dayjs(searchDateTo.value).endOf('day')
-              : null;
-              
-            // Nếu không có date filter, return true
-            if (!dateFrom && !dateTo) {
-              return true;
-            }
-            
-            if (!row.cells || row.cells.length < 9) {
-              return true;
-            }
-            
-            const dateCell = row.cells[8]; // cột complete_time
-            const cellText = dateCell.textContent.trim();
-            
-            if (!cellText) {
-              return false;
-            }
-            
-            const cellDate = dayjs(cellText, 'YYYY-MM-DD HH:mm:ss');
-            if (!cellDate.isValid()) {
-              return false;
-            }
-            
-            let showRow = true;
-            if (dateFrom && cellDate.isBefore(dateFrom)) {
-              showRow = false;
-            }
-            if (dateTo && cellDate.isAfter(dateTo)) {
-              showRow = false;
-            }
-            
-            return showRow;
+
+          if (!row.cells || row.cells.length < 9) {
+            return true;
           }
-          
-          // Hàm clear tất cả filter
-          function clearAllFilters() {
-            searchTextDelivery.value = '';
-            searchDateFrom.value = '';
-            searchDateTo.value = '';
-            textSearchHandler(); // Reset hiển thị
+
+          const dateCell = row.cells[8]; // cột complete_time
+          const cellText = dateCell.textContent.trim();
+
+          if (!cellText) {
+            return false;
           }
-          
-          //button clear
-          const clearButton = document.getElementById('clearFilters');
-          if (clearButton) {
-            clearButton.addEventListener('click', clearAllFilters);
+
+          const cellDate = dayjs(cellText, 'YYYY-MM-DD HH:mm:ss');
+          if (!cellDate.isValid()) {
+            return false;
           }
-          factorySelect.removeEventListener('change', factorySelectHandler);
-          factorySelect.addEventListener('change', factorySelectHandler);
-          
-          searchDateFrom.removeEventListener('change', dateFilterHandler);
-          searchDateTo.removeEventListener('change', dateFilterHandler);
-          searchDateFrom.addEventListener('change', dateFilterHandler);
-          searchDateTo.addEventListener('change', dateFilterHandler);
-          
-          async function factorySelectHandler() {
-            await initDelivery();
+
+          let showRow = true;
+          if (dateFrom && cellDate.isBefore(dateFrom)) {
+            showRow = false;
           }
-          
-          function dateFilterHandler() {
-            // Chạy lại cả text filter và date filter khi date thay đổi
-            textSearchHandler();
+          if (dateTo && cellDate.isAfter(dateTo)) {
+            showRow = false;
           }
-          // event delete delivery
-          specTableBody.removeEventListener('click', handleDeliveryTableClick);
-          specTableBody.addEventListener('click', handleDeliveryTableClick);
+
+          return showRow;
+        }
+
+        // Hàm clear tất cả filter
+        function clearAllFilters() {
+          searchTextDelivery.value = '';
+          searchDateFrom.value = '';
+          searchDateTo.value = '';
+          textSearchHandler(); // Reset hiển thị
+        }
+
+        //button clear
+        const clearButton = document.getElementById('clearFilters');
+        if (clearButton) {
+          clearButton.addEventListener('click', clearAllFilters);
+        }
+        factorySelect.removeEventListener('change', factorySelectHandler);
+        factorySelect.addEventListener('change', factorySelectHandler);
+
+        searchDateFrom.removeEventListener('change', dateFilterHandler);
+        searchDateTo.removeEventListener('change', dateFilterHandler);
+        searchDateFrom.addEventListener('change', dateFilterHandler);
+        searchDateTo.addEventListener('change', dateFilterHandler);
+
+        async function factorySelectHandler() {
+          await initDelivery();
+        }
+
+        function dateFilterHandler() {
+          // Chạy lại cả text filter và date filter khi date thay đổi
+          textSearchHandler();
+        }
+        // event delete delivery
+        specTableBody.removeEventListener('click', handleDeliveryTableClick);
+        specTableBody.addEventListener('click', handleDeliveryTableClick);
       }
-      
+
       // delete delivery
       async function handleDeliveryTableClick(e) {
-        const row = e.target.closest('tr');
         console.log(e.target.dataset);
         const modelId = e.target.dataset.modelId;
         const factory = e.target.dataset.factory.toLowerCase();
@@ -2030,126 +2502,126 @@
           }
         }
       }
-      
-      // Rerender charts with default data in case of error
-      function rerendercharts(){
-        // Create fallback monthly chart with Highcharts
-          Highcharts.chart('monthlyChart', {
-            chart: {
-              type: 'line',
-              backgroundColor: 'transparent',
-              height: 250
-            },
-            responsive: {
-              rules: [{
-                condition: {
-                  maxWidth: 500
-                },
-                chartOptions: {
-                  chart: {
-                    height: 200
-                  }
-                }
-              }]
-            },
-            title: {
-              text: null
-            },
-            xAxis: {
-              categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-              labels: {
-                style: {
-                  color: '#ffffff'
-                }
-              }
-            },
-            yAxis: {
-              title: {
-                text: 'Deliveries',
-                style: {
-                  color: '#ffffff'
-                }
-              },
-              labels: {
-                style: {
-                  color: '#ffffff'
-                }
-              },
-              gridLineColor: 'rgba(255, 255, 255, 0.1)'
-            },
-            legend: {
-              enabled: false
-            },
-            series: [{
-              name: 'Total Deliveries',
-              data: [0, 0, 0, 0, 0, 0],
-              color: '#007FFF',
-              lineWidth: 3
-            }],
-            credits: {
-              enabled: false
-            }
-          });
 
-          // Create fallback status chart with Highcharts
-          Highcharts.chart('orderChart', {
-            chart: {
-              type: 'pie',
-              backgroundColor: 'transparent',
-              height: 250
-            },
-            responsive: {
-              rules: [{
-                condition: {
-                  maxWidth: 500
-                },
-                chartOptions: {
-                  chart: {
-                    height: 200
-                  }
+      // Rerender charts with default data in case of error
+      function rerendercharts() {
+        // Create fallback monthly chart with Highcharts
+        Highcharts.chart('monthlyChart', {
+          chart: {
+            type: 'line',
+            backgroundColor: 'transparent',
+            height: 250
+          },
+          responsive: {
+            rules: [{
+              condition: {
+                maxWidth: 500
+              },
+              chartOptions: {
+                chart: {
+                  height: 200
                 }
-              }]
-            },
-            title: {
-              text: null
-            },
-            plotOptions: {
-              pie: {
-                innerSize: '60%',
-                dataLabels: {
-                  enabled: false
-                },
-                showInLegend: true
               }
-            },
-            legend: {
-              align: 'center',
-              verticalAlign: 'bottom',
-              itemStyle: {
+            }]
+          },
+          title: {
+            text: null
+          },
+          xAxis: {
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            labels: {
+              style: {
+                color: '#ffffff'
+              }
+            }
+          },
+          yAxis: {
+            title: {
+              text: 'Deliveries',
+              style: {
                 color: '#ffffff'
               }
             },
-            series: [{
-              name: 'Status',
-              data: [
-                {
-                  name: 'Complete',
-                  y: 0,
-                  color: '#10b981'
-                },
-                {
-                  name: 'In Progress',
-                  y: 0,
-                  color: '#f59e0b'
+            labels: {
+              style: {
+                color: '#ffffff'
+              }
+            },
+            gridLineColor: 'rgba(255, 255, 255, 0.1)'
+          },
+          legend: {
+            enabled: false
+          },
+          series: [{
+            name: 'Total Deliveries',
+            data: [0, 0, 0, 0, 0, 0],
+            color: '#007FFF',
+            lineWidth: 3
+          }],
+          credits: {
+            enabled: false
+          }
+        });
+
+        // Create fallback status chart with Highcharts
+        Highcharts.chart('orderChart', {
+          chart: {
+            type: 'pie',
+            backgroundColor: 'transparent',
+            height: 250
+          },
+          responsive: {
+            rules: [{
+              condition: {
+                maxWidth: 500
+              },
+              chartOptions: {
+                chart: {
+                  height: 200
                 }
-              ]
-            }],
-            credits: {
-              enabled: false
+              }
+            }]
+          },
+          title: {
+            text: null
+          },
+          plotOptions: {
+            pie: {
+              innerSize: '60%',
+              dataLabels: {
+                enabled: false
+              },
+              showInLegend: true
             }
-          });
+          },
+          legend: {
+            align: 'center',
+            verticalAlign: 'bottom',
+            itemStyle: {
+              color: '#ffffff'
+            }
+          },
+          series: [{
+            name: 'Status',
+            data: [
+              {
+                name: 'Complete',
+                y: 0,
+                color: '#10b981'
+              },
+              {
+                name: 'In Progress',
+                y: 0,
+                color: '#f59e0b'
+              }
+            ]
+          }],
+          credits: {
+            enabled: false
+          }
+        });
       }
-      
+
       // Initialize everything on DOMContentLoaded
       document.addEventListener('DOMContentLoaded', async () => {
         try {
@@ -2175,9 +2647,10 @@
           totalInDayElem.textContent = '0';
           performanceElem.textContent = '0%';
           rerendercharts();
-          
+
         }
       });       
     </script>
 </body>
+
 </html>

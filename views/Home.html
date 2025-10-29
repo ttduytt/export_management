@@ -1,410 +1,619 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="/images/logoweb.jpg" type="image/x-icon">
-    <title>Managerment Delivery - Home</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/images/logoweb.jpg" type="image/x-icon">
+  <title>Managerment Delivery - Home</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #040818;
-            background-image:
-              linear-gradient(to right, rgba(75, 85, 99, 0.4) 1px, transparent 1px),
-              linear-gradient(to bottom, rgba(75, 85, 99, 0.4) 1px, transparent 1px);
-            background-size: 40px 40px, 40px 40px, 100% 100%;
-        }
-        /* Navigation */
-        nav {
-            background: rgba(6, 12, 34, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 0;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(102, 126, 234, 0.3);
-        }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #040818;
+    }
 
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 40px;
-        }
+    /* Light mode */
+    body.light-theme {
+      background-color: white;
+      color: #e3e2e9;
+    }
 
-        .logo {
-            color: white;
-            font-size: 30px;
-            font-weight: 700;
-            padding: 20px 0;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            background: linear-gradient(135deg, #f4f4f4 0%, #e7d3fc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+    /* nav */
+    body.light-theme nav {
+      background: linear-gradient(to right, #667db6, #0082c8, #0082c8, #667db6);
+    }
 
-        .logo img {
-            transition: transform 0.3s ease;
-        }
+    body.light-theme .nav-menu li a.active {
+      background: #2a8f9e;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      color: white;
+    }
 
-        .logo img:hover {
-            transform: scale(1.05);
-        }
+    body.light-theme .nav-menu li a:hover {
+      background: #2a8f9e;
+      color: white;
+      transform: translateY(-2px);
+    }
 
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            gap: 8px;
-            align-items: center;
-        }
+    body.light-theme .nav-menu li a {
+      color: white;
+    }
 
-        .nav-menu li a {
-            color: rgba(255, 255, 255, 0.85);
-            text-decoration: none;
-            padding: 12px 28px;
-            display: block;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            font-weight: 500;
-            font-size: 15px;
-            letter-spacing: 0.5px;
-            border-radius: 8px;
-        }
+    body.light-theme .logo a {
+      color: white;
+    }
 
-        .nav-menu li a::before {
-            content: '';
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%) scaleX(0);
-            width: 60%;
-            height: 2px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            transition: transform 0.3s ease;
-        }
+    body.light-theme .nav-menu li a::before {
+      background: #6dd5ed;
+    }
 
-        .nav-menu li a:hover {
-            background: rgba(102, 126, 234, 0.15);
-            color: white;
-            transform: translateY(-2px);
-        }
+    body.light-theme .container {
+      background: white;
+    }
 
-        .nav-menu li a:hover::before {
-            transform: translateX(-50%) scaleX(1);
-        }
+    body.light-theme .text-wrapper h1 {
+      color: black;
+    }
 
-        .nav-menu li a.active {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
+    body.light-theme .typing-sub {
+      background: #2a8f9e;
+    }
 
-        .nav-menu li a.active::before {
-            transform: translateX(-50%) scaleX(1);
-        }
-        /* Footer */
-        footer {
-          background: #040818b7;
-          color: white;
-          font-size: 12px;
-          text-align: center;
-          padding: 20px 20px;
-          position: fixed;
-          bottom: 0;
-          right: 0;
-          text-align: right;
-          left: auto;
-          width: 100%;
-        }
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hamburger {
-                display: flex;
-            }
-            .nav-menu {
-                position: fixed;
-                left: -100%;
-                top: 60px;
-                flex-direction: column;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                width: 100%;
-                text-align: center;
-                transition: 0.3s;
-                box-shadow: 0 10px 27px rgba(0,0,0,0.05);
-            }
 
-            .nav-menu.active {
-                left: 0;
-            }
+    /* Navigation */
+    nav {
+      background: rgba(6, 12, 34, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 0;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(102, 126, 234, 0.3);
+    }
 
-            .nav-menu li {
-                margin: 0;
-            }
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 40px;
+    }
 
-            .nav-menu li a {
-                padding: 20px;
-            }
-          
-        }
-        .container {
-          display: flex;
-          height: calc(100vh - 140px); /* Chiều cao toàn màn hình trừ header/footer nếu có */
-          color: white;
-        }
-        /* Cột bên trái */
-        .content-left {
-          flex: 1;
-          display: flex;
-          justify-content: center; /* căn giữa ngang */
-          align-items: center;     /* căn giữa dọc */
-          text-align: center;
-          padding: 40px;
-        }
+    .logo {
+      color: white;
+      font-size: 30px;
+      font-weight: 700;
+      padding: 20px 0;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #f4f4f4 0%, #e7d3fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-        .text-wrapper h1 {
-          font-size: 40px;
-          margin-bottom: 20px;
-          text-transform: uppercase;
-          font-weight: 700;
-        }
+    .logo img {
+      transition: transform 0.3s ease;
+    }
 
-        .text-wrapper p {
-          font-size: 18px;
-          color: #ccc;
-        }
-        .text-wrapper {
-          text-align: center;
-          color: white;
-          margin: 50px auto;
-        }
+    .logo img:hover {
+      transform: scale(1.05);
+    }
 
-        .typing-text {
-          overflow: hidden;
-          border-right: 3px solid #fff;
-          white-space: nowrap;
-          margin: 0 auto;
-          letter-spacing: 2px;
-          width: 0;
-          animation: typing 5s steps(40, end) forwards, blink 1s step-end infinite;
-        }
+    .nav-menu {
+      display: flex;
+      list-style: none;
+      gap: 8px;
+      align-items: center;
+    }
 
-        /* Dòng chứa các slogan */
-        .slogan-row {
-          display: flex;
-          justify-content: center;
-          gap: 20px;           
-          /* flex-wrap: wrap; */
-        }
-          .typing-sub.show {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        .typing-sub {
-          background: rgba(255, 255, 255, 0.25);
-          border-radius: 12px;
-          padding: 15px 20px;
-          font-size: 16px;
-          width: 250px;
-          color: white;
-          text-align: center;
-          opacity: 0; /* ẩn ban đầu */
-          transform: translateY(30px);
-          transition: all 0.5s ease;
-          animation: fadeInUp 1s ease forwards;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-        }
+    .nav-menu li a {
+      color: rgba(255, 255, 255, 0.85);
+      text-decoration: none;
+      padding: 12px 28px;
+      display: block;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      font-weight: 500;
+      font-size: 15px;
+      letter-spacing: 0.5px;
+      border-radius: 8px;
+    }
 
-        .typing-sub span {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-        }
-        .logout span{
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .typing-sub svg {
-          color: #4ade80;
-          flex-shrink: 0;
-        }
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .typing-sub:nth-child(1) {
-          animation-delay: 5s;
-        }
+    .nav-menu li a::before {
+      content: '';
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%) scaleX(0);
+      width: 60%;
+      height: 2px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      transition: transform 0.3s ease;
+    }
 
-        .typing-sub:nth-child(2) {
-          animation-delay: 5.5s;
-        }
+    .nav-menu li a:hover {
+      background: rgba(102, 126, 234, 0.15);
+      color: white;
+      transform: translateY(-2px);
+    }
 
-        .typing-sub:nth-child(3) {
-          animation-delay: 6s; 
-        }
+    .nav-menu li a:hover::before {
+      transform: translateX(-50%) scaleX(1);
+    }
 
-        .typing-sub:hover {
-          transform: translateY(-10px);
-          background: rgba(102, 126, 234, 0.2);
-        }
-        @keyframes typing {
-          from { width: 0 }
-          to { width: 100% }
-        }
-        @keyframes blink {
-          50% { border-color: transparent }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0 }
-          to { opacity: 1 }
-        }
-        /* Cột bên phải */
-        .content-right {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center; 
-          align-items: center;    
-          gap: 20px;
-        }
-        .content-right img {
-          width: 80%;
-          max-width: 400px;
-          max-height: 350px;
-          border-radius: 12px;
-          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-          transition: transform 0.3s ease;
-        }
+    .nav-menu li a.active {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
 
-        .content-right img:hover {
-          transform: scale(1.05);
-        }
+    .nav-menu li a.active::before {
+      transform: translateX(-50%) scaleX(1);
+    }
 
-        /* Responsive: khi màn nhỏ, xếp dọc */
-        @media (max-width: 900px) {
-          .container {
-            flex-direction: column;
-            height: auto;
-          }
+    /* From Uiverse.io by JustCode14 */
+    /* The switch - the box around the slider */
+    .switch {
+      font-size: 17px;
+      position: relative;
+      display: inline-block;
+      width: 4em;
+      height: 2.2em;
+      border-radius: 30px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
 
-          .content-left, .content-right {
-            width: 100%;
-          }
+    /* Hide default HTML checkbox */
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
 
-          .content-right {
-            flex-direction: row;
-            flex-wrap: wrap;
-            gap: 10px;
-          }
+    /* The slider */
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #2a2a2a;
+      transition: 0.4s;
+      border-radius: 30px;
+      overflow: hidden;
+    }
 
-          .content-right img {
-            width: 45%;
-            max-width: 200px;
-          }
-        }
-        @media (max-width: 1600px) {
-          .text-wrapper h1 {
-            font-size: 28px;
-          }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 1.2em;
+      width: 1.2em;
+      border-radius: 20px;
+      left: 0.5em;
+      bottom: 0.5em;
+      transition: 0.4s;
+      transition-timing-function: cubic-bezier(0.81, -0.04, 0.38, 1.5);
+      box-shadow: inset 8px -4px 0px 0px #fff;
+    }
 
-          .text-wrapper p {
-            font-size: 14px;
-          }
+    .switch input:checked+.slider {
+      background-color: #00a6ff;
+    }
 
-          .typing-sub {
-            width: 100%;
-            font-size: 14px;
-          }
-          .content-right img {
-            width: 90%;
-            max-width: 300px;
-          }
-        }
-        .vertical-slider {
-          overflow: hidden;
-          position: relative;
-          width: 100%;
-          display: flex;
-          justify-content: center;
-        }
-        .slide-track {
-          display: flex;
-          will-change: transform;
-          flex-direction: column;
-          align-items: center;
-        }
-        .slide-track img {
-          width: 80%;
-          max-width: 600px;
-          margin: 20px 0;
-          border-radius: 10px;
-          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-    </style>
+    .switch input:checked+.slider:before {
+      transform: translateX(1.8em);
+      box-shadow: inset 15px -4px 0px 15px #ffcf48;
+    }
+
+    .star {
+      background-color: #fff;
+      border-radius: 50%;
+      position: absolute;
+      width: 5px;
+      transition: all 0.4s;
+      height: 5px;
+    }
+
+    .star_1 {
+      left: 2.5em;
+      top: 0.5em;
+    }
+
+    .star_2 {
+      left: 2.2em;
+      top: 1.2em;
+    }
+
+    .star_3 {
+      left: 3em;
+      top: 0.9em;
+    }
+
+    .switch input:checked~.slider .star {
+      opacity: 0;
+    }
+
+    .cloud {
+      width: 3.5em;
+      position: absolute;
+      bottom: -1.4em;
+      left: -1.1em;
+      opacity: 0;
+      transition: all 0.4s;
+    }
+
+    .switch input:checked~.slider .cloud {
+      opacity: 1;
+    }
+
+
+    /* Footer */
+    footer {
+      color: white;
+      font-size: 12px;
+      text-align: center;
+      padding: 20px 20px;
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      left: auto;
+      width: 100%;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hamburger {
+        display: flex;
+      }
+
+      .nav-menu {
+        position: fixed;
+        left: -100%;
+        top: 60px;
+        flex-direction: column;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        width: 100%;
+        text-align: center;
+        transition: 0.3s;
+        box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
+      }
+
+      .nav-menu.active {
+        left: 0;
+      }
+
+      .nav-menu li {
+        margin: 0;
+      }
+
+      .nav-menu li a {
+        padding: 20px;
+      }
+
+    }
+
+    .container {
+      display: flex;
+      height: calc(100vh - 140px);
+      /* Chiều cao toàn màn hình trừ header/footer nếu có */
+      color: white;
+    }
+
+    /* Cột bên trái */
+    .content-left {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      /* căn giữa ngang */
+      align-items: center;
+      /* căn giữa dọc */
+      text-align: center;
+      padding: 40px;
+    }
+
+    .text-wrapper h1 {
+      font-size: 40px;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .text-wrapper p {
+      font-size: 18px;
+      color: #ccc;
+    }
+
+    .text-wrapper {
+      text-align: center;
+      color: white;
+      margin: 50px auto;
+    }
+
+    .typing-text {
+      overflow: hidden;
+      border-right: 3px solid #fff;
+      white-space: nowrap;
+      margin: 0 auto;
+      letter-spacing: 2px;
+      width: 0;
+      animation: typing 5s steps(40, end) forwards, blink 1s step-end infinite;
+    }
+
+    /* Dòng chứa các slogan */
+    .slogan-row {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      /* flex-wrap: wrap; */
+    }
+
+    .typing-sub.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .typing-sub {
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 12px;
+      padding: 15px 20px;
+      font-size: 16px;
+      width: 250px;
+      color: white;
+      text-align: center;
+      opacity: 0;
+      /* ẩn ban đầu */
+      transform: translateY(30px);
+      transition: all 0.5s ease;
+      animation: fadeInUp 1s ease forwards;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .typing-sub span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .logout span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .typing-sub svg {
+      color: #4ade80;
+      flex-shrink: 0;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .typing-sub:nth-child(1) {
+      animation-delay: 5s;
+    }
+
+    .typing-sub:nth-child(2) {
+      animation-delay: 5.5s;
+    }
+
+    .typing-sub:nth-child(3) {
+      animation-delay: 6s;
+    }
+
+    .typing-sub:hover {
+      transform: translateY(-10px);
+      background: rgba(102, 126, 234, 0.2);
+    }
+
+    @keyframes typing {
+      from {
+        width: 0
+      }
+
+      to {
+        width: 100%
+      }
+    }
+
+    @keyframes blink {
+      50% {
+        border-color: transparent
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    /* Cột bên phải */
+    .content-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .content-right img {
+      width: 80%;
+      max-width: 400px;
+      max-height: 350px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .content-right img:hover {
+      transform: scale(1.05);
+    }
+
+    /* Responsive: khi màn nhỏ, xếp dọc */
+    @media (max-width: 900px) {
+      .container {
+        flex-direction: column;
+        height: auto;
+      }
+
+      .content-left,
+      .content-right {
+        width: 100%;
+      }
+
+      .content-right {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .content-right img {
+        width: 45%;
+        max-width: 200px;
+      }
+    }
+
+    @media (max-width: 1600px) {
+      .text-wrapper h1 {
+        font-size: 28px;
+      }
+
+      .text-wrapper p {
+        font-size: 14px;
+      }
+
+      .typing-sub {
+        width: 100%;
+        font-size: 14px;
+      }
+
+      .content-right img {
+        width: 90%;
+        max-width: 300px;
+      }
+    }
+
+    .vertical-slider {
+      overflow: hidden;
+      position: relative;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .slide-track {
+      display: flex;
+      will-change: transform;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .slide-track img {
+      width: 80%;
+      max-width: 600px;
+      margin: 20px 0;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+  </style>
 </head>
+
 <body>
-    <div class="all">
+  <div class="all">
     <!-- Navigation -->
     <nav>
-        <div class="nav-container">
-            <div class="logo" ><span><img style="width: 80px;" src="/images/logo.png" alt=""></span>MANAGERMENT DELIVERY</div>
-            <ul class="nav-menu" id="navMenu">
-                <li class="home"><a href="">Home</a></li>
-                <li class="delivery" ><a href="#delivery">Delivery</a></li>
-                <li class="history" ><a href="#history">History</a></li>
-                <li class="admin" id="admin"><a href="#admin">Admin</a></li>
-                <li class="logout">
-                    <a href="#">
-                    <span>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="lucide lucide-log-out-icon lucide-log-out">
-                        <path d="m16 17 5-5-5-5"/>
-                        <path d="M21 12H9"/>
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                        </svg>
-                    </span>
-                    </a>
-                </li>
-              </ul>
-        </div>
+      <div class="nav-container">
+        <div class="logo"><span><img style="width: 80px;" src="/images/logo.png" alt=""></span><a
+            href="#home">MANAGERMENT DELIVERY</a></div>
+        <ul class="nav-menu" id="navMenu">
+          <li class="home"><a href="#">Home</a></li>
+          <li class="delivery"><a href="#delivery">Delivery</a></li>
+          <li class="history"><a href="#history">History</a></li>
+          <li class="admin"><a href="#admin">Admin</a></li>
+          <li class="logout">
+            <a href="#">
+              <span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out-icon lucide-log-out">
+                  <path d="m16 17 5-5-5-5" />
+                  <path d="M21 12H9" />
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                </svg>
+              </span>
+            </a>
+          </li>
+        </ul>
+        <label class="switch">
+          <input checked="true" id="checkbox" type="checkbox" />
+          <span class="slider">
+            <div class="star star_1"></div>
+            <div class="star star_2"></div>
+            <div class="star star_3"></div>
+            <svg viewBox="0 0 16 16" class="cloud_1 cloud">
+              <path transform="matrix(.77976 0 0 .78395-299.99-418.63)" fill="#fff"
+                d="m391.84 540.91c-.421-.329-.949-.524-1.523-.524-1.351 0-2.451 1.084-2.485 2.435-1.395.526-2.388 1.88-2.388 3.466 0 1.874 1.385 3.423 3.182 3.667v.034h12.73v-.006c1.775-.104 3.182-1.584 3.182-3.395 0-1.747-1.309-3.186-2.994-3.379.007-.106.011-.214.011-.322 0-2.707-2.271-4.901-5.072-4.901-2.073 0-3.856 1.202-4.643 2.925">
+              </path>
+            </svg>
+          </span>
+        </label>
+      </div>
     </nav>
     <div class="container">
       <div class="content-left">
         <div class="text-wrapper">
           <h1 class="typing-text">Welcome to the ACM Finished Goods Delivery System</h1>
           <div class="slogan-row">
-            <p class="typing-sub"><span><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-check-big-icon lucide-circle-check-big"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></span>Precision in Every Shipment - Perfection in Every Delivery.</p>
-            <p class="typing-sub"><span><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-check-big-icon lucide-circle-check-big"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></span>Delivering Accuracy, Speed, and Quality.</p>
-            <p class="typing-sub"><span><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-check-big-icon lucide-circle-check-big"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></span>Every Box, a Promise Delivered.</p>
+            <p class="typing-sub"><span><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-circle-check-big-icon lucide-circle-check-big">
+                  <path d="M21.801 10A10 10 0 1 1 17 3.335" />
+                  <path d="m9 11 3 3L22 4" />
+                </svg></span>Precision in Every Shipment - Perfection in Every Delivery.</p>
+            <p class="typing-sub"><span><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-circle-check-big-icon lucide-circle-check-big">
+                  <path d="M21.801 10A10 10 0 1 1 17 3.335" />
+                  <path d="m9 11 3 3L22 4" />
+                </svg></span>Delivering Accuracy, Speed, and Quality.</p>
+            <p class="typing-sub"><span><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-circle-check-big-icon lucide-circle-check-big">
+                  <path d="M21.801 10A10 10 0 1 1 17 3.335" />
+                  <path d="m9 11 3 3L22 4" />
+                </svg></span>Every Box, a Promise Delivered.</p>
           </div>
         </div>
       </div>
@@ -419,25 +628,48 @@
         </div>
       </div>
     </div>
-        <!-- Footer -->
+    <!-- Footer -->
     <footer>
-        <p>&copy; 2025 Copyright for Partron VN</p>
+      <p>&copy; 2025 Copyright for Partron VN</p>
     </footer>
     <script src="/js/gsap.min.js"></script>
     <script>
-        //animation images
-        const track = document.getElementById("slideTrack");
-        track.innerHTML += track.innerHTML;
-        let offset = 0;
-        function scrollLoop() {
-          offset += 0.5; 
-          if (offset >= track.scrollHeight / 2) offset = 0;
-          track.style.transform = `translateY(-${offset}px)`;
-          requestAnimationFrame(scrollLoop);
-        }
-        scrollLoop();
-        
-        const navLinks = document.querySelectorAll('.nav-menu a');
+
+      // Theme Toggle Logic
+      const themeToggle = document.getElementById('checkbox');
+      const body = document.body;
+
+      // Kiểm tra theme đã lưu
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'light') {
+        body.classList.add('light-theme');
+        themeToggle.checked = true;
+      } else {
+        themeToggle.checked = false;
+      }
+
+      themeToggle.addEventListener('change', (e) => {
+        body.classList.toggle('light-theme');
+        const isLight = body.classList.contains('light-theme');
+
+        // Lưu theme vào localStorage
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      });
+
+
+      //animation images
+      const track = document.getElementById("slideTrack");
+      track.innerHTML += track.innerHTML;
+      let offset = 0;
+      function scrollLoop() {
+        offset += 0.5;
+        if (offset >= track.scrollHeight / 2) offset = 0;
+        track.style.transform = `translateY(-${offset}px)`;
+        requestAnimationFrame(scrollLoop);
+      }
+      scrollLoop();
+
+      const navLinks = document.querySelectorAll('.nav-menu a');
 
       // Khôi phục menu active
       const savedMenu = sessionStorage.getItem('activeMenu');
@@ -450,7 +682,7 @@
       navLinks.forEach(link => {
         link.addEventListener('click', e => {
           e.preventDefault();
-          const parentClass = link.parentElement.classList[0]; 
+          const parentClass = link.parentElement.classList[0];
           navLinks.forEach(l => l.classList.remove('active'));
           link.classList.add('active');
           sessionStorage.setItem('activeMenu', parentClass);
@@ -491,7 +723,8 @@
               break;
           }
         });
-        });         
+      });         
     </script>
 </body>
+
 </html>
