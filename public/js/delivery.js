@@ -9,6 +9,7 @@ const searchInput = document.querySelector(".searchInput");
 const importBtn = document.querySelector(".btnImport");
 const excelInput = document.getElementById("excelInput");
 const cbbFactory = document.querySelector(".factory");
+const errorSound = document.getElementById("errorSound");
 import { formatDate } from "../js/utils.js";
 
 let data = [];
@@ -43,6 +44,13 @@ cbbFactory.addEventListener("change", async () => {
   factorySelected = cbbFactory.value.toLowerCase();
   await getAll();
 });
+
+function playErrorSound() {
+  if (errorSound) {
+    errorSound.currentTime = 0;
+    errorSound.play().catch(() => {});
+  }
+}
 
 async function getAll() {
   try {
@@ -597,6 +605,7 @@ searchInput.addEventListener("keydown", async (e) => {
       const isQrExist = await checkQrExist(user.factory.toLowerCase(), qrValue);
 
       if (isQrExist) {
+        playErrorSound();
         alert("Mã QR đã tồn tại");
         return;
       }
@@ -604,12 +613,14 @@ searchInput.addEventListener("keydown", async (e) => {
       const delivery = await findDelivery(qrData);
 
       if (!delivery) {
+        playErrorSound();
         alert("không tìm thấy thông tin xuất hàng khớp với qr");
         return;
       }
 
       let newQuantity = Number(delivery.quantity) + Number(qrData.quantity);
       if (newQuantity > delivery.target) {
+        playErrorSound();
         alert("số lượng cộng thêm lớn hơn số lượng mục tiêu");
         return;
       }
@@ -640,6 +651,7 @@ searchInput.addEventListener("keydown", async (e) => {
       searchInput.value = "";
       await getAll();
     } catch (error) {
+      playErrorSound();
       alert(error);
       searchInput.value = "";
     }

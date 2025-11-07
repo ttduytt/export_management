@@ -285,7 +285,10 @@ router.get("/delivery/history/:factory", async (req, res) => {
   // Các tham số lọc
   const search = req.query.search ? req.query.search.trim() : "";
   const dateFrom = req.query.dateFrom ? req.query.dateFrom.trim() : "";
-  const dateTo = req.query.dateTo ? req.query.dateTo.trim() : "";
+  let dateTo = req.query.dateTo ? req.query.dateTo.trim() : "";
+  if (dateTo) {
+    if (!dateTo.includes(":")) dateTo += " 23:59:59";
+  }
 
   try {
     conn = await pool.getConnection();
