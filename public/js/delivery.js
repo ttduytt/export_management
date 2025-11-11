@@ -275,7 +275,7 @@ function validateExcelFile(file) {
             }
           }
 
-          if (headerRowIndex === -1) {
+          if (headerRowIndex === -1 || headerRowIndex === null) {
             alert("Không tìm thấy dòng header phù hợp!");
             return;
           }
