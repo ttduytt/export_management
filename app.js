@@ -1,6 +1,6 @@
 // app.js (ESM version)
 import express from "express";
-import path from "path";
+import path from "node:path";
 import dotenv from "dotenv";
 import apiRouter from "./routes/api.js";
 import router from "./routes/index.js";

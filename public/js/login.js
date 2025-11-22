@@ -33,7 +33,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (data.success) {
         const userData = {
           username: data.username,
-          password: data.password,
           role: data.role,
           factory: data.factory,
         };

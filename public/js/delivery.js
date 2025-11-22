@@ -594,8 +594,13 @@ async function updateDelivery(username, factory, delivery, qr) {
   }
 }
 
+let isProcessing = false;
+
 searchInput.addEventListener("keydown", async (e) => {
   if (e.key === "Enter") {
+    if (isProcessing) return;
+
+    isProcessing = true; // ĐÁNH DẤU ĐANG XỬ LÝ
     try {
       const qrValue = searchInput.value.trim();
       if (!qrValue) return;
@@ -654,6 +659,8 @@ searchInput.addEventListener("keydown", async (e) => {
       playErrorSound();
       alert(error);
       searchInput.value = "";
+    } finally {
+      isProcessing = false;
     }
   }
 });
