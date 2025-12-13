@@ -5,8 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/images/logoweb.jpg" type="image/x-icon">
+    <script type="module" src="/js/main.js"></script>
     <title>Managerment Delivery - Trang chủ</title>
-    <audio id="errorSound" src="/assets/errorsound.mp3" preload="auto"></audio>
+    <audio id="errorSound" src="/images/errorsound.mp3" preload="auto"></audio>
     <style>
         * {
             margin: 0;
@@ -962,7 +963,7 @@
                 <div>Target</div>
                 <div>Quantity</div>
                 <div>Complete Time</div>
-                <div>Shipment Date</div>
+                <div>Shipping Date</div>
                 <div>Shipping Method</div>
             </div>
 
@@ -1046,7 +1047,13 @@
                             if (confirm('Are you sure you want to logout?')) {
                                 sessionStorage.clear();
                                 localStorage.clear();
-                                window.location.href = '/';
+                                fetch('/exportmanagement/logout', {
+                                    method: 'POST',
+                                    credentials: 'include'
+                                }).then(() => {
+                                    window.location.href = '/';
+                                });
+
                             }
                             break;
 
@@ -1059,12 +1066,7 @@
                             break;
 
                         case 'admin':
-                            const user = JSON.parse(localStorage.getItem('user'));
-                            if (user.role === 'MANAGER') {
                                 window.location.href = '/admin';
-                            } else {
-                                alert('Access denied. Admins only.');
-                            }
                             break;
                         default:
                             console.log('Unknown menu item:', parentClass);

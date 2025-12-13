@@ -1,4 +1,5 @@
 import * as XLSX from "./xlsx.js";
+import { formatDate } from "../js/utils.js";
 
 const gridBtn = document.getElementById("gridBtn");
 const listBtn = document.getElementById("listBtn");
@@ -10,14 +11,10 @@ const importBtn = document.querySelector(".btnImport");
 const excelInput = document.getElementById("excelInput");
 const cbbFactory = document.querySelector(".factory");
 const errorSound = document.getElementById("errorSound");
-import { formatDate } from "../js/utils.js";
 
 let data = [];
-const user = JSON.parse(localStorage.getItem("user"));
-if (!user) {
-  alert("Unauthorized! Please log in.");
-  globalThis.location.href = "/";
-}
+let user = null;
+
 const columnMapping = {
   "MOBIS-CODE": "mobiscode",
   MODEL: "modelname",
@@ -29,6 +26,18 @@ const columnMapping = {
   일자: "shipmentdate",
   출하지: "factory",
 };
+
+user = await getUserProfile();
+
+async function getUserProfile() {
+  const res = await fetch("/exportmanagement/profile", {
+    method: "GET",
+    credentials: "include",
+  });
+
+  const data = await res.json();
+  return data.user;
+}
 
 if (user.factory.toLowerCase() == "v4") {
   importBtn.classList.add("visible");

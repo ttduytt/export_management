@@ -1,13 +1,29 @@
+import { scheduleRefreshtoken } from "./utils.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.querySelector("#loginForm");
   const submitBtn = document.querySelector("#submitBtn");
   const forgotBtn = document.querySelector("#forgotBtn");
+  const savePassword = document.querySelector("#savePassword");
 
   // Xử lý quên mật khẩu
   forgotBtn.addEventListener("click", (e) => {
     e.preventDefault();
     alert("Please contact IT to retrieve your password!");
   });
+
+  const params = new URLSearchParams(window.location.search);
+  const msg = params.get("msg");
+
+  if (msg === "no_permission") {
+    alert("Bạn không có quyền truy cập trang này");
+  }
+
+  if (msg === "invalid_token") {
+    alert(
+      "Phiên đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại!"
+    );
+  }
 
   // Hàm xử lý login dùng chung
   async function handleLogin(e) {
@@ -22,29 +38,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
+      const isSavePass = savePassword.checked;
       const res = await fetch("/exportmanagement/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password, isSavePass }),
       });
 
       const data = await res.json();
-
       if (data.success) {
-        const userData = {
-          username: data.username,
-          role: data.role,
-          factory: data.factory,
-        };
-        sessionStorage.setItem("user", JSON.stringify(userData));
-        localStorage.setItem("user", JSON.stringify(userData));
-
-        window.location.href = "/home";
+        localStorage.setItem("isSavePass", isSavePass)
+        globalThis.location.href = "/home";
       } else {
         alert("Incorrect username or password!");
       }
     } catch (err) {
       alert("Server connection error!");
+      console.log(err);
     }
   }
 

@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="/images/logoweb.jpg" type="image/x-icon">
   <script src="/js/highcharts.js"></script>
+  <script type="module" src="/js/main.js"></script>
   <title>Managerment Delivery - Admin Dashboard</title>
   <style>
     * {
@@ -1375,7 +1376,7 @@
               <th>Quantity</th>
               <th>Status</th>
               <th>Complete Time</th>
-              <th>Shipment Date</th>
+              <th>Shipping Date</th>
               <th>Shipping Method</th>
               <th>Actions</th>
             </tr>
@@ -1450,7 +1451,13 @@
               if (confirm('Are you sure you want to logout?')) {
                 sessionStorage.clear();
                 localStorage.clear();
-                window.location.href = '/';
+
+                fetch('/exportmanagement/logout', {
+                  method: 'POST',
+                  credentials: 'include'
+                }).then(() => {
+                  window.location.href = '/';
+                });
               }
               break;
 
@@ -1463,12 +1470,7 @@
               break;
 
             case 'admin':
-              const user = JSON.parse(localStorage.getItem('user'));
-              if (user.role === 'MANAGER') {
-                window.location.href = '/admin';
-              } else {
-                alert('Access denied. Admins only.');
-              }
+              window.location.href = '/admin';
               break;
             default:
               console.log('Unknown menu item:', parentClass);
@@ -1477,11 +1479,11 @@
         });
       });
 
+
       //overview
-      async function initOverview() {
+      async function initOverview(user) {
         const totalInDayElem = document.getElementById('totalInDay');
         const performanceElem = document.getElementById('performance');
-        const user = JSON.parse(localStorage.getItem('user'));
         const factory = user.factory || 'V4';
         if (!document.getElementById('monthlyChart') || !document.getElementById('orderChart')) {
           return;
@@ -1660,6 +1662,15 @@
         });
       }
 
+      async function getUserProfile() {
+        const res = await fetch("/exportmanagement/profile", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        const data = await res.json();
+        return data.user;
+      }
       //User management table
       async function initUserManagement() {
         // Create user management table
@@ -2625,15 +2636,15 @@
       // Initialize everything on DOMContentLoaded
       document.addEventListener('DOMContentLoaded', async () => {
         try {
+          const user = await getUserProfile();
           const welcome = document.getElementById('welcome');
-          const user = JSON.parse(localStorage.getItem('user'));
           if (user.role === 'MANAGER') {
             welcome.textContent = `Welcome Manager Back, ${user.username || 'Admin'}`;
           } else {
             welcome.textContent = 'Welcome Staff Back, Admin';
           }
           // Initialize overview metrics and charts
-          await initOverview();
+          await initOverview(user);
           // Initialize user management table
           await initUserManagement();
           // Initialize spec management table

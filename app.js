@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import apiRouter from "./routes/api.js";
 import router from "./routes/index.js";
 import { fileURLToPath } from "url";
+import cookieParser from "cookie-parser";
 
 // Cấu hình __dirname vì trong ESM không có sẵn
 const __filename = fileURLToPath(import.meta.url);
@@ -16,6 +17,8 @@ dotenv.config();
 const app = express();
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
+
+app.use(cookieParser());
 
 // API routes
 app.use("/exportmanagement", apiRouter);

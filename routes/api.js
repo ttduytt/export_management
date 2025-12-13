@@ -1,9 +1,20 @@
 import express from "express";
 const router = express.Router();
 import pool from "../config/dbconfig.js";
+import {
+  generateRefreshToken,
+  generateToken,
+  createAccessTokenFromRefresh,
+} from "../authentication/jwt.js";
+import { authenticate } from "../authentication/middleware.js";
 
 // user
-router.get("/users", async (req, res) => {
+router.get("/users", authenticate, async (req, res) => {
+  if (req.user?.factory !== "V4") {
+    return res.status(403).json({
+      message: "Bạn không có quyền thực hiện thao tác này",
+    });
+  }
   let conn;
   try {
     conn = await pool.getConnection();
@@ -17,8 +28,67 @@ router.get("/users", async (req, res) => {
   }
 });
 
+//
+router.get("/profile", authenticate, (req, res) => {
+  res.json({ user: req.user });
+});
+
+// logout
+// logout
+router.post("/logout", async (req, res) => {
+  try {
+    // 1. Lấy device_id từ cookie
+    const device_id = req.cookies.device_id;
+
+    if (!device_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing device_id",
+      });
+    }
+
+    // 2. Xóa JTI trong database
+    await pool.query(`UPDATE list_token SET jti = NULL WHERE device_id = ?`, [
+      device_id,
+    ]);
+
+    // 3. Xóa accessToken
+    res.clearCookie("accessToken", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "Lax",
+      path: "/",
+    });
+
+    // 4. Xóa refreshToken
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "Lax",
+      path: "/",
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  } catch (err) {
+    console.error("Logout error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error during logout",
+    });
+  }
+});
+
 //add user
-router.post("/users", async (req, res) => {
+router.post("/users", authenticate, async (req, res) => {
+  if (req.user?.factory !== "V4") {
+    return res.status(403).json({
+      message: "Bạn không có quyền thực hiện thao tác này",
+    });
+  }
   let conn;
   const { user_name, password, role, factory } = req.body;
   try {
@@ -45,7 +115,12 @@ router.post("/users", async (req, res) => {
 });
 
 // edit user
-router.put("/users/:id", async (req, res) => {
+router.put("/users/:id", authenticate, async (req, res) => {
+  if (req.user?.factory !== "V4") {
+    return res.status(403).json({
+      message: "Bạn không có quyền thực hiện thao tác này",
+    });
+  }
   let conn;
   const userId = req.params.id;
   const { password, role, factory } = req.body;
@@ -79,7 +154,12 @@ router.put("/users/:id", async (req, res) => {
 });
 
 // delete user
-router.delete("/users/:id", async (req, res) => {
+router.delete("/users/:id", authenticate, async (req, res) => {
+  if (req.user?.factory !== "V4") {
+    return res.status(403).json({
+      message: "Bạn không có quyền thực hiện thao tác này",
+    });
+  }
   let conn;
   const userId = req.params.id;
   try {
@@ -108,7 +188,12 @@ router.delete("/users/:id", async (req, res) => {
 });
 
 // model spec
-router.get("/models", async (req, res) => {
+router.get("/models", authenticate, async (req, res) => {
+  if (req.user?.factory !== "V4") {
+    return res.status(403).json({
+      message: "Bạn không có quyền thực hiện thao tác này",
+    });
+  }
   let conn;
   try {
     conn = await pool.getConnection();
@@ -125,7 +210,12 @@ router.get("/models", async (req, res) => {
 });
 
 //add model spec
-router.post("/models", async (req, res) => {
+router.post("/models", authenticate, async (req, res) => {
+  if (req.user?.factory !== "V4") {
+    return res.status(403).json({
+      message: "Bạn không có quyền thực hiện thao tác này",
+    });
+  }
   let conn;
   const { model_type, mobis_code, partron_code, model_name, event_user } =
     req.body;
@@ -153,7 +243,12 @@ router.post("/models", async (req, res) => {
 });
 
 //edit model spec
-router.put("/models/:id", async (req, res) => {
+router.put("/models/:id", authenticate, async (req, res) => {
+  if (req.user?.factory !== "V4") {
+    return res.status(403).json({
+      message: "Bạn không có quyền thực hiện thao tác này",
+    });
+  }
   let conn;
   const modelId = req.params.id;
   const { model_type, mobis_code, partron_code, model_name, event_user } =
@@ -194,7 +289,12 @@ router.put("/models/:id", async (req, res) => {
 });
 
 // delete model spec
-router.delete("/models/:id", async (req, res) => {
+router.delete("/models/:id", authenticate, async (req, res) => {
+  if (req.user?.factory !== "V4") {
+    return res.status(403).json({
+      message: "Bạn không có quyền thực hiện thao tác này",
+    });
+  }
   let conn;
   const id = req.params.id;
   try {
@@ -226,7 +326,12 @@ router.delete("/models/:id", async (req, res) => {
 });
 
 // Bulk import model specs
-router.post("/models/importmodelspec", async (req, res) => {
+router.post("/models/importmodelspec", authenticate, async (req, res) => {
+  if (req.user?.factory !== "V4") {
+    return res.status(403).json({
+      message: "Bạn không có quyền thực hiện thao tác này",
+    });
+  }
   let conn;
   const models = req.body.specs;
   if (!Array.isArray(models) || models.length === 0) {
@@ -276,7 +381,7 @@ router.post("/models/importmodelspec", async (req, res) => {
 });
 
 // history delivery
-router.get("/delivery/history/:factory", async (req, res) => {
+router.get("/delivery/history/:factory", authenticate, async (req, res) => {
   let conn;
   const factory = req.params.factory;
   const page = Number.parseInt(req.query.page) || 1;
@@ -359,7 +464,7 @@ router.get("/delivery/history/:factory", async (req, res) => {
 });
 
 // delivery
-router.get("/delivery/:factory", async (req, res) => {
+router.get("/delivery/:factory", authenticate, async (req, res) => {
   let conn;
   const factory = req.params.factory.toLocaleLowerCase();
   let sqlquery;
@@ -383,7 +488,7 @@ router.get("/delivery/:factory", async (req, res) => {
   }
 });
 
-router.get("/delivery", async (req, res) => {
+router.get("/delivery", authenticate, async (req, res) => {
   let conn;
   try {
     conn = await pool.getConnection();
@@ -399,7 +504,7 @@ router.get("/delivery", async (req, res) => {
   }
 });
 
-router.get("/delivery/:modelId/:factory", async (req, res) => {
+router.get("/delivery/:modelId/:factory", authenticate, async (req, res) => {
   let conn;
   const modelId = req.params.modelId;
   const factory = req.params.factory;
@@ -418,7 +523,7 @@ router.get("/delivery/:modelId/:factory", async (req, res) => {
   }
 });
 
-router.get("/qr/:factory/:mobiscode/:type", async (req, res) => {
+router.get("/qr/:factory/:mobiscode/:type", authenticate, async (req, res) => {
   const conn = await pool.getConnection();
   const { factory, mobiscode, type } = req.params;
 
@@ -444,7 +549,12 @@ router.get("/qr/:factory/:mobiscode/:type", async (req, res) => {
   }
 });
 
-router.delete("/delivery", async (req, res) => {
+router.delete("/delivery", authenticate, async (req, res) => {
+  if (req.user?.factory !== "V4") {
+    return res.status(403).json({
+      message: "Bạn không có quyền thực hiện thao tác này",
+    });
+  }
   let conn;
   const model_id = req.query.modelid;
   const factory = req.query.factory;
@@ -479,7 +589,12 @@ router.delete("/delivery", async (req, res) => {
   }
 });
 
-router.post("/delivery/import", async (req, res) => {
+router.post("/delivery/import", authenticate, async (req, res) => {
+  if (req.user?.factory !== "V4") {
+    return res.status(403).json({
+      message: "Bạn không có quyền thực hiện thao tác này",
+    });
+  }
   const { username, deliveries } = req.body;
   let conn;
 
@@ -588,7 +703,7 @@ router.post("/delivery/import", async (req, res) => {
   }
 });
 
-router.put("/delivery/update/quantity", async (req, res) => {
+router.put("/delivery/update/quantity", authenticate, async (req, res) => {
   const { username, factory, delivery, qr } = req.body;
   const tableName = factory === "v0" ? "delivery_v0" : "delivery_v5";
   let conn;
@@ -631,7 +746,7 @@ router.put("/delivery/update/quantity", async (req, res) => {
   }
 });
 
-router.get("/qr/getvalue", async (req, res) => {
+router.get("/qr/getvalue", authenticate, async (req, res) => {
   const conn = await pool.getConnection();
   const factory = req.query.factory;
   const qrvalue = req.query.qrvalue;
@@ -663,34 +778,145 @@ router.get("/qr/getvalue", async (req, res) => {
 
 // login
 router.post("/api/login", async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, isSavePass } = req.body;
+  let device_id = req.cookies.device_id;
+
   try {
     const rows = await pool.query(
       "SELECT * FROM user WHERE user_name = ? AND password = ?",
       [username, password]
     );
-    if (rows.length > 0) {
-      const user = rows[0];
-      res.json({
-        success: true,
-        message: "Login successful",
-        username: user.user_name,
-        password: user.password,
-        role: user.role,
-        factory: user.factory,
-      });
-    } else {
-      res
+
+    if (rows.length === 0) {
+      return res
         .status(401)
         .json({ success: false, message: "Incorrect username or password!" });
     }
+
+    const user = rows[0];
+
+    const dataAccessToken = generateToken({
+      username: user.user_name,
+      user_id: user.id,
+      role: user.role,
+      factory: user.factory,
+    });
+
+    const dataRefreshToken = generateRefreshToken({
+      username: user.user_name,
+      user_id: user.id,
+      role: user.role,
+      factory: user.factory,
+    });
+
+    // ===== CASE 1: chưa có device_id =====
+    if (!device_id) {
+      device_id = crypto.randomUUID();
+
+      await pool.query(
+        "INSERT INTO list_token (jti, device_id, user_id) VALUES (?, ?, ?)",
+        [dataRefreshToken.jti, device_id, user.id]
+      );
+    } 
+    // ===== CASE 2: đã có device_id =====
+    else {
+      const [exist] = await pool.query(
+        "SELECT id FROM list_token WHERE device_id = ?",
+        [device_id]
+      );
+
+      if (exist.length > 0) {
+        // update refresh token mới
+        await pool.query(
+          "UPDATE list_token SET jti = ? WHERE device_id = ?",
+          [dataRefreshToken.jti, device_id]
+        );
+      } else {
+        // device_id có trên cookie nhưng chưa có trong DB
+        await pool.query(
+          "INSERT INTO list_token (jti, device_id, user_id) VALUES (?, ?, ?)",
+          [dataRefreshToken.jti, device_id, user.id]
+        );
+      }
+    }
+
+    // ===== Cookie options =====
+    let cookieOptions = {
+      httpOnly: true,
+      secure: false,
+    };
+
+    if (isSavePass) {
+      cookieOptions.maxAge = 7 * 24 * 60 * 60 * 1000; // 7 ngày
+    }
+
+    res.cookie("accessToken", dataAccessToken.token, cookieOptions);
+    res.cookie("refreshToken", dataRefreshToken.token, cookieOptions);
+    res.cookie("device_id", device_id, {
+      httpOnly: true,
+      secure: false,
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 ngày
+    });
+
+    res.json({
+      success: true,
+      accessToken: dataAccessToken.token,
+      expiredAt: dataAccessToken.expiredAt,
+      message: "Login successful",
+    });
   } catch (err) {
     console.error("DB error:", err);
     res.status(500).json({ message: "Database error" });
   }
 });
 
-router.get("/api/getoverview", async (req, res) => {
+// refreshtoken
+router.get("/refreshToken", async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+  const isSavePass = req.query.isSavePass === "true";
+
+  if (!refreshToken) {
+    return res.status(400).json({
+      success: false,
+      message: "Missing refresh token",
+    });
+  }
+
+  const result = await createAccessTokenFromRefresh(refreshToken);
+
+  if (!result.success) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid refresh token",
+    });
+  }
+
+  const cookieOptions = {
+    httpOnly: true,
+    secure: false,
+  };
+
+  if (isSavePass) {
+    cookieOptions.maxAge = 5 * 60 * 1000;
+  }
+
+  return res
+    .status(200)
+    .cookie("accessToken", result.accessToken, cookieOptions)
+    .json({
+      success: true,
+      accessToken: result.accessToken,
+      expiredAt: result.expiredAt,
+      isSavePass,
+    });
+});
+
+router.get("/api/getoverview", authenticate, async (req, res) => {
+  if (req.user?.factory !== "V4") {
+    return res.status(403).json({
+      message: "Bạn không có quyền thực hiện thao tác này",
+    });
+  }
   const factory = req.query.factory;
   try {
     if (factory == "V0") {
@@ -773,7 +999,12 @@ router.get("/api/getoverview", async (req, res) => {
   }
 });
 
-router.get("/api/getmonthlyperformance", async (req, res) => {
+router.get("/api/getmonthlyperformance", authenticate, async (req, res) => {
+  if (req.user?.factory !== "V4") {
+    return res.status(403).json({
+      message: "Bạn không có quyền thực hiện thao tác này",
+    });
+  }
   try {
     const factory = req.query.factory || "V0";
     if (factory == "V0") {
@@ -841,7 +1072,12 @@ router.get("/api/getmonthlyperformance", async (req, res) => {
   }
 });
 
-router.get("/api/getstatuscount", async (req, res) => {
+router.get("/api/getstatuscount", authenticate, async (req, res) => {
+  if (req.user?.factory !== "V4") {
+    return res.status(403).json({
+      message: "Bạn không có quyền thực hiện thao tác này",
+    });
+  }
   try {
     const factory = req.query.factory || "V0";
     if (factory == "V0") {
@@ -930,6 +1166,73 @@ router.get("/api/getstatuscount", async (req, res) => {
   }
 });
 
+router.post(
+  "/api/change-password",
+  authenticate,
+  async function changePassword(req, res) {
+    const user_id = req.user.user_id;
+    const { oldPassword, newPassword } = req.body;
+
+    const conn = await pool.getConnection();
+
+    try {
+      await conn.beginTransaction();
+
+      // 1. Lấy user hiện tại
+      const [rows] = await conn.query(
+        "SELECT password FROM user WHERE id = ?",
+        [user_id]
+      );
+
+      if (rows.length === 0) {
+        await conn.rollback();
+        return res.status(404).json({
+          success: false,
+          message: "User không tồn tại",
+        });
+      }
+
+      const dbPassword = rows.password;
+
+      // 2. Kiểm tra mật khẩu cũ
+      const isMatch = oldPassword === dbPassword;
+      if (!isMatch) {
+        await conn.rollback();
+        return res.status(400).json({
+          success: false,
+          message: "Mật khẩu cũ không đúng",
+        });
+      }
+
+      // 3. Cập nhật mật khẩu mới
+      await conn.query("UPDATE user SET password = ? WHERE id = ?", [
+        newPassword,
+        user_id,
+      ]);
+
+      // 4. Xoá token user để logout toàn bộ
+      await revokeTokenByUserId(user_id, conn);
+
+      // 5. Commit
+      await conn.commit();
+
+      return res.status(200).json({
+        success: true,
+        message: "Đổi mật khẩu thành công",
+      });
+    } catch (error) {
+      console.error(error);
+      await conn.rollback();
+      return res.status(500).json({
+        success: false,
+        message: "Đổi mật khẩu thất bại. Vui lòng thử lại.",
+      });
+    } finally {
+      conn.release();
+    }
+  }
+);
+
 async function addHistoryDelivery(
   conn,
   delivery,
@@ -959,6 +1262,14 @@ async function addHistoryDelivery(
     delivery.shippingmethod,
     username,
   ]);
+}
+
+async function revokeTokenByUserId(user_id, conn) {
+  await conn.query("DELETE FROM list_token WHERE user_id = ?", [user_id]);
+}
+
+async function revokeTokenByJti(jti) {
+  await pool.query("DELETE FROM list_token WHERE jti = ?", [jti]);
 }
 
 export default router;
