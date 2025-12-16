@@ -614,6 +614,15 @@ searchInput.addEventListener("keydown", async (e) => {
       const qrValue = searchInput.value.trim();
       if (!qrValue) return;
 
+      // ✅ chỉ cho phép chữ, số và dấu -
+      const qrPattern = /^[A-Za-z0-9-]+$/;
+
+      if (!qrPattern.test(qrValue)) {
+        playErrorSound();
+        alert("Mã QR không hợp lệ");
+        return;
+      }
+
       const qrData = getQrData(qrValue);
 
       const isQrExist = await checkQrExist(user.factory.toLowerCase(), qrValue);

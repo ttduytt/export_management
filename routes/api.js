@@ -34,7 +34,6 @@ router.get("/profile", authenticate, (req, res) => {
 });
 
 // logout
-// logout
 router.post("/logout", async (req, res) => {
   try {
     // 1. Lấy device_id từ cookie
@@ -403,7 +402,7 @@ router.get("/delivery/history/:factory", authenticate, async (req, res) => {
     if (search) {
       sql += ` AND (
         mobis_code LIKE ? OR
-        model_name LIKE ?
+        model_id LIKE ?
       )`;
       const likeStr = `%${search}%`;
       params.push(likeStr, likeStr);
@@ -817,19 +816,19 @@ router.post("/api/login", async (req, res) => {
         "INSERT INTO list_token (jti, device_id, user_id) VALUES (?, ?, ?)",
         [dataRefreshToken.jti, device_id, user.id]
       );
-    } 
+    }
     // ===== CASE 2: đã có device_id =====
     else {
-      const [exist] = await pool.query(
-        "SELECT id FROM list_token WHERE device_id = ?",
+      const exist = await pool.query(
+        "SELECT user_id FROM list_token WHERE device_id = ?",
         [device_id]
       );
 
       if (exist.length > 0) {
         // update refresh token mới
         await pool.query(
-          "UPDATE list_token SET jti = ? WHERE device_id = ?",
-          [dataRefreshToken.jti, device_id]
+          "UPDATE list_token SET jti = ?, user_id = ? WHERE device_id = ?",
+          [dataRefreshToken.jti, user.id, device_id]
         );
       } else {
         // device_id có trên cookie nhưng chưa có trong DB
