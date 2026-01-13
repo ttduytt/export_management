@@ -7,6 +7,7 @@ import {
   createAccessTokenFromRefresh,
 } from "../authentication/jwt.js";
 import { authenticate } from "../authentication/middleware.js";
+import redisClient from "../public/js/redisClient.js";
 
 // user
 router.get("/users", authenticate, async (req, res) => {
@@ -463,7 +464,7 @@ router.get("/delivery/history/:factory", authenticate, async (req, res) => {
 });
 
 // delivery
-router.get("/delivery/:factory", authenticate, async (req, res) => {
+router.get("/delivery/:factory", async (req, res) => {
   let conn;
   const factory = req.params.factory.toLocaleLowerCase();
   let sqlquery;
@@ -608,7 +609,6 @@ router.post("/delivery/import", authenticate, async (req, res) => {
         return;
       }
       const tableDelivereyName = `delivery_${factory}`;
-      const tableHistoryName = `delivery_history_${factory}`;
       const isSpecExist = await conn.query(
         `SELECT COUNT(*) AS count
    FROM delivery_spec
@@ -633,7 +633,7 @@ router.post("/delivery/import", authenticate, async (req, res) => {
 
       const isDeliveryExist = await conn.query(
         `SELECT COUNT(*) AS count
-   FROM ${tableHistoryName}
+   FROM ${tableDelivereyName}
    WHERE mobis_code = ?
      AND target = ?
      AND shipment_date = ?
@@ -702,6 +702,7 @@ router.post("/delivery/import", authenticate, async (req, res) => {
   }
 });
 
+// update delivery quantity
 router.put("/delivery/update/quantity", authenticate, async (req, res) => {
   const { username, factory, delivery, qr } = req.body;
   const tableName = factory === "v0" ? "delivery_v0" : "delivery_v5";
@@ -1244,21 +1245,14 @@ async function addHistoryDelivery(
         INSERT INTO ${
           factory === "v0" ? "delivery_history_v0" : "delivery_history_v5"
         }
-        (model_id, qr, mobis_code, model_name, type, target, event_quantity,
-         shipment_date, shipping_method, event_user)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (model_id, qr, event_quantity, event_user)
+        VALUES (?, ?, ?,?)
       `;
 
   await conn.query(historySql, [
     delivery.modelid,
     qr,
-    delivery.mobiscode,
-    delivery.modelname,
-    delivery.type,
-    delivery.target,
     delivery.quantity,
-    delivery.shipmentdate,
-    delivery.shippingmethod,
     username,
   ]);
 }

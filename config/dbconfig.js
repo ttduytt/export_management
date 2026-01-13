@@ -1,7 +1,11 @@
 import dotenv from "dotenv";
 import mariadb from "mariadb";
+import { createClient } from "redis"
 
 dotenv.config();
+
+const reddisClient = createClient();
+await reddisClient.connect().catch(console.error);
 
 const pool = mariadb.createPool({
   host: process.env.DB_HOST,

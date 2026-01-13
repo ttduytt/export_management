@@ -1,4 +1,3 @@
-import { scheduleRefreshtoken } from "./utils.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.querySelector("#loginForm");

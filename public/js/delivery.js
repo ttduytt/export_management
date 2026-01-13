@@ -1,5 +1,6 @@
 import * as XLSX from "./xlsx.js";
 import { formatDate } from "../js/utils.js";
+import { io } from "https://cdn.socket.io/4.8.1/socket.io.esm.min.js";
 
 const gridBtn = document.getElementById("gridBtn");
 const listBtn = document.getElementById("listBtn");
@@ -27,7 +28,16 @@ const columnMapping = {
   출하지: "factory",
 };
 
+const socket = io();
+
 user = await getUserProfile();
+
+socket.emit("joinRoom", user.factory.toLowerCase());
+
+socket.on("getDeliveryUpdate", async (factory) => {
+  await getAll();
+});
+
 
 async function getUserProfile() {
   const res = await fetch("/exportmanagement/profile", {
@@ -614,8 +624,8 @@ searchInput.addEventListener("keydown", async (e) => {
       const qrValue = searchInput.value.trim();
       if (!qrValue) return;
 
-      // ✅ chỉ cho phép chữ, số và dấu -
-      const qrPattern = /^[A-Za-z0-9-]+$/;
+      // ✅ chỉ cho phép chữ, số và dấu - và khoảng trắng
+      const qrPattern = /^[A-Za-z0-9- ]+$/;
 
       if (!qrPattern.test(qrValue)) {
         playErrorSound();
@@ -671,6 +681,9 @@ searchInput.addEventListener("keydown", async (e) => {
         alert(response.message);
         return;
       }
+      socket.emit("deliveryUpdated", {
+        factory: user.factory.toLowerCase(),
+      });
       searchInput.value = "";
       await getAll();
     } catch (error) {

@@ -59,6 +59,40 @@
         }
 
 
+        /* Hiệu ứng khi quantity được cập nhật */
+        .quantity-updated {
+            animation: highlightPulse 2s ease-in-out;
+        }
+
+        @keyframes highlightPulse {
+            0% {
+                background-color: #4ade80;
+                transform: scale(1);
+            }
+
+            50% {
+                background-color: #22c55e;
+                transform: scale(1.1);
+            }
+
+            100% {
+                background-color: transparent;
+                transform: scale(1);
+            }
+        }
+
+        /* Làm cho số nổi bật hơn khi animate */
+        .quantity-cell {
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .quantity-updated .quantity-cell {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+        }
+
         /* content*/
         body.light-theme .container {
             background-color: white;
@@ -921,7 +955,6 @@
 
             </div>
         </nav>
-
         <div class="container">
             <div class="toolbar">
                 <div class="toolbar-left">
