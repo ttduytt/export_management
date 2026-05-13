@@ -1,6 +1,5 @@
 import * as XLSX from "./xlsx.js";
 import { formatDate } from "../js/utils.js";
-import { io } from "https://cdn.socket.io/4.8.1/socket.io.esm.min.js";
 
 const gridBtn = document.getElementById("gridBtn");
 const listBtn = document.getElementById("listBtn");
@@ -28,16 +27,7 @@ const columnMapping = {
   출하지: "factory",
 };
 
-const socket = io();
-
 user = await getUserProfile();
-
-socket.emit("joinRoom", user.factory.toLowerCase());
-
-socket.on("getDeliveryUpdate", async (factory) => {
-  await getAll();
-});
-
 
 async function getUserProfile() {
   const res = await fetch("/exportmanagement/profile", {
@@ -74,7 +64,7 @@ function playErrorSound() {
 async function getAll() {
   try {
     const response = await fetch(
-      `/exportmanagement/delivery/${factorySelected}`
+      `/exportmanagement/delivery/${factorySelected}`,
     );
     const result = await response.json();
     data = [...result];
@@ -147,7 +137,7 @@ function validateShipmentDate(value, rowIndex) {
   const checkDate = new Date(
     dateObj.getFullYear(),
     dateObj.getMonth(),
-    dateObj.getDate()
+    dateObj.getDate(),
   );
   if (
     checkDate.getDate() !== dateObj.getDate() ||
@@ -186,7 +176,7 @@ function validateRow(row, rowIndex) {
           throw new Error(
             `Lỗi tại dòng ${
               rowIndex + 2
-            }, cột "${key}": Giá trị không hợp lệ: "${value}"`
+            }, cột "${key}": Giá trị không hợp lệ: "${value}"`,
           );
         }
         row[key] = num;
@@ -199,7 +189,7 @@ function validateRow(row, rowIndex) {
           throw new Error(
             `Lỗi tại dòng ${
               rowIndex + 2
-            }, cột "${key}": Giá trị không hợp lệ: "${value}"`
+            }, cột "${key}": Giá trị không hợp lệ: "${value}"`,
           );
         }
         row[key] = num;
@@ -268,8 +258,8 @@ function validateExcelFile(file) {
         if (validSheets.length === 0) {
           return reject(
             new Error(
-              "Không tìm thấy sheet hợp lệ cho tháng hiện tại hoặc tương lai"
-            )
+              "Không tìm thấy sheet hợp lệ cho tháng hiện tại hoặc tương lai",
+            ),
           );
         }
         const requiredColumns = Object.keys(columnMapping);
@@ -299,11 +289,11 @@ function validateExcelFile(file) {
             return;
           }
           const filteredHeader = headerRow.filter((col) =>
-            requiredColumns.includes(col)
+            requiredColumns.includes(col),
           );
           // 3. Lấy index các cột cần thiết trong Excel dựa vào filteredHeader
           const columnIndexes = filteredHeader.map((col) =>
-            headerRow.indexOf(col)
+            headerRow.indexOf(col),
           );
 
           // Ánh xạ headerRow sang tên chuẩn
@@ -328,8 +318,8 @@ function validateExcelFile(file) {
             // Lọc bỏ các dòng không có dữ liệu thực sự
             .filter((row) =>
               Object.values(row).some(
-                (v) => v !== "" && v !== null && v !== undefined
-              )
+                (v) => v !== "" && v !== null && v !== undefined,
+              ),
             );
 
           for (let index = 0; index < rows.length; index++) {
@@ -346,7 +336,7 @@ function validateExcelFile(file) {
               .map((v) =>
                 String(v || "")
                   .trim()
-                  .toLowerCase()
+                  .toLowerCase(),
               )
               .join("|");
 
@@ -415,8 +405,8 @@ function renderList() {
     <div>${item.model_name}</div>
     <div>${item.type}</div>
     <div><span class="status-badge ${item.status.toLowerCase()}">${
-        item.status
-      }</span></div>
+      item.status
+    }</span></div>
     <div>${item.target}</div>
     <div>${item.quantity}</div>
     <div>${completeDate}</div>
@@ -459,8 +449,8 @@ function renderGrid() {
         <div><strong>Target:</strong> ${item.target}</div>
         <div><strong>Quantity:</strong> ${item.quantity}</div>
         <strong>Status:</strong> <div class="status-badge ${item.status.toLowerCase()}"> ${
-        item.status
-      }</div>
+          item.status
+        }</div>
         <div><strong>Complete Time:</strong> ${completeDate}</div>
         <div><strong>Shipment Date:</strong> ${shipmentDate}</div>
         <div><strong>Shipping method:</strong> ${item.shipping_method}</div>
@@ -511,7 +501,7 @@ listBtn.addEventListener("click", () => {
 async function checkQrExist(factory, qr) {
   try {
     const response = await fetch(
-      `exportmanagement/qr/getvalue?factory=${factory}&qrvalue=${qr}`
+      `exportmanagement/qr/getvalue?factory=${factory}&qrvalue=${qr}`,
     );
     if (!response.ok) {
       console.log(response.message);
@@ -531,7 +521,7 @@ async function findDelivery(qrData) {
     const response = await fetch(
       `exportmanagement/qr/${user.factory.toLowerCase()}/${qrData.mobiscode}/${
         qrData.type
-      }`
+      }`,
     );
     const data = await response.json();
     return data;
@@ -633,6 +623,24 @@ searchInput.addEventListener("keydown", async (e) => {
         return;
       }
 
+      const invalidLength = qrValue.length < 38 || qrValue.length > 46;
+
+      // phải bắt đầu bằng 1 trong 3 mã
+      const validPrefix =
+        qrValue.startsWith("R7A8") ||
+        qrValue.startsWith("N-") ||
+        qrValue.startsWith("NQ5");
+
+      // ký tự thứ 5 từ phải sang phải là '-'
+      const fifthFromRight = qrValue.slice(-5, -4);
+      const validDash = fifthFromRight === "-";
+
+      if (invalidLength || !validPrefix || !validDash) {
+        playErrorSound();
+        alert("Mã QR không hợp lệ");
+        return;
+      }
+
       const qrData = getQrData(qrValue);
 
       const isQrExist = await checkQrExist(user.factory.toLowerCase(), qrValue);
@@ -675,15 +683,12 @@ searchInput.addEventListener("keydown", async (e) => {
         user.username,
         user.factory.toLowerCase(),
         delivery,
-        qrValue
+        qrValue,
       );
       if (response.status !== 200) {
         alert(response.message);
         return;
       }
-      socket.emit("deliveryUpdated", {
-        factory: user.factory.toLowerCase(),
-      });
       searchInput.value = "";
       await getAll();
     } catch (error) {

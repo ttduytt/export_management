@@ -35,7 +35,7 @@ const __dirname = path.dirname(__filename);
 
 await connectRedis();
 
-// Load biến môi trường
+// Load biến môi trườnga
 dotenv.config();
 
 app.use(express.static(path.join(__dirname, "public")));

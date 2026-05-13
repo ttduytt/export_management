@@ -7,7 +7,6 @@ import {
   createAccessTokenFromRefresh,
 } from "../authentication/jwt.js";
 import { authenticate } from "../authentication/middleware.js";
-import redisClient from "../public/js/redisClient.js";
 
 // user
 router.get("/users", authenticate, async (req, res) => {
@@ -96,14 +95,14 @@ router.post("/users", authenticate, async (req, res) => {
     // check duplicate username
     const existing = await conn.query(
       "SELECT * FROM user WHERE user_name = ?",
-      [user_name]
+      [user_name],
     );
     if (existing.length > 0) {
       return res.status(409).json({ message: "Username already exists" });
     }
     await conn.query(
       "INSERT INTO user (user_name, password, role, factory) VALUES (?, ?, ?, ?)",
-      [user_name, password, role, factory]
+      [user_name, password, role, factory],
     );
     res.status(201).json({ message: "User created successfully" });
   } catch (error) {
@@ -137,7 +136,7 @@ router.put("/users/:id", authenticate, async (req, res) => {
 
     const result = await conn.query(
       "UPDATE user SET password = ?, role = ?, factory = ? WHERE id = ?",
-      [password, role, factory, userId]
+      [password, role, factory, userId],
     );
 
     if (result.affectedRows > 0) {
@@ -147,6 +146,54 @@ router.put("/users/:id", authenticate, async (req, res) => {
     }
   } catch (error) {
     console.error("Error updating user:", error);
+    res.status(500).json({ message: "Internal server error" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+// change password
+router.put("/change-password", async (req, res) => {
+  let conn;
+  const { username, password } = req.body;
+  console.log("Change password request for username:", username, password);
+  if (!username || !password) {
+    return res.status(400).json({
+      message: "Username và password không được để trống",
+    });
+  }
+
+  try {
+    conn = await pool.getConnection();
+
+    // kiểm tra user tồn tại
+    const existing = await conn.query(
+      "SELECT * FROM user WHERE user_name = ?",
+      [username],
+    );
+
+    console.log("Existing user:", existing);
+    console.log("Username to change:", username);
+
+    if (existing.length === 0) {
+      console.log("User not found for username:", username);
+      console.log(existing);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // update password
+    const result = await conn.query(
+      "UPDATE user SET password = ? WHERE user_name = ?",
+      [password, username],
+    );
+
+    if (result.affectedRows > 0) {
+      res.json({ message: `Password của ${username} đã được cập nhật` });
+    } else {
+      res.status(400).json({ message: "Update failed" });
+    }
+  } catch (error) {
+    console.error("Error changing password:", error);
     res.status(500).json({ message: "Internal server error" });
   } finally {
     if (conn) conn.release();
@@ -198,7 +245,7 @@ router.get("/models", authenticate, async (req, res) => {
   try {
     conn = await pool.getConnection();
     const rows = await conn.query(
-      "SELECT * FROM delivery_spec ORDER BY MOBIS_CODE"
+      "SELECT * FROM delivery_spec ORDER BY MOBIS_CODE",
     );
     res.json(rows);
   } catch (err) {
@@ -224,14 +271,14 @@ router.post("/models", authenticate, async (req, res) => {
     // check duplicate mobis_code
     const existing = await conn.query(
       "SELECT * FROM delivery_spec WHERE mobis_code = ?",
-      [mobis_code]
+      [mobis_code],
     );
     if (existing.length > 0) {
       return res.status(409).json({ message: "Mobis code already exists" });
     }
     let result = await conn.query(
       "INSERT INTO delivery_spec (model_type, mobis_code, partron_code, model_name, event_user) VALUES (?, ?, ?, ?, ?)",
-      [model_type, mobis_code, partron_code, model_name, event_user]
+      [model_type, mobis_code, partron_code, model_name, event_user],
     );
     res.status(201).json({ message: "Model spec created successfully" });
   } catch (error) {
@@ -258,7 +305,7 @@ router.put("/models/:id", authenticate, async (req, res) => {
 
     const existing = await conn.query(
       "SELECT * FROM delivery_spec WHERE id = ?",
-      [modelId]
+      [modelId],
     );
     if (existing.length === 0) {
       return res.status(404).json({ message: "Model spec not found" });
@@ -266,14 +313,14 @@ router.put("/models/:id", authenticate, async (req, res) => {
     // check duplicate mobis_code
     const duplicateCheck = await conn.query(
       "SELECT * FROM delivery_spec WHERE mobis_code = ? AND id != ?",
-      [mobis_code, modelId]
+      [mobis_code, modelId],
     );
     if (duplicateCheck.length > 0) {
       return res.status(400).json({ message: "Mobis code already exists" });
     }
     const result = await conn.query(
       "UPDATE delivery_spec SET model_type = ?, mobis_code = ?, partron_code = ?, model_name = ?, event_user = ? WHERE id = ?",
-      [model_type, mobis_code, partron_code, model_name, event_user, modelId]
+      [model_type, mobis_code, partron_code, model_name, event_user, modelId],
     );
     if (result.affectedRows > 0) {
       res.json({ message: `Model spec ${modelId} updated successfully` });
@@ -302,7 +349,7 @@ router.delete("/models/:id", authenticate, async (req, res) => {
 
     const existing = await conn.query(
       "SELECT * FROM delivery_spec WHERE id = ?",
-      [id]
+      [id],
     );
     if (existing.length === 0) {
       return res.status(404).json({ message: "Model spec not found" });
@@ -321,6 +368,7 @@ router.delete("/models/:id", authenticate, async (req, res) => {
     console.error("Error deleting model spec:", error);
     res.status(500).json({ message: "Internal server error" });
   } finally {
+    i;
     if (conn) conn.release();
   }
 });
@@ -441,11 +489,13 @@ router.get("/delivery/history/:factory", authenticate, async (req, res) => {
             ...(dateFrom ? [dateFrom] : []),
             ...(dateTo ? [dateTo] : []),
             offset + limit,
-          ]
+          ],
     );
 
     const result = JSON.parse(
-      JSON.stringify(rows, (_, v) => (typeof v === "bigint" ? v.toString() : v))
+      JSON.stringify(rows, (_, v) =>
+        typeof v === "bigint" ? v.toString() : v,
+      ),
     );
     res.json({
       page,
@@ -533,7 +583,7 @@ router.get("/qr/:factory/:mobiscode/:type", authenticate, async (req, res) => {
     const delivery = await conn.query(
       `SELECT * FROM ${tableName} WHERE mobis_code = ? AND type = ? AND status != 'Complete'
       ORDER BY ABS(TIMESTAMPDIFF(SECOND, shipment_date, CURDATE())) ASC,CASE WHEN shipping_method = 'SEA' THEN 0 ELSE 1 END LIMIT 1;`,
-      [mobiscode, type]
+      [mobiscode, type],
     );
 
     if (delivery.length > 0) {
@@ -563,7 +613,7 @@ router.delete("/delivery", authenticate, async (req, res) => {
 
     const existing = await conn.query(
       `SELECT * FROM delivery_${factory} WHERE model_id = ?`,
-      [model_id]
+      [model_id],
     );
     if (existing.length === 0) {
       return res.json({ message: "Delivery not found" });
@@ -571,7 +621,7 @@ router.delete("/delivery", authenticate, async (req, res) => {
 
     const result = await conn.query(
       `DELETE FROM delivery_${factory} WHERE model_id = ?`,
-      [model_id]
+      [model_id],
     );
 
     if (result.affectedRows > 0) {
@@ -621,7 +671,7 @@ router.post("/delivery/import", authenticate, async (req, res) => {
           delivery.modeltype,
           delivery.partroncode,
           delivery.modelname,
-        ]
+        ],
       );
 
       if (Number(isSpecExist[0].count) === 0) {
@@ -645,7 +695,7 @@ router.post("/delivery/import", authenticate, async (req, res) => {
           delivery.shipmentdate,
           delivery.shippingmethod,
           delivery.type,
-        ]
+        ],
       );
 
       if (Number(isDeliveryExist[0].count) != 0) {
@@ -660,14 +710,13 @@ router.post("/delivery/import", authenticate, async (req, res) => {
         SELECT COALESCE(MAX(CAST(SUBSTRING_INDEX(model_id, '-', -1) AS UNSIGNED)), 0) AS countModel
         FROM delivery_${factory}
         WHERE mobis_code = ?`,
-        [delivery.mobiscode]
+        [delivery.mobiscode],
       );
       const countModel = Number(rows[0].countModel) + 1;
       const now = new Date();
       const formattedDate = now.toISOString().split("T")[0].replace(/-/g, "");
-      delivery[
-        "modelid"
-      ] = `${delivery.mobiscode}-${formattedDate}-${countModel}`;
+      delivery["modelid"] =
+        `${delivery.mobiscode}-${formattedDate}-${countModel}`;
       // Thêm vào bảng delivery
       const deliverySql = `
         INSERT INTO ${tableDelivereyName}
@@ -687,7 +736,7 @@ router.post("/delivery/import", authenticate, async (req, res) => {
         delivery.shippingmethod,
         delivery.shipmentdate,
       ]);
-
+      console.log(delivery.target);
       await addHistoryDelivery(conn, delivery, username, factory);
     }
 
@@ -760,8 +809,8 @@ router.get("/qr/getvalue", authenticate, async (req, res) => {
 
     data = JSON.parse(
       JSON.stringify(data, (_, value) =>
-        typeof value === "bigint" ? value.toString() : value
-      )
+        typeof value === "bigint" ? value.toString() : value,
+      ),
     );
     if (data.length > 0) {
       res.json(data[0]);
@@ -784,7 +833,7 @@ router.post("/api/login", async (req, res) => {
   try {
     const rows = await pool.query(
       "SELECT * FROM user WHERE user_name = ? AND password = ?",
-      [username, password]
+      [username, password],
     );
 
     if (rows.length === 0) {
@@ -815,27 +864,27 @@ router.post("/api/login", async (req, res) => {
 
       await pool.query(
         "INSERT INTO list_token (jti, device_id, user_id) VALUES (?, ?, ?)",
-        [dataRefreshToken.jti, device_id, user.id]
+        [dataRefreshToken.jti, device_id, user.id],
       );
     }
     // ===== CASE 2: đã có device_id =====
     else {
       const exist = await pool.query(
         "SELECT user_id FROM list_token WHERE device_id = ?",
-        [device_id]
+        [device_id],
       );
 
       if (exist.length > 0) {
         // update refresh token mới
         await pool.query(
           "UPDATE list_token SET jti = ?, user_id = ? WHERE device_id = ?",
-          [dataRefreshToken.jti, user.id, device_id]
+          [dataRefreshToken.jti, user.id, device_id],
         );
       } else {
         // device_id có trên cookie nhưng chưa có trong DB
         await pool.query(
           "INSERT INTO list_token (jti, device_id, user_id) VALUES (?, ?, ?)",
-          [dataRefreshToken.jti, device_id, user.id]
+          [dataRefreshToken.jti, device_id, user.id],
         );
       }
     }
@@ -860,6 +909,9 @@ router.post("/api/login", async (req, res) => {
 
     res.json({
       success: true,
+      username: user.user_name,
+      fullName: user.full_name,
+      role: user.role,
       accessToken: dataAccessToken.token,
       expiredAt: dataAccessToken.expiredAt,
       message: "Login successful",
@@ -1181,7 +1233,7 @@ router.post(
       // 1. Lấy user hiện tại
       const [rows] = await conn.query(
         "SELECT password FROM user WHERE id = ?",
-        [user_id]
+        [user_id],
       );
 
       if (rows.length === 0) {
@@ -1230,7 +1282,7 @@ router.post(
     } finally {
       conn.release();
     }
-  }
+  },
 );
 
 async function addHistoryDelivery(
@@ -1238,21 +1290,28 @@ async function addHistoryDelivery(
   delivery,
   username,
   factory,
-  qr = null
+  qr = null,
 ) {
   //  Thêm vào bảng history
   const historySql = `
         INSERT INTO ${
           factory === "v0" ? "delivery_history_v0" : "delivery_history_v5"
         }
-        (model_id, qr, event_quantity, event_user)
-        VALUES (?, ?, ?,?)
+        (model_id, qr, mobis_code, model_name, type, target, event_quantity,
+         shipment_date, shipping_method, event_user)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
   await conn.query(historySql, [
     delivery.modelid,
     qr,
+    delivery.mobiscode,
+    delivery.modelname,
+    delivery.type,
+    delivery.target,
     delivery.quantity,
+    delivery.shipmentdate,
+    delivery.shippingmethod,
     username,
   ]);
 }

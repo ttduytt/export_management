@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.querySelector("#loginForm");
   const submitBtn = document.querySelector("#submitBtn");
@@ -20,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (msg === "invalid_token") {
     alert(
-      "Phiên đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại!"
+      "Phiên đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại!",
     );
   }
 
@@ -45,8 +44,19 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       const data = await res.json();
+
       if (data.success) {
-        localStorage.setItem("isSavePass", isSavePass)
+        localStorage.setItem("isSavePass", isSavePass);
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            username: data.username,
+            fullName: data.fullName,
+            role: data.role,
+            expiredAt: data.expiredAt,
+          }),
+        );
+
         globalThis.location.href = "/home";
       } else {
         alert("Incorrect username or password!");
