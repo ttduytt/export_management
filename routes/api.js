@@ -10,7 +10,7 @@ import { authenticate } from "../authentication/middleware.js";
 
 // user
 router.get("/users", authenticate, async (req, res) => {
-  if (req.user?.factory !== "V4") {
+  if (req.user?.role !== "ADMIN") {
     return res.status(403).json({
       message: "Bạn không có quyền thực hiện thao tác này",
     });
@@ -23,6 +23,148 @@ router.get("/users", authenticate, async (req, res) => {
   } catch (err) {
     console.error("Error fetching users:", err);
     res.status(500).json({ message: "Internal server error" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+router.get("/translations", async (req, res) => {
+  let conn;
+
+  try {
+    conn = await pool.getConnection();
+
+    const rows = await conn.query(`
+      SELECT
+        ID as id,
+        DESCRIPTION as description,
+        VI as vi,
+        EN as en,
+        KR as kr
+      FROM translations
+    `);
+
+    res.json({
+      success: true,
+      data: rows,
+    });
+  } catch (err) {
+    console.error("Translation API Error:", err);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to load translations",
+    });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+// ─── PUT /translations/update ────────────────────────────────────────────────
+router.put("/translations/update", authenticate, async (req, res) => {
+  const { key, vi, en, kr, event_user } = req.body;
+
+  if (!key || !vi || !en || !kr) {
+    return res.status(400).json({
+      success: false,
+      message: "Thiếu dữ liệu bắt buộc: key, vi, en, kr",
+    });
+  }
+
+  if (!["ADMIN", "MANAGER"].includes(req.user?.role)) {
+    return res.status(403).json({
+      success: false,
+      message: "Bạn không có quyền thực hiện thao tác này",
+    });
+  }
+
+  let conn;
+  try {
+    conn = await pool.getConnection();
+
+    const existing = await conn.query(
+      "SELECT id FROM translations WHERE description = ?",
+      [key],
+    );
+
+    if (existing.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Không tìm thấy bản ghi với key: "${key}"`,
+      });
+    }
+
+    await conn.query(
+      `UPDATE translations
+       SET vi = ?, en = ?, kr = ?, event_user = ?
+       WHERE description = ?`,
+      [vi, en, kr, event_user ?? "Unknown", key],
+    );
+
+    const [updated] = await conn.query(
+      `SELECT description, vi, en, kr, event_user
+       FROM translations
+       WHERE description = ?`,
+      [key],
+    );
+
+    res.json({
+      success: true,
+      message: "Cập nhật thành công",
+      data: updated,
+    });
+  } catch (err) {
+    console.error("PUT /translations/update error:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+// ─── PUT /translations/import ─────────────────────────────────────────────────
+router.put("/translations/import", authenticate, async (req, res) => {
+  const rows = req.body;
+
+  if (!Array.isArray(rows) || rows.length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: "Dữ liệu không hợp lệ hoặc rỗng",
+    });
+  }
+
+  if (!["ADMIN", "MANAGER"].includes(req.user?.role)) {
+    return res.status(403).json({
+      success: false,
+      message: "Bạn không có quyền thực hiện thao tác này",
+    });
+  }
+
+  let conn;
+  try {
+    conn = await pool.getConnection();
+
+    const results = await Promise.all(
+      rows.map(({ description, vi, en, kr }) =>
+        conn.query(
+          `UPDATE translations
+           SET vi = ?, en = ?, kr = ?
+           WHERE description = ?`,
+          [vi ?? "", en ?? "", kr ?? "", description],
+        ),
+      ),
+    );
+
+    const updated = results.filter((r) => r.affectedRows > 0).length;
+    const skipped = rows.length - updated;
+
+    res.json({
+      success: true,
+      message: `Nhập thành công ${updated} bản ghi`,
+      data: { updated, skipped, total: rows.length },
+    });
+  } catch (err) {
+    console.error("PUT /translations/import error:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
   } finally {
     if (conn) conn.release();
   }
@@ -81,18 +223,32 @@ router.post("/logout", async (req, res) => {
   }
 });
 
-//add user
-router.post("/users", authenticate, async (req, res) => {
-  if (req.user?.factory !== "V4") {
-    return res.status(403).json({
-      message: "Bạn không có quyền thực hiện thao tác này",
-    });
-  }
+//get department
+router.get("/departments", authenticate, async (req, res) => {
   let conn;
-  const { user_name, password, role, factory } = req.body;
   try {
     conn = await pool.getConnection();
-    // check duplicate username
+    const rows = await conn.query("SELECT * FROM department");
+    res.json(rows.map((r) => r.department_name));
+  } catch (error) {
+    console.error("Error fetching departments:", error);
+    res.status(500).json({ message: "Internal server error" + error.message });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+//add user
+router.post("/users", authenticate, async (req, res) => {
+  if (!["ADMIN", "MANAGER"].includes(req.user?.role)) {
+    return res
+      .status(403)
+      .json({ message: "Bạn không có quyền thực hiện thao tác này" });
+  }
+  let conn;
+  const { user_name, password, role, factory, department, status } = req.body; // thêm department, status
+  try {
+    conn = await pool.getConnection();
     const existing = await conn.query(
       "SELECT * FROM user WHERE user_name = ?",
       [user_name],
@@ -101,8 +257,8 @@ router.post("/users", authenticate, async (req, res) => {
       return res.status(409).json({ message: "Username already exists" });
     }
     await conn.query(
-      "INSERT INTO user (user_name, password, role, factory) VALUES (?, ?, ?, ?)",
-      [user_name, password, role, factory],
+      "INSERT INTO user (user_name, password, role, factory, department, status) VALUES (?, ?, ?, ?, ?, ?)", // thêm 2 cột
+      [user_name, password, role, factory, department, status ?? "ACTIVE"], // thêm 2 giá trị
     );
     res.status(201).json({ message: "User created successfully" });
   } catch (error) {
@@ -115,18 +271,17 @@ router.post("/users", authenticate, async (req, res) => {
 
 // edit user
 router.put("/users/:id", authenticate, async (req, res) => {
-  if (req.user?.factory !== "V4") {
-    return res.status(403).json({
-      message: "Bạn không có quyền thực hiện thao tác này",
-    });
+  if (!["ADMIN", "MANAGER"].includes(req.user?.role)) {
+    return res
+      .status(403)
+      .json({ message: "Bạn không có quyền thực hiện thao tác này" });
   }
   let conn;
   const userId = req.params.id;
-  const { password, role, factory } = req.body;
+  const { user_name, password, role, factory, department, status } = req.body; // thêm user_name
 
   try {
     conn = await pool.getConnection();
-
     const existing = await conn.query("SELECT * FROM user WHERE id = ?", [
       userId,
     ]);
@@ -134,9 +289,24 @@ router.put("/users/:id", authenticate, async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // ── Nếu đổi user_name thì check trùng với user khác ────────────
+    const finalUsername = user_name?.trim() || existing[0].user_name;
+    if (finalUsername !== existing[0].user_name) {
+      const duplicate = await conn.query(
+        "SELECT id FROM user WHERE user_name = ? AND id != ?",
+        [finalUsername, userId],
+      );
+      if (duplicate.length > 0) {
+        return res.status(409).json({ message: "Username already exists" });
+      }
+    }
+    // ───────────────────────────────────────────────────────────────
+
+    const finalPassword = password?.trim() ? password : existing[0].password;
+
     const result = await conn.query(
-      "UPDATE user SET password = ?, role = ?, factory = ? WHERE id = ?",
-      [password, role, factory, userId],
+      "UPDATE user SET user_name = ?, password = ?, role = ?, factory = ?, department = ?, status = ? WHERE id = ?", // thêm user_name
+      [finalUsername, finalPassword, role, factory, department, status, userId],
     );
 
     if (result.affectedRows > 0) {
@@ -202,7 +372,7 @@ router.put("/change-password", async (req, res) => {
 
 // delete user
 router.delete("/users/:id", authenticate, async (req, res) => {
-  if (req.user?.factory !== "V4") {
+  if (!["ADMIN", "MANAGER"].includes(req.user?.role)) {
     return res.status(403).json({
       message: "Bạn không có quyền thực hiện thao tác này",
     });
@@ -236,7 +406,7 @@ router.delete("/users/:id", authenticate, async (req, res) => {
 
 // model spec
 router.get("/models", authenticate, async (req, res) => {
-  if (req.user?.factory !== "V4") {
+  if (!["ADMIN", "MANAGER"].includes(req.user?.role)) {
     return res.status(403).json({
       message: "Bạn không có quyền thực hiện thao tác này",
     });
@@ -258,7 +428,7 @@ router.get("/models", authenticate, async (req, res) => {
 
 //add model spec
 router.post("/models", authenticate, async (req, res) => {
-  if (req.user?.factory !== "V4") {
+  if (!["ADMIN", "MANAGER"].includes(req.user?.role)) {
     return res.status(403).json({
       message: "Bạn không có quyền thực hiện thao tác này",
     });
@@ -291,7 +461,7 @@ router.post("/models", authenticate, async (req, res) => {
 
 //edit model spec
 router.put("/models/:id", authenticate, async (req, res) => {
-  if (req.user?.factory !== "V4") {
+  if (!["ADMIN", "MANAGER"].includes(req.user?.role)) {
     return res.status(403).json({
       message: "Bạn không có quyền thực hiện thao tác này",
     });
@@ -337,7 +507,7 @@ router.put("/models/:id", authenticate, async (req, res) => {
 
 // delete model spec
 router.delete("/models/:id", authenticate, async (req, res) => {
-  if (req.user?.factory !== "V4") {
+  if (!["ADMIN", "MANAGER"].includes(req.user?.role)) {
     return res.status(403).json({
       message: "Bạn không có quyền thực hiện thao tác này",
     });
@@ -375,7 +545,7 @@ router.delete("/models/:id", authenticate, async (req, res) => {
 
 // Bulk import model specs
 router.post("/models/importmodelspec", authenticate, async (req, res) => {
-  if (req.user?.factory !== "V4") {
+  if (!["ADMIN", "MANAGER"].includes(req.user?.role)) {
     return res.status(403).json({
       message: "Bạn không có quyền thực hiện thao tác này",
     });
@@ -538,41 +708,6 @@ router.get("/delivery/:factory", async (req, res) => {
   }
 });
 
-router.get("/delivery", authenticate, async (req, res) => {
-  let conn;
-  try {
-    conn = await pool.getConnection();
-    const sqlquery =
-      "SELECT * FROM delivery_v0 union all select * from delivery_v5";
-    const rows = await conn.query(sqlquery);
-    res.json(rows);
-  } catch (err) {
-    console.error("Error fetching delivery:", err);
-    res.status(500).json({ message: "Internal server error" });
-  } finally {
-    if (conn) conn.release();
-  }
-});
-
-router.get("/delivery/:modelId/:factory", authenticate, async (req, res) => {
-  let conn;
-  const modelId = req.params.modelId;
-  const factory = req.params.factory;
-  try {
-    conn = await pool.getConnection();
-    const sqlquery = `SELECT * FROM ${
-      factory === "v0" ? "delivery_v0" : "delivery_v5"
-    } WHERE model_id = ?`;
-    const rows = await conn.query(sqlquery, [modelId]);
-    res.json(rows);
-  } catch (err) {
-    console.error("Error fetching delivery:", err);
-    res.status(500).json({ message: "Internal server error" });
-  } finally {
-    if (conn) conn.release();
-  }
-});
-
 router.get("/qr/:factory/:mobiscode/:type", authenticate, async (req, res) => {
   const conn = await pool.getConnection();
   const { factory, mobiscode, type } = req.params;
@@ -600,7 +735,7 @@ router.get("/qr/:factory/:mobiscode/:type", authenticate, async (req, res) => {
 });
 
 router.delete("/delivery", authenticate, async (req, res) => {
-  if (req.user?.factory !== "V4") {
+  if (!["ADMIN", "MANAGER"].includes(req.user?.role)) {
     return res.status(403).json({
       message: "Bạn không có quyền thực hiện thao tác này",
     });
@@ -640,7 +775,7 @@ router.delete("/delivery", authenticate, async (req, res) => {
 });
 
 router.post("/delivery/import", authenticate, async (req, res) => {
-  if (req.user?.factory !== "V4") {
+  if (!["ADMIN", "MANAGER"].includes(req.user?.role)) {
     return res.status(403).json({
       message: "Bạn không có quyền thực hiện thao tác này",
     });
@@ -717,12 +852,19 @@ router.post("/delivery/import", authenticate, async (req, res) => {
       const formattedDate = now.toISOString().split("T")[0].replace(/-/g, "");
       delivery["modelid"] =
         `${delivery.mobiscode}-${formattedDate}-${countModel}`;
+
+      const arriveDate =
+        delivery.firsteport === true
+          ? new Date(Date.now() + 16 * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split("T")[0]
+          : null;
       // Thêm vào bảng delivery
       const deliverySql = `
         INSERT INTO ${tableDelivereyName}
         (model_id, mobis_code, model_name, type, target, status,
-         quantity, shipping_method, shipment_date)
-        VALUES (?,?, ?, ?, ?, ?, ?, ?, ?)
+        quantity, shipping_method, shipment_date, arrive_date)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       await conn.query(deliverySql, [
@@ -735,6 +877,7 @@ router.post("/delivery/import", authenticate, async (req, res) => {
         delivery.quantity,
         delivery.shippingmethod,
         delivery.shipmentdate,
+        arriveDate,
       ]);
       console.log(delivery.target);
       await addHistoryDelivery(conn, delivery, username, factory);
@@ -843,6 +986,13 @@ router.post("/api/login", async (req, res) => {
     }
 
     const user = rows[0];
+
+    if (user.status?.toUpperCase() === "INACTIVE") {
+      return res.status(403).json({
+        success: false,
+        message: "Tài khoản đã bị vô hiệu hóa. Vui lòng liên hệ admin.",
+      });
+    }
 
     const dataAccessToken = generateToken({
       username: user.user_name,
@@ -964,7 +1114,7 @@ router.get("/refreshToken", async (req, res) => {
 });
 
 router.get("/api/getoverview", authenticate, async (req, res) => {
-  if (req.user?.factory !== "V4") {
+  if (!["ADMIN", "MANAGER"].includes(req.user?.role)) {
     return res.status(403).json({
       message: "Bạn không có quyền thực hiện thao tác này",
     });
@@ -1052,7 +1202,7 @@ router.get("/api/getoverview", authenticate, async (req, res) => {
 });
 
 router.get("/api/getmonthlyperformance", authenticate, async (req, res) => {
-  if (req.user?.factory !== "V4") {
+  if (!["ADMIN", "MANAGER"].includes(req.user?.role)) {
     return res.status(403).json({
       message: "Bạn không có quyền thực hiện thao tác này",
     });
@@ -1125,7 +1275,7 @@ router.get("/api/getmonthlyperformance", authenticate, async (req, res) => {
 });
 
 router.get("/api/getstatuscount", authenticate, async (req, res) => {
-  if (req.user?.factory !== "V4") {
+  if (!["ADMIN", "MANAGER"].includes(req.user?.role)) {
     return res.status(403).json({
       message: "Bạn không có quyền thực hiện thao tác này",
     });
@@ -1218,72 +1368,6 @@ router.get("/api/getstatuscount", authenticate, async (req, res) => {
   }
 });
 
-router.post(
-  "/api/change-password",
-  authenticate,
-  async function changePassword(req, res) {
-    const user_id = req.user.user_id;
-    const { oldPassword, newPassword } = req.body;
-
-    const conn = await pool.getConnection();
-
-    try {
-      await conn.beginTransaction();
-
-      // 1. Lấy user hiện tại
-      const [rows] = await conn.query(
-        "SELECT password FROM user WHERE id = ?",
-        [user_id],
-      );
-
-      if (rows.length === 0) {
-        await conn.rollback();
-        return res.status(404).json({
-          success: false,
-          message: "User không tồn tại",
-        });
-      }
-
-      const dbPassword = rows.password;
-
-      // 2. Kiểm tra mật khẩu cũ
-      const isMatch = oldPassword === dbPassword;
-      if (!isMatch) {
-        await conn.rollback();
-        return res.status(400).json({
-          success: false,
-          message: "Mật khẩu cũ không đúng",
-        });
-      }
-
-      // 3. Cập nhật mật khẩu mới
-      await conn.query("UPDATE user SET password = ? WHERE id = ?", [
-        newPassword,
-        user_id,
-      ]);
-
-      // 4. Xoá token user để logout toàn bộ
-      await revokeTokenByUserId(user_id, conn);
-
-      // 5. Commit
-      await conn.commit();
-
-      return res.status(200).json({
-        success: true,
-        message: "Đổi mật khẩu thành công",
-      });
-    } catch (error) {
-      console.error(error);
-      await conn.rollback();
-      return res.status(500).json({
-        success: false,
-        message: "Đổi mật khẩu thất bại. Vui lòng thử lại.",
-      });
-    } finally {
-      conn.release();
-    }
-  },
-);
 
 async function addHistoryDelivery(
   conn,

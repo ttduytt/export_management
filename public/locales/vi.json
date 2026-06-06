@@ -1,0 +1,259 @@
+{
+  "nav": {
+    "brand": "QUẢN LÝ GIAO HÀNG",
+    "home": "Trang chủ",
+    "delivery": "Giao hàng",
+    "history": "Lịch sử",
+    "management": "Quản lý",
+    "user": "Người dùng",
+    "changePassword": "Đổi mật khẩu",
+    "logout": "Đăng xuất"
+  },
+  "welcome": {
+    "title": "Chào mừng đến với hệ thống giao hàng thành phẩm ACM",
+    "slogan1": "Chính xác trong từng chuyến hàng - Hoàn hảo trong từng lần giao.",
+    "slogan2": "Mang đến sự chính xác, tốc độ và chất lượng.",
+    "slogan3": "Mỗi thùng hàng là một lời hứa được thực hiện."
+  },
+  "footer": {
+    "copyright": "© 2025 Bản quyền thuộc Partron VN"
+  },
+  "title": "Delivery Management - Trang chủ",
+  "logoutConfirm": "Bạn có chắc muốn đăng xuất?",
+  "scanQR": "Quét QR",
+  "import": "Import",
+  "list": "Danh sách",
+  "grid": "Lưới",
+  "status": "TRẠNG THÁI",
+  "completeTime": "THỜI GIAN HOÀN THÀNH",
+  "admin": {
+    "welcome": "Chào mừng trở lại, Admin!",
+    "welcomeManager": "Chào mừng Quản lý trở lại, {name}",
+    "welcomeUser": "Chào mừng Người dùng trở lại, Admin",
+    "stats": {
+      "totalInDay": "Tổng số trong ngày",
+      "performance": "Hiệu suất"
+    },
+    "charts": {
+      "monthlyPerformance": {
+        "title": "Hiệu suất hàng tháng",
+        "subtitle": "Tổng quan chỉ số theo tháng",
+        "yAxisLabel": "Số lượng đơn giao",
+        "seriesName": "Tổng số đơn giao"
+      },
+      "shipmentStatus": {
+        "title": "Trạng thái xuất hàng",
+        "subtitle": "Phân tích trạng thái giao hàng",
+        "seriesName": "Trạng thái",
+        "complete": "Hoàn thành",
+        "inProgress": "Đang tiến hành"
+      }
+    },
+    "userManagement": {
+      "title": "Quản lý người dùng",
+      "addUser": "Thêm người dùng",
+      "table": {
+        "stt": "STT",
+        "username": "Tên đăng nhập",
+        "password": "Mật khẩu",
+        "role": "Vai trò",
+        "factory": "Nhà máy",
+        "actions": "Hành động"
+      },
+      "form": {
+        "usernamePlaceholder": "Nhập tên đăng nhập",
+        "passwordPlaceholder": "Nhập mật khẩu",
+        "roleUser": "NGƯỜI DÙNG",
+        "roleManager": "QUẢN LÝ"
+      },
+      "buttons": {
+        "edit": "Sửa",
+        "delete": "Xóa",
+        "save": "Lưu",
+        "saving": "Đang lưu...",
+        "cancel": "Hủy"
+      },
+      "alerts": {
+        "pendingRow": "Vui lòng hoàn thành hoặc hủy bỏ tác vụ hiện tại trước.",
+        "usernameRequired": "Tên đăng nhập là bắt buộc.",
+        "passwordRequired": "Mật khẩu là bắt buộc.",
+        "addSuccess": "Thêm người dùng thành công!",
+        "updateSuccess": "Cập nhật thành công!",
+        "deleteSuccess": "Xóa thành công!",
+        "confirmDelete": "Bạn có chắc chắn muốn xóa người dùng này?",
+        "confirmCancel": "Bạn có chắc chắn muốn hủy thêm người dùng này?",
+        "unknownError": "Lỗi không xác định",
+        "connectionError": "Lỗi kết nối: "
+      }
+    },
+    "modelSpec": {
+      "title": "Thông số Model",
+      "searchPlaceholder": "Tìm kiếm tất cả",
+      "addModel": "Thêm Model",
+      "importFile": "Nhập tệp (Import)",
+      "exportFile": "Xuất tệp (Export)",
+      "table": {
+        "stt": "STT",
+        "modelType": "Loại Model",
+        "mobisCode": "Mã Mobis",
+        "partronCode": "Mã Partron",
+        "modelName": "Tên Model",
+        "actions": "Hành động"
+      },
+      "form": {
+        "modelTypePlaceholder": "Nhập loại model",
+        "mobisCodePlaceholder": "Nhập mã mobis",
+        "partronCodePlaceholder": "Nhập mã partron",
+        "modelNamePlaceholder": "Nhập tên model"
+      },
+      "buttons": {
+        "edit": "Sửa",
+        "delete": "Xóa",
+        "save": "Lưu",
+        "saving": "Đang lưu...",
+        "cancel": "Hủy"
+      },
+      "alerts": {
+        "pendingRow": "Vui lòng hoàn thành hoặc hủy bỏ tác vụ hiện tại trước.",
+        "modelTypeRequired": "Loại model là bắt buộc.",
+        "mobisCodeRequired": "Mã Mobis là bắt buộc.",
+        "partronCodeRequired": "Mã Partron là bắt buộc.",
+        "modelNameRequired": "Tên model là bắt buộc.",
+        "allFieldsRequired": "Vui lòng nhập đầy đủ các trường.",
+        "addSuccess": "Thêm model thành công!",
+        "updateSuccess": "Cập nhật thành công!",
+        "deleteSuccess": "Xóa thành công!",
+        "confirmDeleteModel": "Bạn có chắc muốn xóa thông số model này?",
+        "confirmCancelModel": "Bạn có chắc muốn hủy thêm model này?",
+        "noDataExport": "Không có dữ liệu để xuất!",
+        "invalidCsvFile": "Vui lòng chọn một tệp CSV hợp lệ.",
+        "noValidCsvData": "Không tìm thấy dữ liệu hợp lệ trong tệp CSV!",
+        "importSuccess": "Nhập dữ liệu thành công!",
+        "unknownError": "Lỗi không xác định",
+        "connectionError": "Lỗi kết nối: "
+      }
+    },
+    "delivery": {
+      "title": "Quản lý xuất hàng",
+      "searchPlaceholder": "Tìm kiếm Mã Model, Mã Mobis, Tên Model",
+      "factoryLabel": "Nhà máy:",
+      "fromLabel": "Từ ngày:",
+      "toLabel": "Đến ngày:",
+      "table": {
+        "stt": "STT",
+        "modelId": "Mã Model",
+        "mobisCode": "Mã Mobis",
+        "modelName": "Tên Model",
+        "type": "Loại",
+        "target": "Mục tiêu",
+        "quantity": "Số lượng",
+        "status": "Trạng thái",
+        "completeTime": "Thời gian hoàn thành",
+        "shippingDate": "Ngày giao hàng",
+        "shippingMethod": "Phương thức vận chuyển",
+        "actions": "Hành động"
+      },
+      "buttons": {
+        "delete": "Xóa"
+      },
+      "alerts": {
+        "confirmDelete": "Bạn có chắc chắn muốn xóa bản ghi giao hàng này?",
+        "deleteSuccess": "Xóa thành công!",
+        "unknownError": "Lỗi không xác định",
+        "connectionError": "Lỗi kết nối: "
+      }
+    }
+  },
+  "history": {
+    "title": "Lịch sử giao hàng",
+    "searchPlaceholder": "Tìm kiếm Mã Mobis, Mã Model",
+    "factoryLabel": "Nhà máy:",
+    "dateSeparator": "~",
+    "clearFilters": "Xóa bộ lọc",
+    "table": {
+      "stt": "STT",
+      "modelId": "Mã Model",
+      "qr": "QR",
+      "mobisCode": "Mã Mobis",
+      "modelName": "Tên Model",
+      "type": "Loại",
+      "target": "Mục tiêu",
+      "evenQuantity": "Số lượng",
+      "shippingDate": "Ngày giao hàng",
+      "shippingMethod": "Phương thức vận chuyển",
+      "eventUser": "Người thực hiện",
+      "eventTime": "Thời gian"
+    }
+  },
+  "pagination": {
+    "prev": "Trang trước",
+    "next": "Trang sau"
+  },
+  "changePasswordModal": {
+    "title": "Cài đặt tài khoản",
+    "infoSection": {
+      "username": "Tên đăng nhập",
+      "fullName": "Họ và tên",
+      "role": "Vai trò"
+    },
+    "formSection": {
+      "title": "Đổi mật khẩu",
+      "newPasswordLabel": "Mật khẩu mới",
+      "newPasswordPlaceholder": "Nhập mật khẩu mới",
+      "confirmPasswordLabel": "Xác nhận mật khẩu",
+      "confirmPasswordPlaceholder": "Xác nhận mật khẩu mới",
+      "submitButton": "Cập nhật mật khẩu"
+    },
+    "validation": {
+      "emptyPassword": "Vui lòng nhập mật khẩu mới.",
+      "minLength": "Mật khẩu phải có ít nhất 6 ký tự.",
+      "passwordMismatch": "⚠ Mật khẩu xác nhận không khớp."
+    },
+    "messages": {
+      "connectionError": "Lỗi kết nối server."
+    }
+  },
+  "alerts": {
+    "loginRequired": "Vui lòng đăng nhập để tiếp tục",
+    "loadDataError": "Không thể tải dữ liệu Giao hàng!",
+    "confirmLogout": "Bạn có chắc chắn muốn đăng xuất không?"
+  },
+  "login": {
+  "username": "Tên đăng nhập",
+  "usernamePlaceholder": "Nhập tên đăng nhập",
+  "password": "Mật khẩu",
+  "passwordPlaceholder": "Nhập mật khẩu",
+  "savePassword": "Lưu mật khẩu?",
+  "submit": "Đăng nhập",
+  "forgotText": "Quên mật khẩu?",
+  "forgotLink": "Đặt lại tại đây!",
+  "forgotAlert": "Vui lòng liên hệ IT để lấy lại mật khẩu!",
+  "noPermission": "Bạn không có quyền truy cập trang này",
+  "invalidToken": "Phiên đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại!",
+  "emptyFields": "Vui lòng nhập tên đăng nhập và mật khẩu!",
+  "wrongCredentials": "Tên đăng nhập hoặc mật khẩu không đúng!",
+  "connectionError": "Lỗi kết nối server!"
+  },
+  "statusText": {
+    "run": "Đang chạy",
+    "complete": "Hoàn thành",
+    "wait": "Chờ"
+  },
+  "delivery": {
+    "alerts": {
+      "fetchError": "Lỗi khi lấy dữ liệu xuất hàng",
+      "selectExcel": "Vui lòng chọn file Excel!",
+      "invalidQr": "Mã QR không hợp lệ",
+      "qrExists": "Mã QR đã tồn tại",
+      "noMatchQr": "Không tìm thấy thông tin xuất hàng khớp với QR",
+      "targetExceeded": "Số lượng cộng thêm lớn hơn số lượng mục tiêu",
+      "updateFailed": "Cập nhật thất bại (lỗi kết nối)",
+      "invalidSheet": "Không tìm thấy sheet hợp lệ cho tháng hiện tại hoặc tương lai",
+      "noHeader": "Không tìm thấy dòng header phù hợp!",
+      "emptyFile": "⚠️ File rỗng hoặc không có dữ liệu hợp lệ",
+      "emptyColumn": "Dòng {row} cột {column} không được để trống",
+      "invalidValue": "Lỗi tại dòng {row}, cột \"{column}\": Giá trị không hợp lệ: \"{value}\"",
+      "qtyExceedsTarget": "Dòng {row} Quantity không được lớn hơn Target Quantity"
+    }
+  }
+}

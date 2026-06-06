@@ -1,5 +1,6 @@
 import * as XLSX from "./xlsx.js";
 import { formatDate } from "../js/utils.js";
+import I18n from "/i18n.js";
 
 const gridBtn = document.getElementById("gridBtn");
 const listBtn = document.getElementById("listBtn");
@@ -14,6 +15,8 @@ const errorSound = document.getElementById("errorSound");
 
 let data = [];
 let user = null;
+let factorySelected = "";
+let t = (key, params) => key;
 
 const columnMapping = {
   "MOBIS-CODE": "mobiscode",
@@ -27,8 +30,123 @@ const columnMapping = {
   출하지: "factory",
 };
 
-user = await getUserProfile();
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function getStatusText(status) {
+  if (!status) return "";
+  const key = status.toLowerCase();
+  if (key === "run") return t("statusText.run");
+  if (key === "complete") return t("statusText.complete");
+  if (key === "wait") return t("statusText.wait");
+  return status;
+}
 
+// ─── Apply language to static DOM elements ────────────────────────────────────
+async function applyLang() {
+  // Page Title
+  document.title = t("title");
+
+  // Nav links
+  const brandLink = document.querySelector(".logo a");
+  if (brandLink) brandLink.textContent = t("nav.brand");
+
+  const homeLink = document.querySelector(".home a");
+  if (homeLink) homeLink.textContent = t("nav.home");
+
+  const deliveryLink = document.querySelector(".delivery a");
+  if (deliveryLink) deliveryLink.textContent = t("nav.delivery");
+
+  const historyLink = document.querySelector(".history a");
+  if (historyLink) historyLink.textContent = t("nav.history");
+
+  const adminLink = document.querySelector(".admin a");
+  if (adminLink) adminLink.textContent = t("nav.admin");
+
+  const cpNavLink = document.querySelector(".change-password a");
+  if (cpNavLink) {
+    const textNode = [...cpNavLink.childNodes].find(
+      (n) => n.nodeType === Node.TEXT_NODE && n.textContent.trim(),
+    );
+    if (textNode) textNode.textContent = " " + t("nav.changePassword");
+  }
+
+  // Toolbar
+  const importBtnText = [...importBtn.childNodes].find(
+    (n) => n.nodeType === Node.TEXT_NODE && n.textContent.trim(),
+  );
+  if (importBtnText) importBtnText.textContent = " " + t("import");
+
+  if (searchInput) {
+    searchInput.placeholder = t("scanQR");
+  }
+
+  const listBtnText = [...listBtn.childNodes].find(
+    (n) => n.nodeType === Node.TEXT_NODE && n.textContent.trim(),
+  );
+  if (listBtnText) listBtnText.textContent = " " + t("list");
+
+  const gridBtnText = [...gridBtn.childNodes].find(
+    (n) => n.nodeType === Node.TEXT_NODE && n.textContent.trim(),
+  );
+  if (gridBtnText) gridBtnText.textContent = " " + t("grid");
+
+  // Table Headers
+  const headerDivs = document.querySelectorAll("#tableHeader > div");
+  if (headerDivs.length >= 10) {
+    headerDivs[0].textContent = t("admin.delivery.table.stt");
+    headerDivs[1].textContent = t("admin.delivery.table.mobisCode");
+    headerDivs[2].textContent = t("admin.delivery.table.modelName");
+    headerDivs[3].textContent = t("admin.delivery.table.type");
+    headerDivs[4].textContent = t("admin.delivery.table.status");
+    headerDivs[5].textContent = t("admin.delivery.table.target");
+    headerDivs[6].textContent = t("admin.delivery.table.quantity");
+    headerDivs[7].textContent = t("admin.delivery.table.completeTime");
+    headerDivs[8].textContent = t("admin.delivery.table.shippingDate");
+    headerDivs[9].textContent = t("admin.delivery.table.shippingMethod");
+  }
+
+  // Change Password Modal Static Texts
+  const cpHeader = document.querySelector(".cp-header h2");
+  if (cpHeader) cpHeader.textContent = t("changePasswordModal.title");
+
+  const infoLabels = document.querySelectorAll(".cp-info-item .cp-label");
+  if (infoLabels.length >= 3) {
+    infoLabels[0].textContent = t("changePasswordModal.infoSection.username");
+    infoLabels[1].textContent = t("changePasswordModal.infoSection.fullName");
+    infoLabels[2].textContent = t("changePasswordModal.infoSection.role");
+  }
+
+  const cpFormTitle = document.querySelector(".cp-form h3");
+  if (cpFormTitle)
+    cpFormTitle.textContent = t("changePasswordModal.formSection.title");
+
+  const formLabels = document.querySelectorAll(".cp-field label");
+  if (formLabels.length >= 2) {
+    formLabels[0].textContent = t(
+      "changePasswordModal.formSection.newPasswordLabel",
+    );
+    formLabels[1].textContent = t(
+      "changePasswordModal.formSection.confirmPasswordLabel",
+    );
+  }
+
+  const cpNewPass = document.getElementById("cpNewPass");
+  if (cpNewPass)
+    cpNewPass.placeholder = t(
+      "changePasswordModal.formSection.newPasswordPlaceholder",
+    );
+
+  const cpConfirmPass = document.getElementById("cpConfirmPass");
+  if (cpConfirmPass)
+    cpConfirmPass.placeholder = t(
+      "changePasswordModal.formSection.confirmPasswordPlaceholder",
+    );
+
+  const cpBtnText = document.getElementById("cpBtnText");
+  if (cpBtnText)
+    cpBtnText.textContent = t("changePasswordModal.formSection.submitButton");
+}
+
+// ─── API Operations ───────────────────────────────────────────────────────────
 async function getUserProfile() {
   const res = await fetch("/exportmanagement/profile", {
     method: "GET",
@@ -38,21 +156,6 @@ async function getUserProfile() {
   const data = await res.json();
   return data.user;
 }
-
-if (user.factory.toLowerCase() == "v4") {
-  importBtn.classList.add("visible");
-} else {
-  searchInput.classList.add("visible");
-  cbbFactory.value = user.factory;
-  cbbFactory.disabled = true;
-}
-
-let factorySelected = cbbFactory.value.toLowerCase();
-
-cbbFactory.addEventListener("change", async () => {
-  factorySelected = cbbFactory.value.toLowerCase();
-  await getAll();
-});
 
 function playErrorSound() {
   if (errorSound) {
@@ -71,7 +174,7 @@ async function getAll() {
     renderList();
     renderGrid();
   } catch (error) {
-    alert("Lỗi khi lấy dữ liệu xuất hàng");
+    alert(t("delivery.alerts.fetchError"));
     console.error("Error fetching data:", error);
   }
 }
@@ -165,7 +268,9 @@ function validateShipmentDate(value, rowIndex) {
 function validateRow(row, rowIndex) {
   for (const [key, value] of Object.entries(row)) {
     if (value === null || value === undefined || value === "") {
-      alert(`dòng ${rowIndex + 2} cột ${key} không được để trống`);
+      alert(
+        t("delivery.alerts.emptyColumn", { row: rowIndex + 2, column: key }),
+      );
       return;
     }
 
@@ -174,9 +279,11 @@ function validateRow(row, rowIndex) {
         const num = Number(value);
         if (Number.isNaN(num) || num <= 0) {
           throw new Error(
-            `Lỗi tại dòng ${
-              rowIndex + 2
-            }, cột "${key}": Giá trị không hợp lệ: "${value}"`,
+            t("delivery.alerts.invalidValue", {
+              row: rowIndex + 2,
+              column: key,
+              value: value,
+            }),
           );
         }
         row[key] = num;
@@ -187,9 +294,11 @@ function validateRow(row, rowIndex) {
         const num = Number(value);
         if (Number.isNaN(num) || num < 0) {
           throw new Error(
-            `Lỗi tại dòng ${
-              rowIndex + 2
-            }, cột "${key}": Giá trị không hợp lệ: "${value}"`,
+            t("delivery.alerts.invalidValue", {
+              row: rowIndex + 2,
+              column: key,
+              value: value,
+            }),
           );
         }
         row[key] = num;
@@ -201,7 +310,7 @@ function validateRow(row, rowIndex) {
   }
 
   if (row.targetquantity < row.quantity) {
-    alert(`dòng ${rowIndex + 2} Quantity không được lớn hơn Target Quantity`);
+    alert(t("delivery.alerts.qtyExceedsTarget", { row: rowIndex + 2 }));
   }
 }
 
@@ -256,11 +365,7 @@ function validateExcelFile(file) {
 
         const validSheets = validateSheet(workbook);
         if (validSheets.length === 0) {
-          return reject(
-            new Error(
-              "Không tìm thấy sheet hợp lệ cho tháng hiện tại hoặc tương lai",
-            ),
-          );
+          return reject(new Error(t("delivery.alerts.invalidSheet")));
         }
         const requiredColumns = Object.keys(columnMapping);
         for (const sheetName of validSheets) {
@@ -285,7 +390,7 @@ function validateExcelFile(file) {
           }
 
           if (headerRowIndex === -1 || headerRowIndex === null) {
-            alert("Không tìm thấy dòng header phù hợp!");
+            alert(t("delivery.alerts.noHeader"));
             return;
           }
           const filteredHeader = headerRow.filter((col) =>
@@ -362,7 +467,7 @@ function validateExcelFile(file) {
         }
 
         if (validRows.length < 1) {
-          return reject(new Error("⚠️ File rỗng hoặc không có dữ liệu hợp lệ"));
+          return reject(new Error(t("delivery.alerts.emptyFile")));
         }
         resolve(validRows);
       } catch (err) {
@@ -404,9 +509,9 @@ function renderList() {
     <div>${item.mobis_code}</div>
     <div>${item.model_name}</div>
     <div>${item.type}</div>
-    <div><span class="status-badge ${item.status.toLowerCase()}">${
-      item.status
-    }</span></div>
+    <div><span class="status-badge ${item.status.toLowerCase()}">${getStatusText(
+      item.status,
+    )}</span></div>
     <div>${item.target}</div>
     <div>${item.quantity}</div>
     <div>${completeDate}</div>
@@ -444,16 +549,14 @@ function renderGrid() {
         <strong>${item.model_name}</strong>
     </div>
     <div class="card-body">
-        <div><strong>Mobis Code:</strong> ${item.mobis_code}</div>
-        <div><strong>Type:</strong> ${item.type}</div>
-        <div><strong>Target:</strong> ${item.target}</div>
-        <div><strong>Quantity:</strong> ${item.quantity}</div>
-        <strong>Status:</strong> <div class="status-badge ${item.status.toLowerCase()}"> ${
-          item.status
-        }</div>
-        <div><strong>Complete Time:</strong> ${completeDate}</div>
-        <div><strong>Shipment Date:</strong> ${shipmentDate}</div>
-        <div><strong>Shipping method:</strong> ${item.shipping_method}</div>
+        <div><strong>${t("admin.delivery.table.mobisCode")}:</strong> ${item.mobis_code}</div>
+        <div><strong>${t("admin.delivery.table.type")}:</strong> ${item.type}</div>
+        <div><strong>${t("admin.delivery.table.target")}:</strong> ${item.target}</div>
+        <div><strong>${t("admin.delivery.table.quantity")}:</strong> ${item.quantity}</div>
+        <strong>${t("admin.delivery.table.status")}:</strong> <div class="status-badge ${item.status.toLowerCase()}"> ${getStatusText(item.status)}</div>
+        <div><strong>${t("admin.delivery.table.completeTime")}:</strong> ${completeDate}</div>
+        <div><strong>${t("admin.delivery.table.shippingDate")}:</strong> ${shipmentDate}</div>
+        <div><strong>${t("admin.delivery.table.shippingMethod")}:</strong> ${item.shipping_method}</div>
     </div>
   </div>
       `;
@@ -476,7 +579,7 @@ importBtn.addEventListener("click", () => {
 
 excelInput.addEventListener("change", async () => {
   const file = excelInput.files[0];
-  if (!file) return alert("Vui lòng chọn file Excel!");
+  if (!file) return alert(t("delivery.alerts.selectExcel"));
 
   try {
     const rows = await validateExcelFile(file);
@@ -537,7 +640,7 @@ function getQrData(qr) {
   switch (parts.length) {
     case 7: {
       if (!Number(parts[3])) {
-        throw new Error("Mã QR không hợp lệ");
+        throw new Error(t("delivery.alerts.invalidQr"));
       }
       qrData = {
         mobiscode: parts[2],
@@ -549,7 +652,7 @@ function getQrData(qr) {
 
     case 8: {
       if (!Number(parts[4])) {
-        throw new Error("Mã QR không hợp lệ");
+        throw new Error(t("delivery.alerts.invalidQr"));
       }
       qrData = {
         mobiscode: parts[2] + parts[3],
@@ -561,18 +664,24 @@ function getQrData(qr) {
 
     case 9: {
       if (!Number(parts[5])) {
-        throw new Error("Mã QR không hợp lệ");
+        throw new Error(t("delivery.alerts.invalidQr"));
       }
+
+      const startsWithNumber = /^\d/.test(parts[2]);
+
       qrData = {
-        mobiscode: parts[2] + parts[3] + parts[4],
+        mobiscode: startsWithNumber
+          ? parts[2] + parts[3] + parts[4]
+          : parts[3] + parts[4],
         quantity: parts[5],
         type: parts[6],
       };
+
       return qrData;
     }
 
     default:
-      throw new Error("Mã QR không hợp lệ");
+      throw new Error(t("delivery.alerts.invalidQr"));
   }
 }
 
@@ -599,7 +708,7 @@ async function updateDelivery(username, factory, delivery, qr) {
     return result;
   } catch (error) {
     console.log(error);
-    return { status: 500, message: "Cập nhật thất bại (fetch error)" };
+    return { status: 500, message: t("delivery.alerts.updateFailed") };
   }
 }
 
@@ -619,11 +728,11 @@ searchInput.addEventListener("keydown", async (e) => {
 
       if (!qrPattern.test(qrValue)) {
         playErrorSound();
-        alert("Mã QR không hợp lệ");
+        alert(t("delivery.alerts.invalidQr"));
         return;
       }
 
-      const invalidLength = qrValue.length < 38 || qrValue.length > 46;
+      const invalidLength = qrValue.length < 38 || qrValue.length > 48;
 
       // phải bắt đầu bằng 1 trong 3 mã
       const validPrefix =
@@ -637,7 +746,7 @@ searchInput.addEventListener("keydown", async (e) => {
 
       if (invalidLength || !validPrefix || !validDash) {
         playErrorSound();
-        alert("Mã QR không hợp lệ");
+        alert(t("delivery.alerts.invalidQr"));
         return;
       }
 
@@ -647,7 +756,7 @@ searchInput.addEventListener("keydown", async (e) => {
 
       if (isQrExist) {
         playErrorSound();
-        alert("Mã QR đã tồn tại");
+        alert(t("delivery.alerts.qrExists"));
         return;
       }
 
@@ -655,14 +764,14 @@ searchInput.addEventListener("keydown", async (e) => {
 
       if (!delivery) {
         playErrorSound();
-        alert("không tìm thấy thông tin xuất hàng khớp với qr");
+        alert(t("delivery.alerts.noMatchQr"));
         return;
       }
 
       let newQuantity = Number(delivery.quantity) + Number(qrData.quantity);
       if (newQuantity > delivery.target) {
         playErrorSound();
-        alert("số lượng cộng thêm lớn hơn số lượng mục tiêu");
+        alert(t("delivery.alerts.targetExceeded"));
         return;
       }
 
@@ -693,7 +802,7 @@ searchInput.addEventListener("keydown", async (e) => {
       await getAll();
     } catch (error) {
       playErrorSound();
-      alert(error);
+      alert(error.message || error);
       searchInput.value = "";
     } finally {
       isProcessing = false;
@@ -701,6 +810,36 @@ searchInput.addEventListener("keydown", async (e) => {
   }
 });
 
-await getAll();
-renderList();
-renderGrid();
+cbbFactory.addEventListener("change", async () => {
+  factorySelected = cbbFactory.value.toLowerCase();
+  await getAll();
+});
+
+// ─── Bootstrap ────────────────────────────────────────────────────────────────
+async function bootstrap() {
+  // 1. Init i18n
+  await I18n.init("en");
+  t = (key, params) => I18n.t(key, params);
+  user = await getUserProfile();
+  document.querySelector("app-header")?.setUser(user);
+  // 2. Fetch User Profile
+  user = await getUserProfile();
+
+  // 3. Set Active Factory Selection & visibility
+  if (user.role.toLowerCase() == "user") {
+    searchInput.classList.add("visible");
+    cbbFactory.value = user.factory;
+    cbbFactory.disabled = true;
+  } else {
+    importBtn.classList.add("visible");
+  }
+  factorySelected = cbbFactory.value.toLowerCase();
+
+  // 5. Apply Static Label Translations
+  await applyLang();
+
+  // 6. Get data and render
+  await getAll();
+}
+
+await bootstrap();

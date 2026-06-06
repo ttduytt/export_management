@@ -1,18 +1,14 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="/images/logoweb.jpg" type="image/x-icon" />
   <script type="module" src="/js/main.js"></script>
-  <link rel="icon" href="/images/logoweb.jpg" type="image/x-icon">
+  <script type="module" src="/js/header.js"></script>
   <title>Delivery Management - Home</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -21,1243 +17,105 @@
       background-color: #040818;
     }
 
-    /* Light mode */
-    body.light-theme {
-      background-color: white;
-      color: #e3e2e9;
-    }
-
-    .user-section {
-      position: relative;
-      margin-left: 20px;
-    }
-
-    .user-avatar {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-      border: 2px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .user-avatar:hover {
-      transform: scale(1.05);
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-    }
-
-    .user-avatar-icon {
-      width: 24px;
-      height: 24px;
-      color: white;
-    }
-
-    /* Popup Menu */
-    .user-popup {
-      position: absolute;
-      top: calc(100% + 10px);
-      right: 0;
-      background: rgba(6, 12, 34, 0.98);
-      backdrop-filter: blur(10px);
-      border-radius: 12px;
-      min-width: 220px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(102, 126, 234, 0.3);
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(-10px);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      z-index: 1001;
-    }
-
-    .user-popup.active {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-    }
-
-    .user-popup::before {
-      content: '';
-      position: absolute;
-      top: -6px;
-      right: 15px;
-      width: 12px;
-      height: 12px;
-      background: rgba(6, 12, 34, 0.98);
-      border-left: 1px solid rgba(102, 126, 234, 0.3);
-      border-top: 1px solid rgba(102, 126, 234, 0.3);
-      transform: rotate(45deg);
-    }
-
-    .user-info {
-      padding: 20px;
-      border-bottom: 1px solid rgba(102, 126, 234, 0.2);
-      text-align: center;
-    }
-
-    .user-name {
-      color: white;
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .user-email {
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 13px;
-    }
-
-    .popup-menu {
-      list-style: none;
-      padding: 8px 0;
-    }
-
-    .popup-menu li {
-      margin: 0;
-    }
-
-    .popup-menu a {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 20px;
-      color: rgba(255, 255, 255, 0.85);
-      text-decoration: none;
-      transition: all 0.2s ease;
-      font-size: 14px;
-    }
-
-    .popup-menu a:hover {
-      background: rgba(102, 126, 234, 0.15);
-      color: white;
-    }
-
-    .popup-menu svg {
-      width: 18px;
-      height: 18px;
-      flex-shrink: 0;
-    }
-
-    .popup-divider {
-      height: 1px;
-      background: rgba(102, 126, 234, 0.2);
-      margin: 8px 0;
-    }
-
-    /* Light Theme Support */
-    body.light-theme .user-popup {
-      background: white;
-      border: 1px solid #e0e0e0;
-    }
-
-    body.light-theme .user-popup::before {
-      background: white;
-      border-left: 1px solid #e0e0e0;
-      border-top: 1px solid #e0e0e0;
-    }
-
-    body.light-theme .user-name {
-      color: #333;
-    }
-
-    body.light-theme .user-email {
-      color: #666;
-    }
-
-    body.light-theme .popup-menu a {
-      color: #333;
-    }
-
-    body.light-theme .popup-menu a:hover {
-      background: #f5f5f5;
-    }
-
-    /* nav */
-    body.light-theme nav {
-      background: linear-gradient(to right, #667db6, #0082c8, #0082c8, #667db6);
-    }
-
-    body.light-theme .nav-menu li a.active {
-      background: #2a8f9e;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-      color: white;
-    }
-
-    body.light-theme .nav-menu li a:hover {
-      background: #2a8f9e;
-      color: white;
-      transform: translateY(-2px);
-    }
-
-    body.light-theme .nav-menu li a {
-      color: white;
-    }
-
-    body.light-theme .logo a {
-      color: white;
-    }
-
-    body.light-theme .nav-menu li a::before {
-      background: #6dd5ed;
-    }
-
-    body.light-theme .container {
-      background: white;
-    }
-
-    body.light-theme .text-wrapper h1 {
-      color: black;
-    }
-
-    body.light-theme .typing-sub {
-      background: #2a8f9e;
-    }
-
-
-    /* Navigation */
-    nav {
-      background: rgba(6, 12, 34, 0.95);
-      backdrop-filter: blur(10px);
-      padding: 0;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      border-bottom: 1px solid rgba(102, 126, 234, 0.3);
-    }
-
-    .nav-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 40px;
-    }
-
-    .logo {
-      color: white;
-      font-size: 30px;
-      font-weight: 700;
-      padding: 20px 0;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      background: linear-gradient(135deg, #f4f4f4 0%, #e7d3fc 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .logo img {
-      transition: transform 0.3s ease;
-    }
-
-    .logo img:hover {
-      transform: scale(1.05);
-    }
-
-    .nav-menu {
-      display: flex;
-      list-style: none;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .nav-menu li a {
-      color: rgba(255, 255, 255, 0.85);
-      text-decoration: none;
-      padding: 12px 28px;
-      display: block;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      font-weight: 500;
-      font-size: 15px;
-      letter-spacing: 0.5px;
-      border-radius: 8px;
-    }
-
-    .nav-menu li a::before {
-      content: '';
-      position: absolute;
-      bottom: 8px;
-      left: 50%;
-      transform: translateX(-50%) scaleX(0);
-      width: 60%;
-      height: 2px;
-      background: linear-gradient(90deg, #667eea, #764ba2);
-      transition: transform 0.3s ease;
-    }
-
-    .nav-menu li a:hover {
-      background: rgba(102, 126, 234, 0.15);
-      color: white;
-      transform: translateY(-2px);
-    }
-
-    .nav-menu li a:hover::before {
-      transform: translateX(-50%) scaleX(1);
-    }
-
-    .nav-menu li a.active {
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
-      color: white;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    }
-
-    .nav-menu li a.active::before {
-      transform: translateX(-50%) scaleX(1);
-    }
-
-    /* From Uiverse.io by JustCode14 */
-    /* The switch - the box around the slider */
-    .switch {
-      font-size: 17px;
-      position: relative;
-      display: inline-block;
-      width: 4em;
-      height: 2.2em;
-      border-radius: 30px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Hide default HTML checkbox */
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    /* The slider */
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #2a2a2a;
-      transition: 0.4s;
-      border-radius: 30px;
-      overflow: hidden;
-    }
-
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 1.2em;
-      width: 1.2em;
-      border-radius: 20px;
-      left: 0.5em;
-      bottom: 0.5em;
-      transition: 0.4s;
-      transition-timing-function: cubic-bezier(0.81, -0.04, 0.38, 1.5);
-      box-shadow: inset 8px -4px 0px 0px #fff;
-    }
-
-    .switch input:checked+.slider {
-      background-color: #00a6ff;
-    }
-
-    .switch input:checked+.slider:before {
-      transform: translateX(1.8em);
-      box-shadow: inset 15px -4px 0px 15px #ffcf48;
-    }
-
-    .star {
-      background-color: #fff;
-      border-radius: 50%;
-      position: absolute;
-      width: 5px;
-      transition: all 0.4s;
-      height: 5px;
-    }
-
-    .star_1 {
-      left: 2.5em;
-      top: 0.5em;
-    }
-
-    .star_2 {
-      left: 2.2em;
-      top: 1.2em;
-    }
-
-    .star_3 {
-      left: 3em;
-      top: 0.9em;
-    }
-
-    .switch input:checked~.slider .star {
-      opacity: 0;
-    }
-
-    .cloud {
-      width: 3.5em;
-      position: absolute;
-      bottom: -1.4em;
-      left: -1.1em;
-      opacity: 0;
-      transition: all 0.4s;
-    }
-
-    .switch input:checked~.slider .cloud {
-      opacity: 1;
-    }
-
-
-    /* Footer */
-    footer {
-      color: white;
-      font-size: 12px;
-      text-align: center;
-      padding: 20px 20px;
-      position: fixed;
-      bottom: 0;
-      right: 0;
-      left: auto;
-      width: 100%;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .hamburger {
-        display: flex;
-      }
-
-      .nav-menu {
-        position: fixed;
-        left: -100%;
-        top: 60px;
-        flex-direction: column;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        width: 100%;
-        text-align: center;
-        transition: 0.3s;
-        box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
-      }
-
-      .nav-menu.active {
-        left: 0;
-      }
-
-      .nav-menu li {
-        margin: 0;
-      }
-
-      .nav-menu li a {
-        padding: 20px;
-      }
-
-    }
-
+    /* ── Light theme ─────────────────────────────────────────────────── */
+    body.light-theme { background-color: white; color: #e3e2e9; }
+    body.light-theme nav { background: linear-gradient(to right,#667db6,#0082c8,#0082c8,#667db6); }
+    body.light-theme .nav-menu li a.active { background:#2a8f9e; box-shadow:0 4px 15px rgba(102,126,234,.3); color:white; }
+    body.light-theme .nav-menu li a:hover  { background:#2a8f9e; color:white; transform:translateY(-2px); }
+    body.light-theme .nav-menu li a        { color:white; }
+    body.light-theme .logo a               { color:white; }
+    body.light-theme .nav-menu li a::before{ background:#6dd5ed; }
+    body.light-theme .container            { background:white; }
+    body.light-theme .text-wrapper h1      { color:black; }
+    body.light-theme .text-wrapper h1::after { color:black; }
+    body.light-theme .typing-sub           { background:#2a8f9e; }
+
+    /* ── Container & layout ──────────────────────────────────────────── */
     .container {
       display: flex;
-      height: calc(100vh - 140px);
-      /* Chiều cao toàn màn hình trừ header/footer nếu có */
-      color: white;
-    }
-
-    /* Cột bên trái */
-    .content-left {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      /* căn giữa ngang */
       align-items: center;
-      /* căn giữa dọc */
-      text-align: center;
-      padding: 40px;
+      height: calc(100vh - 80px);
+      padding: 0 60px;
+      gap: 40px;
     }
 
+    /* ── Left content ────────────────────────────────────────────────── */
+    .content-left { flex: 1; min-width: 0; }
+
+    /* ── Typing title ────────────────────────────────────────────────── */
     .text-wrapper h1 {
-      font-size: 40px;
-      margin-bottom: 20px;
-      text-transform: uppercase;
+      font-size: 32px;
       font-weight: 700;
+      color: #e3e2e9;
+      margin-bottom: 28px;
+      line-height: 1.4;
+      min-height: 1.4em; /* giữ chiều cao khi chưa có text */
     }
 
-    .text-wrapper p {
-      font-size: 18px;
-      color: #ccc;
+    /* Cursor nhấp nháy gắn sau chữ */
+    .text-wrapper h1::after {
+      content: '|';
+      color: #e3e2e9;
+      font-weight: 300;
+      margin-left: 2px;
+      animation: blink-cursor 0.75s step-end infinite;
     }
 
-    .text-wrapper {
-      text-align: center;
-      color: white;
-      margin: 50px auto;
+    .text-wrapper h1.hide-cursor::after {
+      display: none;
     }
 
-    .typing-text {
-      overflow: hidden;
-      border-right: 3px solid #fff;
-      white-space: nowrap;
-      margin: 0 auto;
-      letter-spacing: 2px;
-      width: 0;
-      animation: typing 5s steps(40, end) forwards, blink 1s step-end infinite;
+    @keyframes blink-cursor {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
     }
 
-    /* Dòng chứa các slogan */
+    /* ── Slogans — NGANG (3 cột) ─────────────────────────────────────── */
     .slogan-row {
       display: flex;
-      justify-content: center;
-      gap: 20px;
-      /* flex-wrap: wrap; */
-    }
-
-    .typing-sub.show {
-      opacity: 1;
-      transform: translateY(0);
+      flex-direction: row;   /* ← nằm ngang */
+      flex-wrap: wrap;
+      gap: 12px;
     }
 
     .typing-sub {
-      background: rgba(255, 255, 255, 0.25);
-      border-radius: 12px;
-      padding: 15px 20px;
-      font-size: 16px;
-      width: 250px;
-      color: white;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #3b4689;
+      color: #e3e2e9;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 15px;
+      flex: 1;
+      min-width: 200px;
+      /* Fade-in từ dưới lên — JS thêm class .visible */
       opacity: 0;
-      /* ẩn ban đầu */
-      transform: translateY(30px);
-      transition: all 0.5s ease;
-      animation: fadeInUp 1s ease forwards;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+      transform: translateY(10px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
     }
 
-    .typing-sub span {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .logout span {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .typing-sub svg {
-      color: #4ade80;
-      flex-shrink: 0;
-    }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .typing-sub:nth-child(1) {
-      animation-delay: 5s;
-    }
-
-    .typing-sub:nth-child(2) {
-      animation-delay: 5.5s;
-    }
-
-    .typing-sub:nth-child(3) {
-      animation-delay: 6s;
-    }
-
-    .typing-sub:hover {
-      transform: translateY(-10px);
-      background: rgba(102, 126, 234, 0.2);
-    }
-
-    /* Modal Đổi Mật Khẩu */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(5px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s ease;
-    }
-
-    .modal-overlay.active {
+    .typing-sub.visible {
       opacity: 1;
-      visibility: visible;
+      transform: translateY(0);
     }
 
-    .modal-container {
-      background: rgba(6, 12, 34, 0.98);
-      border-radius: 16px;
-      width: 90%;
-      max-width: 500px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-      border: 1px solid rgba(102, 126, 234, 0.3);
-      transform: scale(0.9) translateY(-20px);
-      transition: all 0.3s ease;
-    }
-
-    .modal-overlay.active .modal-container {
-      transform: scale(1) translateY(0);
-    }
-
-    .modal-header {
-      padding: 24px 28px;
-      border-bottom: 1px solid rgba(102, 126, 234, 0.2);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .modal-header h2 {
-      color: white;
-      font-size: 22px;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    .modal-close {
-      background: none;
-      border: none;
-      color: rgba(255, 255, 255, 0.7);
-      cursor: pointer;
-      padding: 8px;
-      border-radius: 8px;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-close:hover {
-      background: rgba(102, 126, 234, 0.15);
-      color: white;
-    }
-
-    .modal-body {
-      padding: 28px;
-    }
-
-    .form-group {
-      margin-bottom: 24px;
-    }
-
-    .form-group label {
-      display: block;
-      color: rgba(255, 255, 255, 0.9);
-      font-size: 14px;
-      font-weight: 500;
-      margin-bottom: 8px;
-    }
-
-    .password-input-wrapper {
-      position: relative;
-    }
-
-    .form-group input {
-      width: 100%;
-      padding: 12px 45px 12px 16px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(102, 126, 234, 0.3);
-      border-radius: 8px;
-      color: white;
-      font-size: 14px;
-      transition: all 0.3s ease;
-    }
-
-    .form-group input:focus {
-      outline: none;
-      border-color: #667eea;
-      background: rgba(255, 255, 255, 0.08);
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    .form-group input::placeholder {
-      color: rgba(255, 255, 255, 0.4);
-    }
-
-    .toggle-password {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: rgba(255, 255, 255, 0.5);
-      cursor: pointer;
-      padding: 4px;
-      display: flex;
-      align-items: center;
-      transition: all 0.2s ease;
-    }
-
-    .toggle-password:hover {
-      color: white;
-    }
-
-    .password-strength {
-      margin-top: 8px;
-    }
-
-    .strength-bar {
-      height: 4px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 2px;
-      overflow: hidden;
-      margin-bottom: 6px;
-    }
-
-    .strength-fill {
-      height: 100%;
-      width: 0%;
-      transition: all 0.3s ease;
-      border-radius: 2px;
-    }
-
-    .strength-text {
-      font-size: 12px;
-      color: rgba(255, 255, 255, 0.6);
-    }
-
-    .modal-footer {
-      display: flex;
-      gap: 12px;
-      justify-content: flex-end;
-      margin-top: 32px;
-    }
-
-    .btn-cancel,
-    .btn-submit {
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      border: none;
-    }
-
-    .btn-cancel {
-      background: rgba(255, 255, 255, 0.05);
-      color: rgba(255, 255, 255, 0.8);
-      border: 1px solid rgba(102, 126, 234, 0.3);
-    }
-
-    .btn-cancel:hover {
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-    }
-
-    .btn-submit {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    }
-
-    .btn-submit:hover {
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-      transform: translateY(-2px);
-    }
-
-    .btn-submit:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    /* ===== CHANGE PASSWORD MODAL — DARK NAVY THEME ===== */
-
-        .cp-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(5, 10, 30, 0.75);
-            backdrop-filter: blur(6px);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .cp-overlay.active {
-            display: flex;
-        }
-
-        .cp-modal {
-            background: #1a2a5e;
-            /* navy card — giống panel bảng */
-            border: 1px solid #2e4080;
-            border-radius: 16px;
-            padding: 32px;
-            width: 440px;
-            max-width: 95vw;
-            position: relative;
-            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55),
-                0 0 0 1px rgba(99, 179, 255, 0.08);
-            animation: cpSlideIn .25s ease;
-            color: #e8eeff;
-        }
-
-        @keyframes cpSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-18px) scale(.97);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        /* ── Close button ── */
-        .cp-close {
-            position: absolute;
-            top: 14px;
-            right: 16px;
-            background: none;
-            border: none;
-            font-size: 22px;
-            cursor: pointer;
-            color: #7a8fcc;
-            line-height: 1;
-            transition: color .2s;
-        }
-
-        .cp-close:hover {
-            color: #e8eeff;
-        }
-
-        /* ── Header ── */
-        .cp-header {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 22px;
-        }
-
-        .cp-avatar {
-            width: 54px;
-            height: 54px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #1de9c4, #0ea5e9);
-            /* teal → cyan như nav btn */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #0d1b3e;
-            flex-shrink: 0;
-            box-shadow: 0 0 16px rgba(29, 233, 196, 0.35);
-        }
-
-        .cp-header h2 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin: 0;
-            color: #ffffff;
-            letter-spacing: .02em;
-        }
-
-        /* ── Info grid ── */
-        .cp-info-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background: rgba(10, 20, 60, 0.55);
-            /* nền tối hơn một chút */
-            border: 1px solid #2a3f7e;
-            border-radius: 12px;
-            padding: 16px 18px;
-        }
-
-        .cp-info-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .cp-label {
-            font-size: .78rem;
-            font-weight: 600;
-            color: #6b83c4;
-            text-transform: uppercase;
-            letter-spacing: .06em;
-        }
-
-        .cp-value {
-            font-size: .95rem;
-            font-weight: 600;
-            color: #dde6ff;
-        }
-
-        .cp-badge {
-            background: linear-gradient(135deg, #1de9c4, #0ea5e9);
-            /* teal accent */
-            color: #0a1628;
-            font-size: .72rem;
-            font-weight: 800;
-            padding: 3px 12px;
-            border-radius: 20px;
-            letter-spacing: .07em;
-            text-transform: uppercase;
-        }
-
-        /* ── Divider ── */
-        .cp-divider {
-            border: none;
-            border-top: 1px solid #2a3f7e;
-            margin: 20px 0;
-        }
-
-        /* ── Form ── */
-        .cp-form h3 {
-            font-size: .95rem;
-            font-weight: 700;
-            margin: 0 0 16px;
-            color: #a0b4e8;
-            text-transform: uppercase;
-            letter-spacing: .06em;
-        }
-
-        .cp-field {
-            margin-bottom: 14px;
-        }
-
-        .cp-field label {
-            display: block;
-            font-size: .8rem;
-            font-weight: 600;
-            color: #6b83c4;
-            margin-bottom: 6px;
-            letter-spacing: .03em;
-        }
-
-        .cp-input-wrap {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .cp-input-wrap input {
-            width: 100%;
-            padding: 10px 42px 10px 14px;
-            border: 1.5px solid #2a3f7e;
-            border-radius: 10px;
-            font-size: .95rem;
-            background: rgba(10, 20, 60, 0.6);
-            color: #e8eeff;
-            outline: none;
-            transition: border-color .2s, box-shadow .2s;
-            box-sizing: border-box;
-        }
-
-        .cp-input-wrap input::placeholder {
-            color: #4a5e9a;
-        }
-
-        .cp-input-wrap input:focus {
-            border-color: #1de9c4;
-            box-shadow: 0 0 0 3px rgba(29, 233, 196, 0.15);
-        }
-
-        .cp-eye {
-            position: absolute;
-            right: 10px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 4px;
-            color: #4a5e9a;
-            display: flex;
-            align-items: center;
-            transition: color .2s;
-        }
-
-        .cp-eye:hover {
-            color: #1de9c4;
-        }
-
-        /* ── Message ── */
-        .cp-msg {
-            min-height: 20px;
-            font-size: .85rem;
-            margin: 6px 0 10px;
-            font-weight: 500;
-        }
-
-        .cp-msg.error {
-            color: #f87171;
-        }
-
-        .cp-msg.success {
-            color: #4ade80;
-        }
-
-        /* xanh lá như badge Complete */
-
-        /* ── Submit button ── */
-        .cp-btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #1de9c4, #0ea5e9);
-            color: #0a1628;
-            border: none;
-            border-radius: 10px;
-            font-size: .95rem;
-            font-weight: 700;
-            cursor: pointer;
-            letter-spacing: .04em;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: opacity .2s, transform .15s, box-shadow .2s;
-            box-shadow: 0 4px 20px rgba(29, 233, 196, 0.3);
-        }
-
-        .cp-btn:hover:not(:disabled) {
-            opacity: .92;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 24px rgba(29, 233, 196, 0.45);
-        }
-
-        .cp-btn:active:not(:disabled) {
-            transform: translateY(0);
-        }
-
-        .cp-btn:disabled {
-            opacity: .5;
-            cursor: not-allowed;
-        }
-
-        /* ── Spinner ── */
-        .cp-spinner {
-            width: 18px;
-            height: 18px;
-            border: 2.5px solid rgba(10, 22, 40, 0.3);
-            border-top-color: #0a1628;
-            border-radius: 50%;
-            animation: spin .7s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-    /* Light Theme Support */
-    body.light-theme .user-popup {
-      background: white;
-      border: 1px solid #e0e0e0;
-    }
-
-    body.light-theme .user-popup::before {
-      background: white;
-      border-left: 1px solid #e0e0e0;
-      border-top: 1px solid #e0e0e0;
-    }
-
-    body.light-theme .user-name {
-      color: #333;
-    }
-
-    body.light-theme .user-email {
-      color: #666;
-    }
-
-    body.light-theme .popup-menu a {
-      color: #333;
-    }
-
-    body.light-theme .popup-menu a:hover {
-      background: #f5f5f5;
-    }
-
-    body.light-theme .modal-container {
-      background: white;
-      border: 1px solid #e0e0e0;
-    }
-
-    body.light-theme .modal-header {
-      border-bottom: 1px solid #e0e0e0;
-    }
-
-    body.light-theme .modal-header h2 {
-      color: #333;
-    }
-
-    body.light-theme .modal-close {
-      color: #666;
-    }
-
-    body.light-theme .modal-close:hover {
-      background: #f5f5f5;
-      color: #333;
-    }
-
-    body.light-theme .form-group label {
-      color: #333;
-    }
-
-    body.light-theme .form-group input {
-      background: #f5f5f5;
-      border: 1px solid #e0e0e0;
-      color: #333;
-    }
-
-    body.light-theme .form-group input:focus {
-      background: white;
-      border-color: #667eea;
-    }
-
-    body.light-theme .form-group input::placeholder {
-      color: #999;
-    }
-
-    body.light-theme .toggle-password {
-      color: #666;
-    }
-
-    body.light-theme .toggle-password:hover {
-      color: #333;
-    }
-
-    body.light-theme .strength-bar {
-      background: #e0e0e0;
-    }
-
-    body.light-theme .strength-text {
-      color: #666;
-    }
-
-    body.light-theme .btn-cancel {
-      background: #f5f5f5;
-      border: 1px solid #e0e0e0;
-      color: #333;
-    }
-
-    body.light-theme .btn-cancel:hover {
-      background: #e0e0e0;
-    }
-
-    @keyframes typing {
-      from {
-        width: 0
-      }
-
-      to {
-        width: 100%
-      }
-    }
-
-    @keyframes blink {
-      50% {
-        border-color: transparent
-      }
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0
-      }
-
-      to {
-        opacity: 1
-      }
-    }
-
-    /* Cột bên phải */
+    /* ── Right content ───────────────────────────────────────────────── */
     .content-right {
       flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      gap: 20px;
-    }
-
-    .content-right img {
-      width: 80%;
-      max-width: 400px;
-      max-height: 350px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-      transition: transform 0.3s ease;
-    }
-
-    .content-right img:hover {
-      transform: scale(1.05);
-    }
-
-    /* Responsive: khi màn nhỏ, xếp dọc */
-    @media (max-width: 900px) {
-      .container {
-        flex-direction: column;
-        height: auto;
-      }
-
-      .content-left,
-      .content-right {
-        width: 100%;
-      }
-
-      .content-right {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-
-      .content-right img {
-        width: 45%;
-        max-width: 200px;
-      }
-    }
-
-    @media (max-width: 1600px) {
-      .text-wrapper h1 {
-        font-size: 28px;
-      }
-
-      .text-wrapper p {
-        font-size: 14px;
-      }
-
-      .typing-sub {
-        width: 100%;
-        font-size: 14px;
-      }
-
-      .content-right img {
-        width: 90%;
-        max-width: 300px;
-      }
+      height: 100%;
+      overflow: hidden;
     }
 
     .vertical-slider {
       overflow: hidden;
       position: relative;
       width: 100%;
+      height: 100%;
       display: flex;
       justify-content: center;
     }
@@ -1267,6 +125,7 @@
       will-change: transform;
       flex-direction: column;
       align-items: center;
+      width: 100%;
     }
 
     .slide-track img {
@@ -1274,666 +133,224 @@
       max-width: 600px;
       margin: 20px 0;
       border-radius: 10px;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 4px 15px rgba(102,126,234,.3);
+    }
+
+    /* ── Change Password Modal ───────────────────────────────────────── */
+    .cp-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(5,10,30,.75); backdrop-filter: blur(6px);
+      z-index: 9999; align-items: center; justify-content: center;
+    }
+    .cp-overlay.active { display: flex; }
+    .cp-modal {
+      background: #1a2a5e; border: 1px solid #2e4080;
+      border-radius: 16px; padding: 32px; width: 440px; max-width: 95vw;
+      position: relative;
+      box-shadow: 0 24px 64px rgba(0,0,0,.55), 0 0 0 1px rgba(99,179,255,.08);
+      animation: cpSlideIn .25s ease; color: #e8eeff;
+    }
+    @keyframes cpSlideIn {
+      from { opacity:0; transform:translateY(-18px) scale(.97); }
+      to   { opacity:1; transform:translateY(0) scale(1); }
+    }
+    .cp-close {
+      position:absolute; top:14px; right:16px;
+      background:none; border:none; font-size:22px;
+      cursor:pointer; color:#7a8fcc; line-height:1; transition:color .2s;
+    }
+    .cp-close:hover { color:#e8eeff; }
+    .cp-header { display:flex; align-items:center; gap:14px; margin-bottom:22px; }
+    .cp-avatar {
+      width:54px; height:54px; border-radius:50%;
+      background:linear-gradient(135deg,#1de9c4,#0ea5e9);
+      display:flex; align-items:center; justify-content:center;
+      color:#0d1b3e; flex-shrink:0; box-shadow:0 0 16px rgba(29,233,196,.35);
+    }
+    .cp-header h2 { font-size:1.2rem; font-weight:700; margin:0; color:#fff; letter-spacing:.02em; }
+    .cp-info-grid {
+      display:flex; flex-direction:column; gap:10px;
+      background:rgba(10,20,60,.55); border:1px solid #2a3f7e;
+      border-radius:12px; padding:16px 18px;
+    }
+    .cp-info-item  { display:flex; justify-content:space-between; align-items:center; }
+    .cp-label  { font-size:.78rem; font-weight:600; color:#6b83c4; text-transform:uppercase; letter-spacing:.06em; }
+    .cp-value  { font-size:.95rem; font-weight:600; color:#dde6ff; }
+    .cp-badge  {
+      background:linear-gradient(135deg,#1de9c4,#0ea5e9); color:#0a1628;
+      font-size:.72rem; font-weight:800; padding:3px 12px;
+      border-radius:20px; letter-spacing:.07em; text-transform:uppercase;
+    }
+    .cp-divider { border:none; border-top:1px solid #2a3f7e; margin:20px 0; }
+    .cp-form h3  { font-size:.95rem; font-weight:700; margin:0 0 16px; color:#a0b4e8; text-transform:uppercase; letter-spacing:.06em; }
+    .cp-field    { margin-bottom:14px; }
+    .cp-field label { display:block; font-size:.8rem; font-weight:600; color:#6b83c4; margin-bottom:6px; }
+    .cp-input-wrap { position:relative; display:flex; align-items:center; }
+    .cp-input-wrap input {
+      width:100%; padding:10px 42px 10px 14px; border:1.5px solid #2a3f7e; border-radius:10px;
+      font-size:.95rem; background:rgba(10,20,60,.6); color:#e8eeff; outline:none;
+      transition:border-color .2s,box-shadow .2s; box-sizing:border-box;
+    }
+    .cp-input-wrap input::placeholder { color:#4a5e9a; }
+    .cp-input-wrap input:focus { border-color:#1de9c4; box-shadow:0 0 0 3px rgba(29,233,196,.15); }
+    .cp-eye {
+      position:absolute; right:10px; background:none; border:none; cursor:pointer;
+      padding:4px; color:#4a5e9a; display:flex; align-items:center; transition:color .2s;
+    }
+    .cp-eye:hover { color:#1de9c4; }
+    .cp-msg  { min-height:20px; font-size:.85rem; margin:6px 0 10px; font-weight:500; }
+    .cp-msg.error   { color:#f87171; }
+    .cp-msg.success { color:#4ade80; }
+    .cp-btn {
+      width:100%; padding:12px; background:linear-gradient(135deg,#1de9c4,#0ea5e9);
+      color:#0a1628; border:none; border-radius:10px; font-size:.95rem; font-weight:700;
+      cursor:pointer; letter-spacing:.04em; display:flex; align-items:center;
+      justify-content:center; gap:8px;
+      transition:opacity .2s,transform .15s,box-shadow .2s;
+      box-shadow:0 4px 20px rgba(29,233,196,.3);
+    }
+    .cp-btn:hover:not(:disabled) { opacity:.92; transform:translateY(-2px); box-shadow:0 6px 24px rgba(29,233,196,.45); }
+    .cp-btn:active:not(:disabled) { transform:translateY(0); }
+    .cp-btn:disabled { opacity:.5; cursor:not-allowed; }
+    .cp-spinner {
+      width:18px; height:18px; border:2.5px solid rgba(10,22,40,.3);
+      border-top-color:#0a1628; border-radius:50%; animation:spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* ── Footer ──────────────────────────────────────────────────────── */
+    footer {
+      color:white; font-size:12px; text-align:right;
+      background-color:transparent; padding:8px 20px;
+      position:fixed; bottom:0; right:0; width:100%;
+    }
+
+    /* ── Responsive ──────────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .container { flex-direction:column; height:auto; padding:20px; }
+      .content-right { height:360px; overflow:hidden; }
+      .slogan-row { flex-direction:column; }
+      .slide-track img { width:90%; max-width:300px; }
+    }
+    @media (max-width: 1600px) {
+      .text-wrapper h1 { font-size:28px; }
+      .typing-sub      { font-size:14px; }
+      .slide-track img { width:90%; max-width:300px; }
     }
   </style>
 </head>
-
 <body>
-      <!-- Modal Change Password — thêm trước </body> -->
-    <div id="changePassOverlay" class="cp-overlay">
-        <div class="cp-modal">
-            <button class="cp-close" id="closeChangePass">&times;</button>
 
-            <div class="cp-header">
-                <div class="cp-avatar">
-                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="1.5">
-                        <circle cx="12" cy="8" r="4" />
-                        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-                    </svg>
-                </div>
-                <h2>Account Settings</h2>
-            </div>
-
-            <!-- User Info -->
-            <div class="cp-info-grid">
-                <div class="cp-info-item">
-                    <span class="cp-label">Username</span>
-                    <span class="cp-value" id="cpUsername"></span>
-                </div>
-                <div class="cp-info-item">
-                    <span class="cp-label">Full Name</span>
-                    <span class="cp-value" id="cpFullName"></span>
-                </div>
-                <div class="cp-info-item">
-                    <span class="cp-label">Role</span>
-                    <span class="cp-value">
-                        <span class="cp-badge" id="cpRole"></span>
-                    </span>
-                </div>
-            </div>
-
-            <hr class="cp-divider">
-
-            <!-- Change Password Form -->
-            <div class="cp-form">
-                <h3>Change Password</h3>
-
-                <div class="cp-field">
-                    <label>New Password</label>
-                    <div class="cp-input-wrap">
-                        <input type="password" id="cpNewPass" placeholder="Enter new password" />
-                        <button class="cp-eye" onclick="togglePass('cpNewPass', this)">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                <circle cx="12" cy="12" r="3" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="cp-field">
-                    <label>Confirm Password</label>
-                    <div class="cp-input-wrap">
-                        <input type="password" id="cpConfirmPass" placeholder="Confirm new password" />
-                        <button class="cp-eye" onclick="togglePass('cpConfirmPass', this)">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                <circle cx="12" cy="12" r="3" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                <p class="cp-msg" id="cpMsg"></p>
-
-                <button class="cp-btn" id="cpSubmitBtn" onclick="submitChangePass()">
-                    <span id="cpBtnText">Update Password</span>
-                    <span id="cpBtnLoader" class="cp-spinner" style="display:none"></span>
-                </button>
-            </div>
+  <!-- Change Password Modal -->
+  <div id="changePassOverlay" class="cp-overlay">
+    <div class="cp-modal">
+      <button class="cp-close" id="closeChangePass">&times;</button>
+      <div class="cp-header">
+        <div class="cp-avatar">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+          </svg>
         </div>
+        <h2 id="cpModalTitle">Account Settings</h2>
+      </div>
+      <div class="cp-info-grid">
+        <div class="cp-info-item">
+          <span class="cp-label" id="cpLabelUsername">Username</span>
+          <span class="cp-value" id="cpUsername"></span>
+        </div>
+        <div class="cp-info-item">
+          <span class="cp-label" id="cpLabelFullName">Full Name</span>
+          <span class="cp-value" id="cpFullName"></span>
+        </div>
+        <div class="cp-info-item">
+          <span class="cp-label" id="cpLabelRole">Role</span>
+          <span class="cp-value"><span class="cp-badge" id="cpRole"></span></span>
+        </div>
+      </div>
+      <hr class="cp-divider"/>
+      <div class="cp-form">
+        <h3 id="cpFormTitle">Change Password</h3>
+        <div class="cp-field">
+          <label id="cpLabelNewPass">New Password</label>
+          <div class="cp-input-wrap">
+            <input type="password" id="cpNewPass" placeholder="Enter new password"/>
+            <button class="cp-eye" onclick="togglePass('cpNewPass',this)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="cp-field">
+          <label id="cpLabelConfirmPass">Confirm Password</label>
+          <div class="cp-input-wrap">
+            <input type="password" id="cpConfirmPass" placeholder="Confirm new password"/>
+            <button class="cp-eye" onclick="togglePass('cpConfirmPass',this)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <p class="cp-msg" id="cpMsg"></p>
+        <button class="cp-btn" id="cpSubmitBtn" onclick="submitChangePass()">
+          <span id="cpBtnText">Update Password</span>
+          <span id="cpBtnLoader" class="cp-spinner" style="display:none"></span>
+        </button>
+      </div>
     </div>
-  <div class="all">
-    <!-- Navigation -->
-    <nav>
-      <div class="nav-container">
-        <div class="logo"><span><img style="width: 80px;" src="/images/logo.png" alt=""></span><a
-            href="#home">DELIVERY MANAGEMENT</a></div>
-        <ul class="nav-menu" id="navMenu">
-          <li class="home"><a href="#">Home</a></li>
-          <li class="delivery"><a href="#delivery">Delivery</a></li>
-          <li class="history"><a href="#history">History</a></li>
-          <li class="admin"><a href="#admin">Admin</a></li>
-                              <li class="change-password">
-                        <a href="#" id="openChangePass">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                            </svg>
-                            Change Password
-                        </a>
-                    </li>
-          <li class="logout">
-            <a href="#">
-              <span>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                  stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out-icon lucide-log-out">
-                  <path d="m16 17 5-5-5-5" />
-                  <path d="M21 12H9" />
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                </svg>
-              </span>
-            </a>
-          </li>
-        </ul>
-        <label class="switch">
-          <input checked="true" id="checkbox" type="checkbox" />
-          <span class="slider">
-            <div class="star star_1"></div>
-            <div class="star star_2"></div>
-            <div class="star star_3"></div>
-            <svg viewBox="0 0 16 16" class="cloud_1 cloud">
-              <path transform="matrix(.77976 0 0 .78395-299.99-418.63)" fill="#fff"
-                d="m391.84 540.91c-.421-.329-.949-.524-1.523-.524-1.351 0-2.451 1.084-2.485 2.435-1.395.526-2.388 1.88-2.388 3.466 0 1.874 1.385 3.423 3.182 3.667v.034h12.73v-.006c1.775-.104 3.182-1.584 3.182-3.395 0-1.747-1.309-3.186-2.994-3.379.007-.106.011-.214.011-.322 0-2.707-2.271-4.901-5.072-4.901-2.073 0-3.856 1.202-4.643 2.925">
-              </path>
-            </svg>
-          </span>
-        </label>
+  </div>
 
-        <div style="display: none;" class="user-section">
-          <div class="user-avatar" id="userAvatar">
-            <svg class="user-avatar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-          </div>
+  <!-- Header — same as delivery -->
+  <app-header active="home"></app-header>
 
-          <!-- Popup Menu -->
-          <div class="user-popup" id="userPopup">
-            <div class="user-info">
-              <div class="user-name">NGUYET</div>
-              <div class="user-email">NGUYEN NGUYET</div>
-            </div>
-            <ul class="popup-menu">
-              <li>
-                <a href="#change-password" id="changePasswordBtn">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                  </svg>
-                  <span>Đổi mật khẩu</span>
-                </a>
-              </li>
-              <div class="popup-divider"></div>
-              <li>
-                <a href="#logout" id="logoutBtnPopup">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                    <polyline points="16 17 21 12 16 7"></polyline>
-                    <line x1="21" y1="12" x2="9" y2="12"></line>
-                  </svg>
-                  <span>Đăng xuất</span>
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </nav>
-    <div class="container">
-      <div class="content-left">
-        <div class="text-wrapper">
-          <h1 class="typing-text">Welcome to the ACM Finished Goods Delivery System</h1>
-          <div class="slogan-row">
-            <p class="typing-sub"><span><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                  class="lucide lucide-circle-check-big-icon lucide-circle-check-big">
-                  <path d="M21.801 10A10 10 0 1 1 17 3.335" />
-                  <path d="m9 11 3 3L22 4" />
-                </svg></span>Precision in Every Shipment - Perfection in Every Delivery.</p>
-            <p class="typing-sub"><span><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                  class="lucide lucide-circle-check-big-icon lucide-circle-check-big">
-                  <path d="M21.801 10A10 10 0 1 1 17 3.335" />
-                  <path d="m9 11 3 3L22 4" />
-                </svg></span>Delivering Accuracy, Speed, and Quality.</p>
-            <p class="typing-sub"><span><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                  class="lucide lucide-circle-check-big-icon lucide-circle-check-big">
-                  <path d="M21.801 10A10 10 0 1 1 17 3.335" />
-                  <path d="m9 11 3 3L22 4" />
-                </svg></span>Every Box, a Promise Delivered.</p>
-          </div>
-        </div>
-      </div>
-      <div class="content-right">
-        <div class="vertical-slider">
-          <div class="slide-track" id="slideTrack">
-            <img src="/images/kho1.jpg" alt="Delivery Image">
-            <img src="/images/kho2.jpg" alt="Delivery Image">
-            <img src="/images/kho3.jpg" alt="Delivery Image">
-            <img src="/images/kho4.png" alt="Delivery Image">
-          </div>
+  <div class="container">
+    <!-- Left -->
+    <div class="content-left">
+      <div class="text-wrapper">
+        <h1 id="welcomeTitle"></h1>
+        <div class="slogan-row">
+          <p class="typing-sub">
+            <span><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></span>
+            <span id="slogan1">Precision in Every Shipment - Perfection in Every Delivery.</span>
+          </p>
+          <p class="typing-sub">
+            <span><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></span>
+            <span id="slogan2">Delivering Accuracy, Speed, and Quality.</span>
+          </p>
+          <p class="typing-sub">
+            <span><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg></span>
+            <span id="slogan3">Every Box, a Promise Delivered.</span>
+          </p>
         </div>
       </div>
     </div>
 
-    <!-- Modal Đổi Mật Khẩu -->
-    <!-- Thêm vào cuối body, trước thẻ đóng </body> -->
-    <div class="modal-overlay" id="changePasswordModal">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2>Đổi mật khẩu</h2>
-          <button class="modal-close" id="closeModal">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form id="changePasswordForm">
-            <div class="form-group">
-              <label for="oldPassword">Mật khẩu cũ</label>
-              <div class="password-input-wrapper">
-                <input type="password" id="oldPassword" name="oldPassword" required placeholder="Nhập mật khẩu cũ">
-                <button type="button" class="toggle-password" data-target="oldPassword">
-                  <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                    <circle cx="12" cy="12" r="3"></circle>
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="newPassword">Mật khẩu mới</label>
-              <div class="password-input-wrapper">
-                <input type="password" id="newPassword" name="newPassword" required placeholder="Nhập mật khẩu mới">
-                <button type="button" class="toggle-password" data-target="newPassword">
-                  <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                    <circle cx="12" cy="12" r="3"></circle>
-                  </svg>
-                </button>
-              </div>
-              <div class="password-strength" id="passwordStrength">
-                <div class="strength-bar">
-                  <div class="strength-fill"></div>
-                </div>
-                <span class="strength-text"></span>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="confirmPassword">Xác nhận mật khẩu mới</label>
-              <div class="password-input-wrapper">
-                <input type="password" id="confirmPassword" name="confirmPassword" required
-                  placeholder="Nhập lại mật khẩu mới">
-                <button type="button" class="toggle-password" data-target="confirmPassword">
-                  <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                    <circle cx="12" cy="12" r="3"></circle>
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn-cancel" id="cancelBtn">Hủy</button>
-              <button type="submit" class="btn-submit">Đổi mật khẩu</button>
-            </div>
-          </form>
+    <!-- Right: vertical image slider -->
+    <div class="content-right">
+      <div class="vertical-slider">
+        <div class="slide-track" id="slideTrack">
+          <img src="/images/kho1.jpg" alt="Delivery Image"/>
+          <img src="/images/kho2.jpg" alt="Delivery Image"/>
+          <img src="/images/kho3.jpg" alt="Delivery Image"/>
+          <img src="/images/kho4.png" alt="Delivery Image"/>
         </div>
       </div>
     </div>
-    <!-- Footer -->
-    <footer>
-      <p>&copy; 2025 Copyright for Partron VN</p>
-    </footer>
-    <script src="/js/gsap.min.js"></script>
-    <script>
+  </div>
 
-      // Theme Toggle Logic
-      const themeToggle = document.getElementById('checkbox');
-      const body = document.body;
+  <footer><p id="footerText">&copy; 2025 Copyright for Partron VN</p></footer>
 
-      // Kiểm tra theme đã lưu
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'light') {
-        body.classList.add('light-theme');
-        themeToggle.checked = true;
-      } else {
-        themeToggle.checked = false;
-      }
+  <!-- togglePass phải global vì dùng onclick inline -->
+  <script>
+    function togglePass(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const isText = input.type === "text";
+      input.type = isText ? "password" : "text";
+      btn.style.opacity = isText ? "1" : ".5";
+    }
+  </script>
 
-      themeToggle.addEventListener('change', (e) => {
-        body.classList.toggle('light-theme');
-        const isLight = body.classList.contains('light-theme');
-
-        // Lưu theme vào localStorage
-        localStorage.setItem('theme', isLight ? 'light' : 'dark');
-      });
-
-      // User Avatar Popup
-      const userAvatar = document.getElementById('userAvatar');
-      const userPopup = document.getElementById('userPopup');
-
-      userAvatar.addEventListener('click', (e) => {
-        e.stopPropagation();
-        userPopup.classList.toggle('active');
-      });
-
-      // Close popup when clicking outside
-      document.addEventListener('click', (e) => {
-        if (!userAvatar.contains(e.target) && !userPopup.contains(e.target)) {
-          userPopup.classList.remove('active');
-        }
-      });
-
-
-      // Logout from popup
-      const logoutBtnPopup = document.getElementById('logoutBtnPopup');
-      logoutBtnPopup.addEventListener('click', (e) => {
-        e.preventDefault();
-        userPopup.classList.remove('active');
-        if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
-          sessionStorage.clear();
-          localStorage.clear();
-          fetch('/exportmanagement/logout', {
-            method: 'POST',
-            credentials: 'include'
-          }).then(() => {
-            globalThis.location.href = '/';
-          });
-        }
-      });
-
-
-      // Change Password Modal
-      const changePasswordBtn = document.getElementById('changePasswordBtn');
-      const changePasswordModal = document.getElementById('changePasswordModal');
-      const closeModal = document.getElementById('closeModal');
-      const cancelBtn = document.getElementById('cancelBtn');
-      const changePasswordForm = document.getElementById('changePasswordForm');
-
-      // Open modal
-      changePasswordBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        userPopup.classList.remove('active');
-        changePasswordModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-      });
-
-      // Close modal
-      const closeModalHandler = () => {
-        changePasswordModal.classList.remove('active');
-        document.body.style.overflow = 'auto';
-        changePasswordForm.reset();
-        document.querySelector('.strength-fill').style.width = '0%';
-        document.querySelector('.strength-text').textContent = '';
-      };
-
-      closeModal.addEventListener('click', closeModalHandler);
-      cancelBtn.addEventListener('click', closeModalHandler);
-
-      // Close modal when clicking outside
-      changePasswordModal.addEventListener('click', (e) => {
-        if (e.target === changePasswordModal) {
-          closeModalHandler();
-        }
-      });
-
-      // Toggle password visibility
-      document.querySelectorAll('.toggle-password').forEach(button => {
-        button.addEventListener('click', () => {
-          const targetId = button.getAttribute('data-target');
-          const input = document.getElementById(targetId);
-          const eyeIcon = button.querySelector('.eye-icon');
-
-          if (input.type === 'password') {
-            input.type = 'text';
-            eyeIcon.innerHTML = `
-        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-        <line x1="1" y1="1" x2="23" y2="23"></line>
-      `;
-          } else {
-            input.type = 'password';
-            eyeIcon.innerHTML = `
-        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-        <circle cx="12" cy="12" r="3"></circle>
-      `;
-          }
-        });
-      });
-
-      // Password strength checker
-      const newPasswordInput = document.getElementById('newPassword');
-      const strengthFill = document.querySelector('.strength-fill');
-      const strengthText = document.querySelector('.strength-text');
-
-      newPasswordInput.addEventListener('input', (e) => {
-        const password = e.target.value;
-        let strength = 0;
-
-        if (password.length >= 8) strength += 25;
-        if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength += 25;
-        if (password.match(/[0-9]/)) strength += 25;
-        if (password.match(/[^a-zA-Z0-9]/)) strength += 25;
-
-        strengthFill.style.width = strength + '%';
-
-        if (strength === 0) {
-          strengthFill.style.background = 'transparent';
-          strengthText.textContent = '';
-        } else if (strength <= 25) {
-          strengthFill.style.background = '#ef4444';
-          strengthText.textContent = 'Yếu';
-        } else if (strength <= 50) {
-          strengthFill.style.background = '#f59e0b';
-          strengthText.textContent = 'Trung bình';
-        } else if (strength <= 75) {
-          strengthFill.style.background = '#3b82f6';
-          strengthText.textContent = 'Khá';
-        } else {
-          strengthFill.style.background = '#10b981';
-          strengthText.textContent = 'Mạnh';
-        }
-      });
-
-      changePasswordForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const oldPassword = document.getElementById('oldPassword').value;
-        const newPassword = document.getElementById('newPassword').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-
-        // Validate
-        if (newPassword !== confirmPassword) {
-          alert('Mật khẩu mới và xác nhận mật khẩu không khớp!');
-          return;
-        }
-
-        if (newPassword.length < 8) {
-          alert('Mật khẩu mới phải có ít nhất 8 ký tự!');
-          return;
-        }
-
-        if (oldPassword === newPassword) {
-          alert('Mật khẩu mới không được trùng với mật khẩu cũ!');
-          return;
-        }
-
-        try {
-          const response = await fetch('exportmanagement/api/change-password', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ oldPassword, newPassword })
-          });
-
-          const data = await response.json();
-
-          if (data.success) {
-            alert('Đổi mật khẩu thành công!');
-            closeModalHandler();
-          } else {
-            alert('Đổi mật khẩu thất bại: ' + data.message);
-          }
-
-        } catch (error) {
-          console.error(error);
-          alert('Có lỗi xảy ra khi gọi API!');
-        }
-      });
-
-
-      //animation images
-      const track = document.getElementById("slideTrack");
-      track.innerHTML += track.innerHTML;
-      let offset = 0;
-      function scrollLoop() {
-        offset += 0.5;
-        if (offset >= track.scrollHeight / 2) offset = 0;
-        track.style.transform = `translateY(-${offset}px)`;
-        requestAnimationFrame(scrollLoop);
-      }
-      scrollLoop();
-
-      const navLinks = document.querySelectorAll('.nav-menu a');
-
-      // Khôi phục menu active
-      const savedMenu = sessionStorage.getItem('activeMenu');
-      if (savedMenu) {
-        navLinks.forEach(link => link.classList.remove('active'));
-        const target = document.querySelector(`.${savedMenu} a`);
-        if (target) target.classList.add('active');
-      }
-      // Lắng nghe click cho toàn bộ menu
-      navLinks.forEach(link => {
-        link.addEventListener('click', e => {
-          e.preventDefault();
-          const parentClass = link.parentElement.classList[0];
-          navLinks.forEach(l => l.classList.remove('active'));
-          link.classList.add('active');
-          sessionStorage.setItem('activeMenu', parentClass);
-
-          // Xử lý hành động theo từng menu
-          switch (parentClass) {
-            case 'home':
-              window.location.href = '/home';
-              break;
-
-            case 'logout':
-              if (confirm('Are you sure you want to logout?')) {
-                sessionStorage.clear();
-                localStorage.clear();
-                fetch('/exportmanagement/logout', {
-                  method: 'POST',
-                  credentials: 'include'
-                }).then(() => {
-                  window.location.href = '/';
-                });
-
-              }
-              break;
-
-            case 'delivery':
-              window.location.href = '/delivery';
-              break;
-
-            case 'history':
-              window.location.href = '/deliveryHistory';
-              break;
-
-            case 'admin':
-              window.location.href = '/admin';
-              break;
-            default:
-              console.log('Unknown menu item:', parentClass);
-              break;
-          }
-        });
-      });         
-    </script>
-
-            <script>
-            // ===== CHANGE PASSWORD LOGIC =====
-
-            // Lấy user info từ token (đã decode sẵn trong app)
-            const userInfo = {
-                username: "ACM",       // thay bằng biến từ token của bạn
-                fullName: "NGUYET",
-                role: "MANAGER"
-            };
-
-            // Mở modal
-            document.getElementById("openChangePass").addEventListener("click", (e) => {
-                e.preventDefault();
-                document.getElementById("cpUsername").textContent = userInfo.username;
-                document.getElementById("cpFullName").textContent = userInfo.fullName;
-                document.getElementById("cpRole").textContent = userInfo.role;
-                document.getElementById("cpMsg").textContent = "";
-                document.getElementById("cpMsg").className = "cp-msg";
-                document.getElementById("cpNewPass").value = "";
-                document.getElementById("cpConfirmPass").value = "";
-                document.getElementById("changePassOverlay").classList.add("active");
-            });
-
-            // Đóng modal
-            document.getElementById("closeChangePass").addEventListener("click", () => {
-                document.getElementById("changePassOverlay").classList.remove("active");
-            });
-            document.getElementById("changePassOverlay").addEventListener("click", (e) => {
-                if (e.target === e.currentTarget)
-                    document.getElementById("changePassOverlay").classList.remove("active");
-            });
-
-            // Toggle hiện/ẩn mật khẩu
-            function togglePass(inputId, btn) {
-                const input = document.getElementById(inputId);
-                const isText = input.type === "text";
-                input.type = isText ? "password" : "text";
-                btn.style.opacity = isText ? "1" : ".5";
-            }
-
-            // Submit đổi mật khẩu
-            async function submitChangePass() {
-                const newPass = document.getElementById("cpNewPass").value.trim();
-                const confirmPass = document.getElementById("cpConfirmPass").value.trim();
-                const msgEl = document.getElementById("cpMsg");
-                const btn = document.getElementById("cpSubmitBtn");
-                const btnText = document.getElementById("cpBtnText");
-                const loader = document.getElementById("cpBtnLoader");
-
-                // Validation
-                msgEl.className = "cp-msg";
-                if (!newPass) {
-                    msgEl.textContent = "⚠ Vui lòng nhập mật khẩu mới.";
-                    msgEl.classList.add("error");
-                    return;
-                }
-                if (newPass.length < 6) {
-                    msgEl.textContent = "⚠ Mật khẩu phải có ít nhất 6 ký tự.";
-                    msgEl.classList.add("error");
-                    return;
-                }
-                if (newPass !== confirmPass) {
-                    msgEl.textContent = "⚠ Mật khẩu xác nhận không khớp.";
-                    msgEl.classList.add("error");
-                    return;
-                }
-
-                // Loading state
-                btn.disabled = true;
-                btnText.style.display = "none";
-                loader.style.display = "inline-block";
-
-                try {
-
-                    const res = await fetch("/exportmanagement/change-password", {
-                        method: "PUT",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            username: userInfo.username,
-                            password: newPass
-                        })
-                    });
-
-                    const data = await res.json();
-
-                    if (res.ok) {
-                        msgEl.textContent = "✅ " + data.message;
-                        msgEl.classList.add("success");
-                        document.getElementById("cpNewPass").value = "";
-                        document.getElementById("cpConfirmPass").value = "";
-                        setTimeout(() => {
-                            document.getElementById("changePassOverlay").classList.remove("active");
-                            msgEl.textContent = "";
-                            msgEl.className   = "cp-msg";
-                        }, 1500);
-                    } else {
-                        msgEl.textContent = "❌ " + (data.message || "Đổi mật khẩu thất bại.");
-                        msgEl.classList.add("error");
-                    }
-                } catch (err) {
-                    msgEl.textContent = "❌ Lỗi kết nối server.";
-                    msgEl.classList.add("error");
-                } finally {
-                    btn.disabled = false;
-                    btnText.style.display = "inline";
-                    loader.style.display = "none";
-                }
-            }
-        </script>
-
-
+  <script type="module" src="/js/home.js"></script>
 </body>
-
 </html>

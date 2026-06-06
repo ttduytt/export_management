@@ -1,0 +1,256 @@
+{
+  "nav": {
+    "brand": "DELIVERY MANAGEMENT",
+    "home": "Home",
+    "delivery": "Delivery",
+    "history": "History",
+    "management": "Management",
+    "user": "User",
+    "changePassword": "Change Password",
+    "logout": "Logout"
+  },
+  "welcome": {
+    "title": "Welcome to the ACM Finished Goods Delivery System",
+    "slogan1": "Precision in Every Shipment - Perfection in Every Delivery.",
+    "slogan2": "Delivering Accuracy, Speed, and Quality.",
+    "slogan3": "Every Box, a Promise Delivered."
+  },
+  "title": "Delivery Management - Home",
+  "logoutConfirm": "Are you sure you want to logout?",
+  "scanQR": "Scan QR",
+  "import": "Import",
+  "list": "List",
+  "grid": "Grid",
+  "status": "STATUS",
+  "completeTime": "COMPLETE TIME",
+  "admin": {
+    "welcome": "Welcome back, Admin!",
+    "welcomeManager": "Welcome Manager Back, {name}",
+    "welcomeUser": "Welcome User Back, Admin",
+    "stats": {
+      "totalInDay": "Total in day",
+      "performance": "Performance"
+    },
+    "charts": {
+      "monthlyPerformance": {
+        "title": "Monthly Performance",
+        "subtitle": "Overview of monthly metrics",
+        "yAxisLabel": "Deliveries",
+        "seriesName": "Total Deliveries"
+      },
+      "shipmentStatus": {
+        "title": "Shipment Status",
+        "subtitle": "Delivery status breakdown",
+        "seriesName": "Status",
+        "complete": "Complete",
+        "inProgress": "In Progress"
+      }
+    },
+    "userManagement": {
+      "title": "User Management",
+      "addUser": "Add User",
+      "table": {
+        "stt": "STT",
+        "username": "Username",
+        "password": "Password",
+        "role": "Role",
+        "factory": "Factory",
+        "actions": "Actions"
+      },
+      "form": {
+        "usernamePlaceholder": "Enter username",
+        "passwordPlaceholder": "Enter password",
+        "roleUser": "USER",
+        "roleManager": "MANAGER"
+      },
+      "buttons": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "save": "Save",
+        "saving": "Saving...",
+        "cancel": "Cancel"
+      },
+      "alerts": {
+        "pendingRow": "Please complete or cancel the current addition first.",
+        "usernameRequired": "Username is required.",
+        "passwordRequired": "Password is required.",
+        "addSuccess": "User added successfully!",
+        "updateSuccess": "Update successful!",
+        "deleteSuccess": "Delete successful!",
+        "confirmDelete": "Are you sure you want to delete this user?",
+        "confirmCancel": "Are you sure you want to cancel adding this user?",
+        "unknownError": "Unknown error",
+        "connectionError": "Connection error: "
+      }
+    },
+    "modelSpec": {
+      "title": "Model Spec",
+      "searchPlaceholder": "Search All",
+      "addModel": "Add Model",
+      "importFile": "Import File",
+      "exportFile": "Export File",
+      "table": {
+        "stt": "STT",
+        "modelType": "Model Type",
+        "mobisCode": "Mobis Code",
+        "partronCode": "Partron Code",
+        "modelName": "Model Name",
+        "actions": "Actions"
+      },
+      "form": {
+        "modelTypePlaceholder": "Enter model type",
+        "mobisCodePlaceholder": "Enter mobis code",
+        "partronCodePlaceholder": "Enter partron code",
+        "modelNamePlaceholder": "Enter model name"
+      },
+      "buttons": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "save": "Save",
+        "saving": "Saving...",
+        "cancel": "Cancel"
+      },
+      "alerts": {
+        "pendingRow": "Please complete or cancel the current addition first.",
+        "modelTypeRequired": "Model type is required.",
+        "mobisCodeRequired": "Mobis code is required.",
+        "partronCodeRequired": "Partron code is required.",
+        "modelNameRequired": "Model name is required.",
+        "allFieldsRequired": "All fields are required.",
+        "addSuccess": "Model added successfully!",
+        "updateSuccess": "Update successful!",
+        "deleteSuccess": "Delete successful!",
+        "confirmDeleteModel": "Are you sure you want to delete this model spec?",
+        "confirmCancelModel": "Are you sure you want to cancel adding this model?",
+        "noDataExport": "No data to export!",
+        "invalidCsvFile": "Please select a valid CSV file.",
+        "noValidCsvData": "No valid data found in the CSV file!",
+        "importSuccess": "Import successful!",
+        "unknownError": "Unknown error",
+        "connectionError": "Connection error: "
+      }
+    },
+    "delivery": {
+      "title": "Delivery",
+      "searchPlaceholder": "Search Model ID, Mobis Code, Model Name",
+      "factoryLabel": "Factory:",
+      "fromLabel": "From:",
+      "toLabel": "To:",
+      "table": {
+        "stt": "STT",
+        "modelId": "Model Id",
+        "mobisCode": "Mobis Code",
+        "modelName": "Model Name",
+        "type": "Type",
+        "target": "Target",
+        "quantity": "Quantity",
+        "status": "Status",
+        "completeTime": "Complete Time",
+        "shippingDate": "Shipping Date",
+        "shippingMethod": "Shipping Method",
+        "actions": "Actions"
+      },
+      "buttons": {
+        "delete": "Delete"
+      },
+      "alerts": {
+        "confirmDelete": "Are you sure you want to delete this delivery record?",
+        "deleteSuccess": "Delete successful!",
+        "unknownError": "Unknown error",
+        "connectionError": "Connection error: "
+      }
+    }
+  },
+  "history": {
+    "title": "Delivery History",
+    "searchPlaceholder": "Search Mobis Code, Model ID",
+    "factoryLabel": "Factory:",
+    "dateSeparator": "~",
+    "clearFilters": "Clear Filters",
+    "table": {
+      "stt": "STT",
+      "modelId": "Model Id",
+      "qr": "QR",
+      "mobisCode": "Mobis Code",
+      "modelName": "Model Name",
+      "type": "Type",
+      "target": "Target",
+      "evenQuantity": "Even Quantity",
+      "shippingDate": "Shipping Date",
+      "shippingMethod": "Shipping Method",
+      "eventUser": "Event User",
+      "eventTime": "Event Time"
+    }
+  },
+  "pagination": {
+    "prev": "Previous",
+    "next": "Next"
+  },
+  "changePasswordModal": {
+    "title": "Account Settings",
+    "infoSection": {
+      "username": "Username",
+      "fullName": "Full Name",
+      "role": "Role"
+    },
+    "formSection": {
+      "title": "Change Password",
+      "newPasswordLabel": "New Password",
+      "newPasswordPlaceholder": "Enter new password",
+      "confirmPasswordLabel": "Confirm Password",
+      "confirmPasswordPlaceholder": "Confirm new password",
+      "submitButton": "Update Password"
+    },
+    "validation": {
+      "emptyPassword": "⚠ Please enter a new password.",
+      "minLength": "⚠ Password must be at least 6 characters.",
+      "passwordMismatch": "⚠ Passwords do not match."
+    },
+    "messages": {
+      "connectionError": "❌ Server connection error."
+    }
+  },
+  "alerts": {
+    "loginRequired": "Please login to continue",
+    "loadDataError": "Unable to load Delivery data!",
+    "confirmLogout": "Are you sure you want to logout?"
+  },
+  "login": {
+  "username": "Username",
+  "usernamePlaceholder": "Enter username",
+  "password": "Password",
+  "passwordPlaceholder": "Enter password",
+  "savePassword": "Save password?",
+  "submit": "Submit",
+  "forgotText": "Forgot your password?",
+  "forgotLink": "Reset it here!",
+  "forgotAlert": "Please contact IT to retrieve your password!",
+  "noPermission": "You do not have permission to access this page",
+  "invalidToken": "Session expired. Please login again!",
+  "emptyFields": "Please enter your username and password!",
+  "wrongCredentials": "Incorrect username or password!",
+  "connectionError": "Server connection error!"
+  },
+  "statusText": {
+    "run": "Run",
+    "complete": "Complete",
+    "wait": "Wait"
+  },
+  "delivery": {
+    "alerts": {
+      "fetchError": "Error fetching delivery data",
+      "selectExcel": "Please select an Excel file!",
+      "invalidQr": "Invalid QR code",
+      "qrExists": "QR code already exists",
+      "noMatchQr": "No matching delivery info found for QR",
+      "targetExceeded": "Added quantity exceeds target quantity",
+      "updateFailed": "Update failed (connection error)",
+      "invalidSheet": "No valid sheet found for current or future month",
+      "noHeader": "No matching header row found!",
+      "emptyFile": "⚠️ File is empty or has no valid data",
+      "emptyColumn": "Row {row} column {column} cannot be empty",
+      "invalidValue": "Error at row {row}, column \"{column}\": Invalid value: \"{value}\"",
+      "qtyExceedsTarget": "Row {row} quantity cannot be greater than target quantity"
+    }
+  }
+}

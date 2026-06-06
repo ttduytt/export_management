@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="/images/logoweb.jpg" type="image/x-icon" />
+  <script type="module" src="/js/header.js"></script>
+  <script type="module" src="/js/user.js"></script>
+  <title>Delivery Management – User Dashboard</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #090f27;
+      color: #e2e8f0;
+      line-height: 1.5;
+    }
+
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+
+    /* ─── Page shell ─────────────────────────────────────────────────── */
+    .page-root {
+      display: flex;
+      gap: 16px;
+      padding: 16px;
+      height: calc(100dvh - 86px);
+      overflow: hidden;
+    }
+
+    /* ─── Panel shared ───────────────────────────────────────────────── */
+    .panel {
+      background: #070c21;
+      border: 1px solid #30363D;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      display: flex;
+      background: #3b4689;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-bottom: 1px solid #30363D;
+      flex-shrink: 0;
+    }
+    .panel-header-icon { font-size: 16px; color: #60a5fa; }
+    .panel-header-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: white;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+    }
+
+    /* ─── LEFT: Table panel ──────────────────────────────────────────── */
+    .table-panel { flex: 1; min-width: 0; }
+
+    .table-scroll { flex: 1; overflow-x: auto; overflow-y: auto; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; }
+
+    thead th {
+      padding: 10px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      color: white;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      border-bottom: 1px solid #30363D;
+      white-space: nowrap;
+      background: #3b4689;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(48,54,61,.5);
+      cursor: pointer;
+      transition: background .12s;
+    }
+    tbody tr:hover  { background: rgba(59,130,246,.06); }
+    tbody tr.active { background: rgba(59,130,246,.13); }
+
+    tbody td {
+      padding: 10px 14px;
+      color: #cbd5e1;
+      vertical-align: middle;
+    }
+
+    .stt { color: #475569; font-family: monospace; }
+    .td-empty { color: #475569; font-size: 13px; padding: 48px; text-align: center; }
+
+    /* ─── Badges ─────────────────────────────────────────────────────── */
+    .badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      border: 1px solid transparent;
+    }
+    .badge-admin    { background: rgba(239,68,68,.15);   color: #f87171; border-color: rgba(239,68,68,.3); }
+    .badge-manager  { background: rgba(245,158,11,.15);  color: #fbbf24; border-color: rgba(245,158,11,.3); }
+    .badge-user     { background: rgba(59,130,246,.15);  color: #60a5fa; border-color: rgba(59,130,246,.3); }
+    .badge-active   { background: rgba(16,185,129,.15);  color: #34d399; border-color: rgba(16,185,129,.3); }
+    .badge-inactive { background: rgba(100,116,139,.15); color: #94a3b8; border-color: rgba(100,116,139,.3); }
+    .badge-chip     { background: rgba(100,116,139,.2);  color: #94a3b8; border-color: rgba(100,116,139,.25); font-size: 10px; margin: 1px 2px; }
+    .badge-all      { background: rgba(168,85,247,.2);   color: #c084fc; border-color: rgba(168,85,247,.3); }
+
+    /* chips wrap in cell */
+    .chips-cell { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; }
+
+    /* ─── RIGHT: Editor panel ────────────────────────────────────────── */
+    .editor-wrapper {
+      flex-shrink: 0;
+      width: 0; height: 100%;
+      opacity: 0;
+      overflow: hidden;
+      pointer-events: none;
+      transition: width .42s cubic-bezier(.4,0,.2,1), opacity .32s cubic-bezier(.4,0,.2,1);
+    }
+    .editor-wrapper.open { width: 420px; opacity: 1; pointer-events: auto; }
+
+    @keyframes editor-in {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .editor-wrapper.open .editor-inner {
+      animation: editor-in .3s .15s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    .editor-inner {
+      width: 420px; height: 100%;
+      background: #161B22;
+      border: 1px solid #30363D;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .editor-body {
+      background: #090f27;
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* ─── Field ──────────────────────────────────────────────────────── */
+    .field-row { display: flex; flex-direction: column; gap: 5px; }
+
+    .field-label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+    }
+    .field-label .req { color: #f87171; }
+
+    .edit-input, .edit-select {
+      width: 100%;
+      background: #0d1520;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: #e2e8f0;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .edit-input::placeholder { color: #475569; }
+    .edit-input:focus, .edit-select:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59,130,246,.2);
+    }
+    .edit-input.err, .edit-select.err { border-color: rgba(239,68,68,.6); }
+    .edit-select { cursor: pointer; }
+    .edit-select option { background: #1e293b; color: #e2e8f0; }
+
+    .row-2 { display: flex; gap: 12px; }
+    .row-2 .field-row { flex: 1; }
+
+    .field-error {
+      font-size: 11px; color: #f87171;
+      display: flex; align-items: center; gap: 3px;
+    }
+    .field-error.hidden { display: none; }
+
+    /* ─── Custom dropdown (factory / department) ─────────────────────── */
+    .combo-wrap { position: relative; }
+
+    .combo-trigger {
+      width: 100%;
+      background: #0d1520;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 8px 36px 8px 12px;
+      font-size: 13px;
+      color: #e2e8f0;
+      text-align: left;
+      cursor: pointer;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
+    }
+    .combo-trigger:focus,
+    .combo-trigger.open {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59,130,246,.2);
+    }
+    .combo-trigger.err { border-color: rgba(239,68,68,.6); }
+    .combo-trigger .arrow {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      font-size: 14px; color: #475569;
+      transition: transform .2s;
+      pointer-events: none;
+    }
+    .combo-trigger.open .arrow { transform: translateY(-50%) rotate(180deg); }
+
+    .combo-trigger .placeholder { color: #475569; }
+
+    /* ALL pill inside trigger */
+    .pill-all {
+      display: inline-block;
+      background: rgba(168,85,247,.2);
+      color: #c084fc;
+      border: 1px solid rgba(168,85,247,.3);
+      border-radius: 5px;
+      padding: 1px 8px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    /* dropdown list */
+    .combo-list {
+      display: none;
+      position: absolute;
+      left: 0; right: 0;
+      top: calc(100% + 4px);
+      z-index: 200;
+      background: #1c2330;
+      border: 1px solid rgba(100,116,139,.4);
+      border-radius: 10px;
+      padding: 5px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.5);
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .combo-list.show { display: block; animation: drop-in .15s cubic-bezier(.34,1.2,.64,1); }
+
+    @keyframes drop-in {
+      from { opacity: 0; transform: scaleY(.9) translateY(-4px); }
+      to   { opacity: 1; transform: scaleY(1) translateY(0); }
+    }
+
+    .combo-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 7px 10px;
+      border-radius: 7px;
+      font-size: 13px;
+      color: white;
+      cursor: pointer;
+      border: none;
+      background: none;
+      text-align: left;
+      transition: background .12s, color .12s;
+    }
+    .combo-option:hover { background: rgba(255,255,255,.05); color: #e2e8f0; }
+    .combo-option.selected { background: rgba(59,130,246,.15); color: #93c5fd; }
+    .combo-option .check { font-size: 12px; color: #60a5fa; width: 14px; }
+    .combo-option.opt-all { border-bottom: 1px solid rgba(100,116,139,.25); margin-bottom: 3px; color: #c084fc; }
+    .combo-option.opt-all:hover { background: rgba(168,85,247,.1); }
+    .combo-option.opt-all.selected { background: rgba(168,85,247,.15); }
+
+    /* ─── Error banner ───────────────────────────────────────────────── */
+    .error-banner {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px;
+      background: rgba(239,68,68,.1);
+      border: 1px solid rgba(239,68,68,.3);
+      border-radius: 8px;
+      font-size: 12px; color: #f87171;
+    }
+    .error-banner.hidden { display: none; }
+
+    /* ─── Action buttons ─────────────────────────────────────────────── */
+    .editor-actions {
+      padding: 12px 16px;
+      background-color: #070c21;
+      border-top: 1px solid #30363D;
+      flex-shrink: 0;
+    }
+    .actions-row { display: flex; gap: 8px; }
+
+    .btn {
+      flex: 1;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 12px; font-weight: 700;
+      cursor: pointer; border: none;
+      transition: background .18s, opacity .18s;
+    }
+    .btn:disabled { opacity: .3; cursor: not-allowed; }
+
+    .btn-create {
+      background: #059669; color: #fff;
+      box-shadow: 0 4px 12px rgba(5,150,105,.25);
+    }
+    .btn-create:not(:disabled):hover { background: #10b981; }
+
+    .btn-save {
+      background: #2563eb; color: #fff;
+      box-shadow: 0 4px 12px rgba(37,99,235,.25);
+    }
+    .btn-save:not(:disabled):hover { background: #3b82f6; }
+
+    .btn-delete {
+      background: rgba(239,68,68,.12);
+      border: 1px solid rgba(239,68,68,.35);
+      color: #f87171;
+    }
+    .btn-delete:not(:disabled):hover { background: rgba(239,68,68,.22); }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 13px; height: 13px;
+      border: 2px solid rgba(255,255,255,.25);
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+  <app-header active="user"></app-header>
+
+  <div class="page-root">
+
+    <!-- ══ LEFT ══════════════════════════════════════════════════════════ -->
+    <div class="panel table-panel">
+      <div class="panel-header">
+        <span class="panel-header-title" id="th-user-mgmt">User Management</span>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th id="th-user-stt">No.</th>
+              <th id="th-user-username">Username</th>
+              <th id="th-user-role">Role</th>
+              <th id="th-user-factory">Factory</th>
+              <th id="th-user-department">Department</th>
+              <th id="th-user-status">Status</th>
+            </tr>
+          </thead>
+          <tbody id="userTableBody">
+            <tr><td colspan="6" class="td-empty">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ RIGHT: Editor ════════════════════════════════════════════════ -->
+    <div class="editor-wrapper open" id="editorWrapper">
+      <div class="editor-inner">
+
+        <div class="panel-header">
+          <span class="panel-header-title" id="th-editor-title">Editor</span>
+        </div>
+
+        <div class="editor-body">
+
+          <!-- Username -->
+          <div class="field-row">
+            <label class="field-label">
+               <span id="lbl-username">Username</span><span class="req">*</span>
+            </label>
+            <input type="text" id="input-username" class="edit-input" placeholder="username" />
+            <span class="field-error hidden" id="err-username">⚠ Required</span>
+          </div>
+
+          <!-- Password -->
+          <div class="field-row">
+            <label class="field-label">
+               <span id="lbl-password">Password</span><span class="req" id="req-password">*</span>
+            </label>
+            <input type="password" id="input-password" class="edit-input" placeholder="••••••••" />
+            <span class="field-error hidden" id="err-password">⚠ Required</span>
+          </div>
+
+          <!-- Role + Status -->
+          <div class="row-2">
+            <div class="field-row">
+              <label class="field-label">
+                 <span id="lbl-role">Role</span><span class="req">*</span>
+              </label>
+              <select id="input-role" class="edit-select edit-input">
+                <option value="USER">USER</option>
+                <option value="MANAGER">MANAGER</option>
+                <option value="ADMIN">ADMIN</option>
+              </select>
+            </div>
+            <div class="field-row">
+              <label class="field-label">
+                 <span id="lbl-status">Status</span>
+              </label>
+              <select id="input-status" class="edit-select edit-input">
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="INACTIVE">INACTIVE</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Factory (custom dropdown with ALL) -->
+          <div class="field-row">
+            <label class="field-label">
+               <span id="lbl-factory">Factory</span><span class="req">*</span>
+            </label>
+            <div class="combo-wrap" id="factory-combo-wrap">
+              <button type="button" class="combo-trigger" id="factory-trigger">
+                <span id="factory-display" class="placeholder">— Select —</span>
+                <span class="arrow">▾</span>
+              </button>
+              <div class="combo-list" id="factory-list">
+                <button type="button" class="combo-option opt-all" data-value="ALL">
+                  <span class="check"></span>
+                  <span class="pill-all">ALL</span>
+                </button>
+                <button type="button" class="combo-option" data-value="V0"><span class="check"></span>V0</button>
+                <button type="button" class="combo-option" data-value="V4"><span class="check"></span>V4</button>
+                <button type="button" class="combo-option" data-value="V5"><span class="check"></span>V5</button>
+              </div>
+            </div>
+            <span class="field-error hidden" id="err-factory">⚠ Required</span>
+          </div>
+
+          <!-- Department (custom dropdown with ALL, populated dynamically) -->
+          <div class="field-row">
+            <label class="field-label">
+               <span id="lbl-department">Department</span><span class="req">*</span>
+            </label>
+            <div class="combo-wrap" id="dept-combo-wrap">
+              <button type="button" class="combo-trigger" id="dept-trigger">
+                <span id="dept-display" class="placeholder">— Select —</span>
+                <span class="arrow">▾</span>
+              </button>
+              <div class="combo-list" id="dept-list">
+                <!-- populated by JS based on factory selection -->
+              </div>
+            </div>
+            <span class="field-error hidden" id="err-department">⚠ Required</span>
+          </div>
+
+          <!-- Error banner -->
+          <div class="error-banner hidden" id="errorBanner">
+            <span>⚠</span>
+            <span id="errorBannerText"></span>
+          </div>
+
+        </div><!-- /editor-body -->
+
+        <!-- Actions -->
+        <div class="editor-actions">
+          <div class="actions-row">
+            <button class="btn btn-create" id="btn-add-user">
+              <span></span> <span id="lbl-btn-create">Add User</span>
+            </button>
+            <button class="btn btn-save" id="btn-save-user" disabled>
+              <span></span> <span id="lbl-btn-save">Save Changes</span>
+            </button>
+            <button class="btn btn-delete" id="btn-delete-user" disabled>
+              <span></span> <span id="lbl-btn-delete">Delete</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /page-root -->
+
+  <script src="/js/dayjs.min.js"></script>
+</body>
+</html>

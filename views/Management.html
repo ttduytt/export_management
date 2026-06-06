@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/images/logoweb.jpg" type="image/x-icon">
+  <script src="/js/highcharts.js"></script>
+
+  <!-- ① Load header component (registers <app-header>) -->
+  <script type="module" src="/js/header.js"></script>
+  <!-- ② Page-level JS -->
+  <script type="module" src="/js/management.js"></script>
+
+  <title>Delivery Management - Management Dashboard</title>
+  <style>
+    /* ─── Reset & base ─────────────────────────────────────── */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #040818;
+    }
+
+    /* ─── Light theme (page-level) ─────────────────────────── */
+    body.light-theme {
+      background-color: white;
+      color: #e3e2e9;
+    }
+
+    body.light-theme .container {
+      color: #1f2937;
+    }
+
+    body.light-theme .welcome-card {
+      background: linear-gradient(135deg, #e0e7ff 0%, #dbeafe 100%);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    body.light-theme .welcome-text h2 {
+      color: #1f2937;
+    }
+
+    body.light-theme .stats strong,
+    body.light-theme .stats span {
+      color: #1f2937;
+    }
+
+    body.light-theme .divider {
+      background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+    }
+
+    body.light-theme .chart-card {
+      background: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e5e7eb;
+    }
+
+    body.light-theme .chart-header h3 {
+      color: #1f2937;
+    }
+
+    body.light-theme .chart-header p {
+      color: #6b7280;
+    }
+
+    body.light-theme .management-user,
+    body.light-theme .management-delivery-spec,
+    body.light-theme .management-delivery {
+      background: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e5e7eb;
+    }
+
+    body.light-theme .management-user th,
+    body.light-theme .management-delivery-spec th,
+    body.light-theme .management-delivery th {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    body.light-theme .management-user td,
+    body.light-theme .management-delivery-spec td,
+    body.light-theme .management-delivery td {
+      color: #1f2937;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    body.light-theme .management-user tr:hover,
+    body.light-theme .management-delivery-spec tr:hover,
+    body.light-theme .management-delivery tr:hover {
+      background: #f9fafb;
+    }
+
+    body.light-theme .management-user tbody::-webkit-scrollbar-track,
+    body.light-theme .management-delivery-spec tbody::-webkit-scrollbar-track,
+    body.light-theme .management-delivery tbody::-webkit-scrollbar-track {
+      background: #f3f4f6;
+    }
+
+    body.light-theme .management-user tbody::-webkit-scrollbar-thumb,
+    body.light-theme .management-delivery-spec tbody::-webkit-scrollbar-thumb,
+    body.light-theme .management-delivery tbody::-webkit-scrollbar-thumb {
+      background: #d1d5db;
+    }
+
+    body.light-theme .management-user tbody::-webkit-scrollbar-thumb:hover,
+    body.light-theme .management-delivery-spec tbody::-webkit-scrollbar-thumb:hover,
+    body.light-theme .management-delivery tbody::-webkit-scrollbar-thumb:hover {
+      background: #9ca3af;
+    }
+
+    body.light-theme #factorySelect,
+    body.light-theme .date-filter,
+    body.light-theme .searchText,
+    body.light-theme .edit-input {
+      background: white;
+      color: #1f2937;
+      border: 1px solid #d1d5db;
+    }
+
+    body.light-theme #factorySelect:focus,
+    body.light-theme .date-filter:focus,
+    body.light-theme .searchText:focus,
+    body.light-theme .edit-input:focus {
+      background: white;
+      border-color: #2a8f9e;
+    }
+
+    body.light-theme #factorySelect option {
+      background-color: white;
+      color: #1f2937;
+    }
+
+    body.light-theme .searchText::placeholder {
+      color: #9ca3af;
+    }
+
+    body.light-theme input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(0);
+    }
+
+    body.light-theme .add-user,
+    body.light-theme .import,
+    body.light-theme .export,
+    body.light-theme .add-spec {
+      background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+    }
+
+    body.light-theme .add-user:hover,
+    body.light-theme .import:hover,
+    body.light-theme .export:hover,
+    body.light-theme .add-spec:hover {
+      background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
+    }
+
+    body.light-theme .edit-user,
+    body.light-theme .delete-user,
+    body.light-theme .edit-model,
+    body.light-theme .delete-model {
+      background: linear-gradient(135deg, #2a8f9e 0%, #0891b2 100%);
+    }
+
+    body.light-theme .edit-user:hover,
+    body.light-theme .delete-user:hover,
+    body.light-theme .edit-model:hover,
+    body.light-theme .delete-model:hover {
+      background: linear-gradient(135deg, #0e7490 0%, #0e7490 100%);
+    }
+
+    body.light-theme #clearFilters {
+      background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+    }
+
+    body.light-theme #clearFilters:hover {
+      background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
+    }
+
+    body.light-theme .status-badge.complete {
+      background-color: #d1fae5;
+      color: #065f46;
+      border: 1px solid #10b981;
+    }
+
+    body.light-theme .status-badge.wait {
+      background-color: #fef3c7;
+      color: #92400e;
+      border: 1px solid #f59e0b;
+    }
+
+    body.light-theme .status-badge.run {
+      background-color: #dbeafe;
+      color: #1e40af;
+      border: 1px solid #3b82f6;
+    }
+
+    body.light-theme .role-badge.manager {
+      background-color: #d1fae5;
+      color: #065f46;
+      border: 1px solid #10b981;
+    }
+
+    body.light-theme .role-badge.user {
+      background-color: #fef3c7;
+      color: #92400e;
+      border: 1px solid #f59e0b;
+    }
+
+    body.light-theme footer {
+      color: #6b7280;
+      background: white;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    body.light-theme mark {
+      background-color: #fef08a;
+      color: #854d0e;
+    }
+
+    body.light-theme .highcharts-title,
+    body.light-theme .highcharts-subtitle,
+    body.light-theme .highcharts-axis-labels text,
+    body.light-theme .highcharts-legend-item text,
+    body.light-theme .highcharts-data-label text,
+    body.light-theme .highcharts-label text {
+      fill: #1f2937 !important;
+    }
+
+    body.light-theme .highcharts-axis-line,
+    body.light-theme .highcharts-tick {
+      stroke: #9ca3af !important;
+    }
+
+    body.light-theme .highcharts-grid-line {
+      stroke: #e5e7eb !important;
+    }
+
+    /* ─── Layout ────────────────────────────────────────────── */
+    footer {
+      color: white;
+      font-size: 12px;
+      padding: 20px;
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      text-align: right;
+      width: 100%;
+    }
+
+    .container {
+      display: flex;
+      color: white;
+      margin-top: 16px;
+    }
+
+    .logout span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .top-row {
+      gap: 20px;
+      width: 40%;
+      height: 100%;
+      flex: 1;
+      color: white;
+      flex-wrap: wrap;
+      margin: 0 0 0 20px;
+    }
+
+    .bottom-row {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 40%;
+      flex: 1;
+      color: white;
+      flex-wrap: wrap;
+      margin: 0 20px 0 0;
+      padding-left: 24px;
+    }
+
+    /* ─── Welcome card ──────────────────────────────────────── */
+    .welcome-card {
+      width: 100.7%;
+      display: flex;
+      height: 200px;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(102, 126, 234, .25) 0%, rgba(118, 75, 162, .25) 100%);
+      border-radius: 8px;
+      padding: 30px 20px;
+    }
+
+    .welcome-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .welcome-text h2 {
+      font-size: 20px;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+
+    .stats {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .stats div {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .stats strong {
+      font-size: 26px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .stats span {
+      color: #fff;
+      font-size: 14px;
+    }
+
+    .divider {
+      width: 1px;
+      height: 30px;
+      background: linear-gradient(135deg, rgba(102, 126, 234, .25) 0%, rgba(118, 75, 162, .25) 100%);
+    }
+
+    .welcome-right img {
+      width: 340px;
+      height: auto;
+    }
+
+    /* ─── Charts ────────────────────────────────────────────── */
+    .chart-row {
+      display: flex;
+      gap: 20px;
+      width: 100%;
+      margin: 10px 0;
+    }
+
+    .chart-card {
+      flex: 1;
+      background: linear-gradient(135deg, rgba(102, 126, 234, .25) 0%, rgba(118, 75, 162, .25) 100%);
+      border-radius: 12px;
+      padding: 24px;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .05);
+    }
+
+    .chart-header h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #fff;
+      margin: 0 0 8px;
+    }
+
+    .chart-header p {
+      font-size: 14px;
+      color: #6b7280;
+      margin: 0 0 20px;
+    }
+
+    .chart-container {
+      width: 100%;
+      height: 300px;
+      position: relative;
+    }
+
+    .chart-container div {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* ─── User management table ─────────────────────────────── */
+    .management-user {
+      flex: 1;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .05);
+      background: linear-gradient(135deg, rgba(102, 126, 234, .25) 0%, rgba(118, 75, 162, .25) 100%);
+      max-height: 300px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .management-user table {
+      border-collapse: collapse;
+      width: 100%;
+      border: none;
+      background: transparent;
+      flex: 1;
+    }
+
+    .management-user .table-container {
+      flex: 1;
+      overflow-y: auto;
+      max-height: 300px;
+    }
+
+    .management-user th,
+    .management-user td {
+      padding: 12px 16px;
+      text-align: center;
+      border: none;
+      border-bottom: 1px solid #e5e7eb83;
+      font-size: 12px;
+    }
+
+    .management-user th {
+      background: rgba(102, 126, 234, .4);
+      color: #fff;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      text-transform: uppercase;
+      z-index: 5;
+    }
+
+    .management-user tbody {
+      display: block;
+      max-height: 200px;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .management-user thead {
+      display: block;
+    }
+
+    .management-user tr {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    .management-user tbody::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .management-user tbody::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, .1);
+      border-radius: 4px;
+    }
+
+    .management-user tbody::-webkit-scrollbar-thumb {
+      background: rgba(102, 126, 234, .6);
+      border-radius: 4px;
+    }
+
+    .management-user tbody::-webkit-scrollbar-thumb:hover {
+      background: rgba(102, 126, 234, .8);
+    }
+
+    .management-user tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* ─── Buttons (table actions) ───────────────────────────── */
+    .edit-user,
+    .delete-user,
+    .edit-model,
+    .delete-model {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      margin-right: 6px;
+      margin-bottom: 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all .3s ease;
+    }
+
+    .edit-user:hover,
+    .delete-user:hover,
+    .edit-model:hover,
+    .delete-model:hover {
+      background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    }
+
+    .add-user {
+      background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all .3s ease;
+    }
+
+    .add-user:hover {
+      background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
+    }
+
+    /* ─── Model spec table ──────────────────────────────────── */
+    .management-delivery-spec {
+      flex: 1;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .05);
+      background: linear-gradient(135deg, rgba(102, 126, 234, .25) 0%, rgba(118, 75, 162, .25) 100%);
+      max-height: 320px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .management-delivery-spec table {
+      border-collapse: collapse;
+      width: 100%;
+      border: none;
+      background: transparent;
+      flex: 1;
+    }
+
+    .management-delivery-spec th,
+    .management-delivery-spec td {
+      padding: 12px 16px;
+      text-align: center;
+      border: none;
+      border-bottom: 1px solid #e5e7eb83;
+      font-size: 12px;
+    }
+
+    .management-delivery-spec th {
+      background: rgba(102, 126, 234, .4);
+      color: #fff;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      text-transform: uppercase;
+      z-index: 5;
+    }
+
+    .management-delivery-spec tbody {
+      display: block;
+      max-height: 200px;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .management-delivery-spec thead {
+      display: block;
+    }
+
+    .management-delivery-spec tr {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    .management-delivery-spec tbody::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .management-delivery-spec tbody::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, .1);
+      border-radius: 4px;
+    }
+
+    .management-delivery-spec tbody::-webkit-scrollbar-thumb {
+      background: rgba(102, 126, 234, .6);
+      border-radius: 4px;
+    }
+
+    .management-delivery-spec tbody::-webkit-scrollbar-thumb:hover {
+      background: rgba(102, 126, 234, .8);
+    }
+
+    .management-delivery-spec tr:last-child td {
+      border-bottom: none;
+    }
+
+    .import,
+    .export,
+    .add-spec {
+      background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      margin-right: 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all .3s ease;
+    }
+
+    .import:hover,
+    .export:hover,
+    .add-spec:hover {
+      background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
+    }
+
+    .searchText {
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: none;
+      width: 100%;
+      max-width: 300px;
+      background: rgba(255, 255, 255, .1);
+      color: white;
+    }
+
+    .searchText::placeholder {
+      color: #d1d5db;
+    }
+
+    .searchText:focus {
+      outline: none;
+      background: rgba(255, 255, 255, .2);
+    }
+
+    .edit-input {
+      background: rgba(255, 255, 255, .9);
+      border: 1px solid #667eea;
+      border-radius: 4px;
+      padding: 6px 8px;
+      color: #333;
+      font-size: 12px;
+      width: 100%;
+      min-width: 80px;
+    }
+
+    .edit-input:focus {
+      outline: none;
+      border-color: #764ba2;
+      background: white;
+    }
+
+    /* ─── Delivery table ────────────────────────────────────── */
+    .bottom-row3 {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+      color: white;
+      margin: 0 20px 0 0;
+      flex-wrap: wrap;
+    }
+
+    .management-delivery {
+      flex: 1;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .05);
+      background: linear-gradient(135deg, rgba(102, 126, 234, .25) 0%, rgba(118, 75, 162, .25) 100%);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .management-delivery table {
+      border-collapse: collapse;
+      width: 100%;
+      table-layout: fixed;
+      border: none;
+      background: transparent;
+    }
+
+    .management-delivery thead,
+    .management-delivery tbody tr {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    .management-delivery thead tr {
+      display: table;
+      width: calc(100% - 8px);
+      table-layout: fixed;
+    }
+
+    .management-delivery tbody {
+      display: block;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .management-delivery thead {
+      background: rgba(102, 126, 234, .4);
+      color: #fff;
+      font-weight: 600;
+      text-transform: uppercase;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .management-delivery th,
+    .management-delivery td {
+      padding: 12px 16px;
+      text-align: center;
+      border-bottom: 1px solid rgba(229, 231, 235, .3);
+      font-size: 12px;
+      color: white;
+    }
+
+    .management-delivery tr:last-child td {
+      border-bottom: none;
+    }
+
+    .management-delivery tbody::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .management-delivery tbody::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, .1);
+      border-radius: 4px;
+    }
+
+    .management-delivery tbody::-webkit-scrollbar-thumb {
+      background: rgba(102, 126, 234, .6);
+      border-radius: 4px;
+    }
+
+    .management-delivery tbody::-webkit-scrollbar-thumb:hover {
+      background: rgba(102, 126, 234, .8);
+    }
+
+    #factorySelect {
+      padding: 6px 8px;
+      border-radius: 4px;
+      border: none;
+      background: rgba(255, 255, 255, .1);
+      color: white;
+      font-size: 14px;
+    }
+
+    #factorySelect:focus {
+      outline: none;
+      background: rgba(255, 255, 255, .2);
+    }
+
+    #factorySelect option {
+      background-color: #2b2b2bb7;
+      color: white;
+    }
+
+    #clearFilters {
+      background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all .3s ease;
+    }
+
+    #clearFilters:hover {
+      background: linear-gradient(135deg, #05855c 0%, #225ad3 100%);
+    }
+
+    .date-filter {
+      padding: 6px 8px;
+      border-radius: 4px;
+      border: none;
+      background: rgba(255, 255, 255, .1);
+      color: white;
+      font-size: 14px;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+    }
+
+    /* ─── Badges ────────────────────────────────────────────── */
+    .role-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .role-badge.manager {
+      background-color: rgba(0, 128, 0, .5);
+      color: white;
+      border: 1px solid #159957;
+    }
+
+    .role-badge.user {
+      background-color: rgba(255, 165, 0, .5);
+      color: white;
+      border: 1px solid #f5af19;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .status-badge.complete {
+      background-color: rgba(0, 128, 0, .5);
+      color: white;
+      border: 1px solid #159957;
+    }
+
+    .status-badge.wait {
+      background-color: rgba(255, 165, 0, .5);
+      color: white;
+      border: 1px solid #f5af19;
+    }
+
+    .status-badge.run {
+      background-color: rgba(109, 213, 237, .5);
+      color: white;
+      border: 1px solid #0083B0;
+    }
+
+    /* ─── Responsive ────────────────────────────────────────── */
+    @media screen and (max-width: 1600px) {
+      .container {
+        flex-direction: column;
+        height: auto;
+      }
+
+      .top-row,
+      .bottom-row {
+        width: 100%;
+        margin: 0 0 20px;
+      }
+
+      .welcome-card {
+        flex-direction: row;
+        height: auto;
+        text-align: center;
+      }
+
+      .welcome-right img {
+        width: 100%;
+        max-width: 350px;
+        margin-top: 20px;
+      }
+
+      .chart-row {
+        flex-direction: row;
+      }
+
+      .bottom-row {
+        padding-left: 0;
+      }
+
+      .management-delivery-spec,
+      .management-user {
+        margin: 0;
+        padding: 0;
+      }
+
+      .management-user th,
+      .management-user td,
+      .management-delivery-spec th,
+      .management-delivery-spec td {
+        font-size: 14px;
+      }
+
+      .bottom-row3 {
+        width: 100%;
+        margin: 0;
+      }
+    }
+
+    @media screen and (min-width: 1700px) {
+      .bottom-row3 {
+        padding: 12px 20px 24px 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ① Header component — set active="management" for this page -->
+  <app-header active="management"></app-header>
+
+  <div class="all">
+    <div class="container">
+      <!-- Hàng 1: Overview & Charts -->
+      <div class="top-row">
+        <div class="welcome-card">
+          <div class="welcome-left">
+            <div class="welcome-text">
+              <h2 id="welcome">Welcome back, Admin!</h2>
+              <div class="stats">
+                <div>
+                  <strong id="totalInDay"></strong>
+                  <span id="lbl-total-in-day">Total in day</span>
+                </div>
+                <div class="divider"></div>
+                <div>
+                  <strong id="performance"></strong>
+                  <span id="lbl-performance">Performance</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="welcome-right">
+            <img src="/images/admin.svg" alt="user" />
+          </div>
+        </div>
+
+        <div class="chart-row">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3 id="lbl-chart-monthly-title"></h3>
+              <p id="lbl-chart-monthly-sub"></p>
+            </div>
+            <div class="chart-container">
+              <div id="monthlyChart"></div>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3 id="lbl-chart-status-title"></h3>
+              <p id="lbl-chart-status-sub"></p>
+            </div>
+            <div class="chart-container">
+              <div id="orderChart"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hàng 2: Management tables -->
+      <div class="bottom-row">
+
+
+        <!-- Model Spec -->
+        <div class="management-delivery-spec">
+          <table>
+            <thead>
+              <tr>
+                <th id="th-model-spec" colspan="1"
+                  style="text-align:left;font-size:20px;padding-bottom:10px;text-transform:uppercase;"></th>
+                <th colspan="2">
+                  <input class="searchText" type="text" id="searchText" placeholder="Search All" />
+                </th>
+                <th colspan="1" style="text-align:right;">
+                  <button class="add-spec" id="btn-add-spec"></button>
+                </th>
+                <th colspan="1" style="text-align:right;">
+                  <button class="import" id="importButton"></button>
+                </th>
+                <th colspan="1" style="text-align:right;">
+                  <button class="export" id="exportButton"></button>
+                </th>
+              </tr>
+              <tr>
+<th id="th-spec-stt">STT</th>
+<th id="th-spec-modelType">Model Type</th>
+<th id="th-spec-mobisCode">Mobis Code</th>
+<th id="th-spec-partronCode">Partron Code</th>
+<th id="th-spec-modelName">Model Name</th>
+<th id="th-spec-actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="specTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hàng 3: Delivery Management -->
+    <div class="bottom-row3">
+      <div class="management-delivery">
+        <table>
+          <thead>
+            <tr>
+              <th id="th-delivery" colspan="1"
+                style="text-align:left;font-size:20px;padding-bottom:10px;text-transform:uppercase;"></th>
+              <th colspan="3">
+                <input class="searchText" type="text" id="searchTextDelivery"
+                  placeholder="Search Model ID, Mobis Code, Model Name" />
+              </th>
+              <th colspan="3">
+                <span id="lbl-factory"></span>
+                <select id="factorySelect">
+                  <option value="V0" selected>V0</option>
+                  <option value="V5">V5</option>
+                </select>
+              </th>
+              <th colspan="2">
+                <span id="lbl-from">
+                  <input type="date" id="deliveryDateFrom" class="date-filter" />
+                </span>
+              </th>
+              <th colspan="2">
+                <span id="lbl-to">
+                  <input type="date" id="deliveryDateTo" class="date-filter" />
+                </span>
+              </th>
+              <th colspan="1">
+                <button id="clearFilters">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
+                    <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+                    <path d="M16 16h5v5" />
+                  </svg>
+                </button>
+              </th>
+            </tr>
+            <tr>
+<th id="th-del-stt">STT</th>
+<th id="th-del-modelId">Model Id</th>
+<th id="th-del-mobisCode">Mobis Code</th>
+<th id="th-del-modelName">Model Name</th>
+<th id="th-del-type">Type</th>
+<th id="th-del-target">Target</th>
+<th id="th-del-quantity">Quantity</th>
+<th id="th-del-status">Status</th>
+<th id="th-del-completeTime">Complete Time</th>
+<th id="th-del-shippingDate">Shipping Date</th>
+<th id="th-del-shippingMethod">Shipping Method</th>
+<th id="th-del-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="DeliveryTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="/js/dayjs.min.js"></script>
+</body>
+
+</html>

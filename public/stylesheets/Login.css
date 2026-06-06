@@ -1,10 +1,12 @@
-/* From Uiverse.io by shadyeljokers */ 
-html, body {
+/* From Uiverse.io by shadyeljokers */
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100%;
   background: #020617;
 }
+
 .all {
   margin: 0;
   padding: 0;
@@ -22,7 +24,7 @@ html, body {
   overflow: hidden;
 }
 
-/* From Uiverse.io by glisovic01 */ 
+/* From Uiverse.io by glisovic01 */
 .login-box {
   position: absolute;
   top: 50%;
@@ -33,7 +35,7 @@ html, body {
   transform: translate(-50%, -55%);
   background: #040818;
   box-sizing: border-box;
-  box-shadow: 0 15px 25px rgba(0,0,0,.6);
+  box-shadow: 0 15px 25px rgba(0, 0, 0, .6);
   border-radius: 10px;
 }
 
@@ -74,8 +76,8 @@ html, body {
   transition: .5s;
 }
 
-.login-box .user-box input:focus ~ label,
-.login-box .user-box input:valid ~ label {
+.login-box .user-box input:focus~label,
+.login-box .user-box input:valid~label {
   top: -20px;
   left: 0;
   color: #fff;
@@ -84,7 +86,10 @@ html, body {
 
 /* 🔹 Sửa toàn bộ phần dưới từ a → button */
 .login-box form button {
-  position: relative;
+  width: 100%;
+  height: 50px;
+  border-radius: 5px;
+  border: 1px solid #fff;
   display: inline-block;
   padding: 10px 20px;
   font-weight: bold;
@@ -96,20 +101,14 @@ html, body {
   margin-top: 40px;
   letter-spacing: 3px;
   background: transparent;
-  border: none;
   cursor: pointer;
 }
 
 .login-box form button:hover {
   background: #fff;
   color: #272727;
-  border-radius: 5px;
 }
 
-.login-box form button span {
-  position: absolute;
-  display: block;
-}
 
 .login-box form button span:nth-child(1) {
   top: 0;
@@ -121,8 +120,14 @@ html, body {
 }
 
 @keyframes btn-anim1 {
-  0% { left: -100%; }
-  50%,100% { left: 100%; }
+  0% {
+    left: -100%;
+  }
+
+  50%,
+  100% {
+    left: 100%;
+  }
 }
 
 .login-box form button span:nth-child(2) {
@@ -136,8 +141,14 @@ html, body {
 }
 
 @keyframes btn-anim2 {
-  0% { top: -100%; }
-  50%,100% { top: 100%; }
+  0% {
+    top: -100%;
+  }
+
+  50%,
+  100% {
+    top: 100%;
+  }
 }
 
 .login-box form button span:nth-child(3) {
@@ -151,8 +162,14 @@ html, body {
 }
 
 @keyframes btn-anim3 {
-  0% { right: -100%; }
-  50%,100% { right: 100%; }
+  0% {
+    right: -100%;
+  }
+
+  50%,
+  100% {
+    right: 100%;
+  }
 }
 
 .login-box form button span:nth-child(4) {
@@ -166,8 +183,14 @@ html, body {
 }
 
 @keyframes btn-anim4 {
-  0% { bottom: -100%; }
-  50%,100% { bottom: 100%; }
+  0% {
+    bottom: -100%;
+  }
+
+  50%,
+  100% {
+    bottom: 100%;
+  }
 }
 
 .login-box p:last-child {
@@ -184,4 +207,123 @@ html, body {
   background: transparent;
   color: #aaa;
   border-radius: 5px;
+}
+
+/* ── Bottom row: save password + language ── */
+.bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 15px 0;
+}
+
+.save-pass-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.save-pass-wrap input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #03e9f4;
+  flex-shrink: 0;
+}
+
+.save-pass-wrap label {
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  cursor: pointer;
+  font-size: 13px;
+  user-select: none;
+}
+
+
+.lang-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(3, 233, 244, 0.08);
+  border: 1px solid rgba(3, 233, 244, 0.3);
+  border-radius: 6px;
+  padding: 5px 10px;
+  cursor: pointer;
+  color: #03e9f4;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.lang-trigger:hover {
+  background: rgba(3, 233, 244, 0.15);
+  border-color: #03e9f4;
+}
+
+.lang-trigger svg {
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.lang-wrap.open .lang-trigger svg {
+  transform: rotate(180deg);
+}
+
+.lang-flag {
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* Dropdown menu */
+.lang-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  background: #0d1b3e;
+  border: 1px solid rgba(3, 233, 244, 0.25);
+  border-radius: 8px;
+  overflow: hidden;
+  min-width: 130px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+.lang-wrap.open .lang-menu {
+  display: block;
+}
+
+.lang-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.75);
+  transition: background 0.15s, color 0.15s;
+}
+
+.lang-option:hover {
+  background: rgba(3, 233, 244, 0.12);
+  color: #03e9f4;
+}
+
+.lang-option.active {
+  color: #03e9f4;
+  background: rgba(3, 233, 244, 0.08);
+}
+
+.lang-option .lang-flag {
+  font-size: 16px;
+}
+
+.lang-wrap {
+  position: relative;
+  overflow: visible !important;
 }

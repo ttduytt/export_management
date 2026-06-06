@@ -5,7 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="/images/logoweb.jpg" type="image/x-icon">
-  <script type="module" src="/js/main.js"></script>
+  <script type="module" src="/js/history.js"></script>
+  <script type="module" src="/js/header.js"></script>
   <title>Delivery Management - History</title>
   <style>
     * {
@@ -23,13 +24,11 @@
       overflow: hidden;
     }
 
-    /* Light mode */
     body.light-theme {
       background-color: white;
       color: #e3e2e9;
     }
 
-    /* nav */
     body.light-theme nav {
       background: linear-gradient(to right, #667db6, #0082c8, #0082c8, #667db6);
     }
@@ -58,7 +57,6 @@
       background: #6dd5ed;
     }
 
-    /* Content */
     body.light-theme .management-delivery {
       background: white;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -82,7 +80,6 @@
       background: #f9fafb;
     }
 
-    /* Form Elements */
     body.light-theme #factorySelect,
     body.light-theme .date-filter,
     body.light-theme .searchText {
@@ -112,7 +109,6 @@
       filter: invert(0);
     }
 
-    /* Buttons */
     body.light-theme #clearFilters {
       background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
     }
@@ -134,11 +130,6 @@
       color: #9ca3af;
     }
 
-    body.light-theme .pagination button:disabled:hover {
-      background: #e5e7eb;
-    }
-
-    /* Scrollbar */
     body.light-theme .management-delivery tbody::-webkit-scrollbar-track {
       background: #f3f4f6;
     }
@@ -151,220 +142,11 @@
       background: #9ca3af;
     }
 
-    body.light-theme .management-delivery::-webkit-scrollbar-track {
-      background: #f3f4f6;
-    }
-
-    body.light-theme .management-delivery::-webkit-scrollbar-thumb {
-      background: #d1d5db;
-    }
-
-    body.light-theme .management-delivery::-webkit-scrollbar-thumb:hover {
-      background: #9ca3af;
-    }
-
-
-    /* Navigation */
-    nav {
-      background: rgba(6, 12, 34, 0.95);
-      backdrop-filter: blur(10px);
-      padding: 0;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      border-bottom: 1px solid rgba(102, 126, 234, 0.3);
-    }
-
-    .nav-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 40px;
-    }
-
-    .logo {
-      color: white;
-      font-size: 30px;
-      font-weight: 700;
-      padding: 20px 0;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      background: linear-gradient(135deg, #f4f4f4 0%, #e7d3fc 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .logo img {
-      transition: transform 0.3s ease;
-    }
-
-    .logo img:hover {
-      transform: scale(1.05);
-    }
-
-    .nav-menu {
-      display: flex;
-      list-style: none;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .nav-menu li a {
-      color: rgba(255, 255, 255, 0.85);
-      text-decoration: none;
-      padding: 12px 28px;
-      display: block;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      font-weight: 500;
-      font-size: 15px;
-      letter-spacing: 0.5px;
-      border-radius: 8px;
-    }
-
-    .nav-menu li a::before {
-      content: '';
-      position: absolute;
-      bottom: 8px;
-      left: 50%;
-      transform: translateX(-50%) scaleX(0);
-      width: 60%;
-      height: 2px;
-      background: linear-gradient(90deg, #667eea, #764ba2);
-      transition: transform 0.3s ease;
-    }
-
-    .nav-menu li a:hover {
-      background: rgba(102, 126, 234, 0.15);
-      color: white;
-      transform: translateY(-2px);
-    }
-
-    .nav-menu li a:hover::before {
-      transform: translateX(-50%) scaleX(1);
-    }
-
-    .nav-menu li a.active {
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
-      color: white;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    }
-
-    .nav-menu li a.active::before {
-      transform: translateX(-50%) scaleX(1);
-    }
-
-
-    /* From Uiverse.io by JustCode14 */
-    /* The switch - the box around the slider */
-    .switch {
-      font-size: 17px;
-      position: relative;
-      display: inline-block;
-      width: 4em;
-      height: 2.2em;
-      border-radius: 30px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Hide default HTML checkbox */
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    /* The slider */
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #2a2a2a;
-      transition: 0.4s;
-      border-radius: 30px;
-      overflow: hidden;
-    }
-
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 1.2em;
-      width: 1.2em;
-      border-radius: 20px;
-      left: 0.5em;
-      bottom: 0.5em;
-      transition: 0.4s;
-      transition-timing-function: cubic-bezier(0.81, -0.04, 0.38, 1.5);
-      box-shadow: inset 8px -4px 0px 0px #fff;
-    }
-
-    .switch input:checked+.slider {
-      background-color: #00a6ff;
-    }
-
-    .switch input:checked+.slider:before {
-      transform: translateX(1.8em);
-      box-shadow: inset 15px -4px 0px 15px #ffcf48;
-    }
-
-    .star {
-      background-color: #fff;
-      border-radius: 50%;
-      position: absolute;
-      width: 5px;
-      transition: all 0.4s;
-      height: 5px;
-    }
-
-    .star_1 {
-      left: 2.5em;
-      top: 0.5em;
-    }
-
-    .star_2 {
-      left: 2.2em;
-      top: 1.2em;
-    }
-
-    .star_3 {
-      left: 3em;
-      top: 0.9em;
-    }
-
-    .switch input:checked~.slider .star {
-      opacity: 0;
-    }
-
-    .cloud {
-      width: 3.5em;
-      position: absolute;
-      bottom: -1.4em;
-      left: -1.1em;
-      opacity: 0;
-      transition: all 0.4s;
-    }
-
-    .switch input:checked~.slider .cloud {
-      opacity: 1;
-    }
-
-
-    /* Footer */
     footer {
       color: white;
       font-size: 12px;
       text-align: center;
-      padding: 20px 20px;
+      padding: 20px;
       position: fixed;
       bottom: 0;
       right: 0;
@@ -388,7 +170,6 @@
       overflow: hidden;
     }
 
-
     .management-delivery {
       flex: 1;
       width: 100%;
@@ -400,7 +181,6 @@
       overflow: hidden;
     }
 
-    /* Thay đổi table */
     .management-delivery table {
       border-collapse: collapse;
       border: none;
@@ -412,7 +192,6 @@
       flex-direction: column;
     }
 
-    /* Thay đổi thead */
     .management-delivery thead {
       background: rgba(102, 126, 234, 0.4);
       color: #fff;
@@ -428,7 +207,6 @@
       overflow-x: hidden;
     }
 
-
     .filter-row {
       display: flex;
       justify-content: space-between;
@@ -436,297 +214,12 @@
       padding: 16px 12px;
     }
 
-
     .management-delivery thead .tableHead,
     .management-delivery tbody tr {
       display: grid;
-      grid-template-columns:
-        40px minmax(180px, 180px) minmax(280px, 280px) repeat(9, minmax(0, 1fr));
-
+      grid-template-columns: 40px minmax(180px, 180px) minmax(280px, 280px) repeat(9, minmax(0, 1fr));
     }
 
-    /* ===== CHANGE PASSWORD MODAL — DARK NAVY THEME ===== */
-
-        .cp-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(5, 10, 30, 0.75);
-            backdrop-filter: blur(6px);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .cp-overlay.active {
-            display: flex;
-        }
-
-        .cp-modal {
-            background: #1a2a5e;
-            /* navy card — giống panel bảng */
-            border: 1px solid #2e4080;
-            border-radius: 16px;
-            padding: 32px;
-            width: 440px;
-            max-width: 95vw;
-            position: relative;
-            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55),
-                0 0 0 1px rgba(99, 179, 255, 0.08);
-            animation: cpSlideIn .25s ease;
-            color: #e8eeff;
-        }
-
-        @keyframes cpSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-18px) scale(.97);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        /* ── Close button ── */
-        .cp-close {
-            position: absolute;
-            top: 14px;
-            right: 16px;
-            background: none;
-            border: none;
-            font-size: 22px;
-            cursor: pointer;
-            color: #7a8fcc;
-            line-height: 1;
-            transition: color .2s;
-        }
-
-        .cp-close:hover {
-            color: #e8eeff;
-        }
-
-        /* ── Header ── */
-        .cp-header {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 22px;
-        }
-
-        .cp-avatar {
-            width: 54px;
-            height: 54px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #1de9c4, #0ea5e9);
-            /* teal → cyan như nav btn */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #0d1b3e;
-            flex-shrink: 0;
-            box-shadow: 0 0 16px rgba(29, 233, 196, 0.35);
-        }
-
-        .cp-header h2 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin: 0;
-            color: #ffffff;
-            letter-spacing: .02em;
-        }
-
-        /* ── Info grid ── */
-        .cp-info-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background: rgba(10, 20, 60, 0.55);
-            /* nền tối hơn một chút */
-            border: 1px solid #2a3f7e;
-            border-radius: 12px;
-            padding: 16px 18px;
-        }
-
-        .cp-info-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .cp-label {
-            font-size: .78rem;
-            font-weight: 600;
-            color: #6b83c4;
-            text-transform: uppercase;
-            letter-spacing: .06em;
-        }
-
-        .cp-value {
-            font-size: .95rem;
-            font-weight: 600;
-            color: #dde6ff;
-        }
-
-        .cp-badge {
-            background: linear-gradient(135deg, #1de9c4, #0ea5e9);
-            /* teal accent */
-            color: #0a1628;
-            font-size: .72rem;
-            font-weight: 800;
-            padding: 3px 12px;
-            border-radius: 20px;
-            letter-spacing: .07em;
-            text-transform: uppercase;
-        }
-
-        /* ── Divider ── */
-        .cp-divider {
-            border: none;
-            border-top: 1px solid #2a3f7e;
-            margin: 20px 0;
-        }
-
-        /* ── Form ── */
-        .cp-form h3 {
-            font-size: .95rem;
-            font-weight: 700;
-            margin: 0 0 16px;
-            color: #a0b4e8;
-            text-transform: uppercase;
-            letter-spacing: .06em;
-        }
-
-        .cp-field {
-            margin-bottom: 14px;
-        }
-
-        .cp-field label {
-            display: block;
-            font-size: .8rem;
-            font-weight: 600;
-            color: #6b83c4;
-            margin-bottom: 6px;
-            letter-spacing: .03em;
-        }
-
-        .cp-input-wrap {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .cp-input-wrap input {
-            width: 100%;
-            padding: 10px 42px 10px 14px;
-            border: 1.5px solid #2a3f7e;
-            border-radius: 10px;
-            font-size: .95rem;
-            background: rgba(10, 20, 60, 0.6);
-            color: #e8eeff;
-            outline: none;
-            transition: border-color .2s, box-shadow .2s;
-            box-sizing: border-box;
-        }
-
-        .cp-input-wrap input::placeholder {
-            color: #4a5e9a;
-        }
-
-        .cp-input-wrap input:focus {
-            border-color: #1de9c4;
-            box-shadow: 0 0 0 3px rgba(29, 233, 196, 0.15);
-        }
-
-        .cp-eye {
-            position: absolute;
-            right: 10px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 4px;
-            color: #4a5e9a;
-            display: flex;
-            align-items: center;
-            transition: color .2s;
-        }
-
-        .cp-eye:hover {
-            color: #1de9c4;
-        }
-
-        /* ── Message ── */
-        .cp-msg {
-            min-height: 20px;
-            font-size: .85rem;
-            margin: 6px 0 10px;
-            font-weight: 500;
-        }
-
-        .cp-msg.error {
-            color: #f87171;
-        }
-
-        .cp-msg.success {
-            color: #4ade80;
-        }
-
-        /* xanh lá như badge Complete */
-
-        /* ── Submit button ── */
-        .cp-btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #1de9c4, #0ea5e9);
-            color: #0a1628;
-            border: none;
-            border-radius: 10px;
-            font-size: .95rem;
-            font-weight: 700;
-            cursor: pointer;
-            letter-spacing: .04em;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: opacity .2s, transform .15s, box-shadow .2s;
-            box-shadow: 0 4px 20px rgba(29, 233, 196, 0.3);
-        }
-
-        .cp-btn:hover:not(:disabled) {
-            opacity: .92;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 24px rgba(29, 233, 196, 0.45);
-        }
-
-        .cp-btn:active:not(:disabled) {
-            transform: translateY(0);
-        }
-
-        .cp-btn:disabled {
-            opacity: .5;
-            cursor: not-allowed;
-        }
-
-        /* ── Spinner ── */
-        .cp-spinner {
-            width: 18px;
-            height: 18px;
-            border: 2.5px solid rgba(10, 22, 40, 0.3);
-            border-top-color: #0a1628;
-            border-radius: 50%;
-            animation: spin .7s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-
-    /* Căn giữa & padding chuẩn */
     .management-delivery th,
     .management-delivery td {
       padding: 12px 8px;
@@ -738,13 +231,11 @@
       white-space: nowrap;
     }
 
-    /* Cột QR căn trái */
     .management-delivery th:nth-child(3),
     .management-delivery td:nth-child(3) {
       padding-left: 12px;
     }
 
-    /* Cột Model Name căn trái */
     .management-delivery th:nth-child(5),
     .management-delivery td:nth-child(5) {
       padding-left: 12px;
@@ -754,7 +245,6 @@
       border-bottom: none;
     }
 
-    /* Custom scrollbar cho tbody (vertical) */
     .management-delivery tbody::-webkit-scrollbar {
       width: 8px;
       height: 8px;
@@ -773,26 +263,6 @@
     .management-delivery tbody::-webkit-scrollbar-thumb:hover {
       background: rgba(102, 126, 234, 0.8);
     }
-
-    /* Custom scrollbar cho container (horizontal) */
-    .management-delivery::-webkit-scrollbar {
-      height: 8px;
-    }
-
-    .management-delivery::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-    }
-
-    .management-delivery::-webkit-scrollbar-thumb {
-      background: rgba(102, 126, 234, 0.6);
-      border-radius: 4px;
-    }
-
-    .management-delivery::-webkit-scrollbar-thumb:hover {
-      background: rgba(102, 126, 234, 0.8);
-    }
-
 
     #factorySelect {
       padding: 6px 8px;
@@ -890,205 +360,337 @@
       opacity: 0.5;
     }
 
-    .pagination button:disabled:hover {
-      background: rgba(102, 126, 234, 0.3);
+    /* Change Password Modal */
+    .cp-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 10, 30, 0.75);
+      backdrop-filter: blur(6px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cp-overlay.active {
+      display: flex;
+    }
+
+    .cp-modal {
+      background: #1a2a5e;
+      border: 1px solid #2e4080;
+      border-radius: 16px;
+      padding: 32px;
+      width: 440px;
+      max-width: 95vw;
+      position: relative;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+      animation: cpSlideIn .25s ease;
+      color: #e8eeff;
+    }
+
+    @keyframes cpSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-18px) scale(.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .cp-close {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      color: #7a8fcc;
+      line-height: 1;
+      transition: color .2s;
+    }
+
+    .cp-close:hover {
+      color: #e8eeff;
+    }
+
+    .cp-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .cp-avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1de9c4, #0ea5e9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0d1b3e;
+      flex-shrink: 0;
+      box-shadow: 0 0 16px rgba(29, 233, 196, 0.35);
+    }
+
+    .cp-header h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 0;
+      color: #fff;
+    }
+
+    .cp-info-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: rgba(10, 20, 60, 0.55);
+      border: 1px solid #2a3f7e;
+      border-radius: 12px;
+      padding: 16px 18px;
+    }
+
+    .cp-info-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cp-label {
+      font-size: .78rem;
+      font-weight: 600;
+      color: #6b83c4;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .cp-value {
+      font-size: .95rem;
+      font-weight: 600;
+      color: #dde6ff;
+    }
+
+    .cp-badge {
+      background: linear-gradient(135deg, #1de9c4, #0ea5e9);
+      color: #0a1628;
+      font-size: .72rem;
+      font-weight: 800;
+      padding: 3px 12px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+
+    .cp-divider {
+      border: none;
+      border-top: 1px solid #2a3f7e;
+      margin: 20px 0;
+    }
+
+    .cp-form h3 {
+      font-size: .95rem;
+      font-weight: 700;
+      margin: 0 0 16px;
+      color: #a0b4e8;
+      text-transform: uppercase;
+    }
+
+    .cp-field {
+      margin-bottom: 14px;
+    }
+
+    .cp-field label {
+      display: block;
+      font-size: .8rem;
+      font-weight: 600;
+      color: #6b83c4;
+      margin-bottom: 6px;
+    }
+
+    .cp-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .cp-input-wrap input {
+      width: 100%;
+      padding: 10px 42px 10px 14px;
+      border: 1.5px solid #2a3f7e;
+      border-radius: 10px;
+      font-size: .95rem;
+      background: rgba(10, 20, 60, 0.6);
+      color: #e8eeff;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      box-sizing: border-box;
+    }
+
+    .cp-input-wrap input::placeholder {
+      color: #4a5e9a;
+    }
+
+    .cp-input-wrap input:focus {
+      border-color: #1de9c4;
+      box-shadow: 0 0 0 3px rgba(29, 233, 196, 0.15);
+    }
+
+    .cp-eye {
+      position: absolute;
+      right: 10px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      color: #4a5e9a;
+      display: flex;
+      align-items: center;
+      transition: color .2s;
+    }
+
+    .cp-eye:hover {
+      color: #1de9c4;
+    }
+
+    .cp-msg {
+      min-height: 20px;
+      font-size: .85rem;
+      margin: 6px 0 10px;
+      font-weight: 500;
+    }
+
+    .cp-msg.error {
+      color: #f87171;
+    }
+
+    .cp-msg.success {
+      color: #4ade80;
+    }
+
+    .cp-btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #1de9c4, #0ea5e9);
+      color: #0a1628;
+      border: none;
+      border-radius: 10px;
+      font-size: .95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity .2s, transform .15s;
+      box-shadow: 0 4px 20px rgba(29, 233, 196, 0.3);
+    }
+
+    .cp-btn:hover:not(:disabled) {
+      opacity: .92;
+      transform: translateY(-2px);
+    }
+
+    .cp-btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .cp-spinner {
+      width: 18px;
+      height: 18px;
+      border: 2.5px solid rgba(10, 22, 40, 0.3);
+      border-top-color: #0a1628;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
     }
   </style>
 </head>
 
 <body>
-      <!-- Modal Change Password — thêm trước </body> -->
-    <div id="changePassOverlay" class="cp-overlay">
-        <div class="cp-modal">
-            <button class="cp-close" id="closeChangePass">&times;</button>
 
-            <div class="cp-header">
-                <div class="cp-avatar">
-                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="1.5">
-                        <circle cx="12" cy="8" r="4" />
-                        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-                    </svg>
-                </div>
-                <h2>Account Settings</h2>
-            </div>
 
-            <!-- User Info -->
-            <div class="cp-info-grid">
-                <div class="cp-info-item">
-                    <span class="cp-label">Username</span>
-                    <span class="cp-value" id="cpUsername"></span>
-                </div>
-                <div class="cp-info-item">
-                    <span class="cp-label">Full Name</span>
-                    <span class="cp-value" id="cpFullName"></span>
-                </div>
-                <div class="cp-info-item">
-                    <span class="cp-label">Role</span>
-                    <span class="cp-value">
-                        <span class="cp-badge" id="cpRole"></span>
-                    </span>
-                </div>
-            </div>
-
-            <hr class="cp-divider">
-
-            <!-- Change Password Form -->
-            <div class="cp-form">
-                <h3>Change Password</h3>
-
-                <div class="cp-field">
-                    <label>New Password</label>
-                    <div class="cp-input-wrap">
-                        <input type="password" id="cpNewPass" placeholder="Enter new password" />
-                        <button class="cp-eye" onclick="togglePass('cpNewPass', this)">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                <circle cx="12" cy="12" r="3" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="cp-field">
-                    <label>Confirm Password</label>
-                    <div class="cp-input-wrap">
-                        <input type="password" id="cpConfirmPass" placeholder="Confirm new password" />
-                        <button class="cp-eye" onclick="togglePass('cpConfirmPass', this)">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                <circle cx="12" cy="12" r="3" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                <p class="cp-msg" id="cpMsg"></p>
-
-                <button class="cp-btn" id="cpSubmitBtn" onclick="submitChangePass()">
-                    <span id="cpBtnText">Update Password</span>
-                    <span id="cpBtnLoader" class="cp-spinner" style="display:none"></span>
-                </button>
-            </div>
-        </div>
-    </div>
   <div class="all">
     <!-- Navigation -->
-    <nav>
-      <div class="nav-container">
-        <div class="logo"><span><img style="width: 80px;" src="/images/logo.png" alt=""></span><a
-            href="#home">DELIVERY MANAGEMENT</a></div>
-        <ul class="nav-menu" id="navMenu">
-          <li class="home"><a href="#">Home</a></li>
-          <li class="delivery"><a href="#delivery">Delivery</a></li>
-          <li class="history"><a href="#history">History</a></li>
-          <li class="admin"><a href="#admin">Admin</a></li>
-                              <li class="change-password">
-                        <a href="#" id="openChangePass">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                            </svg>
-                            Change Password
-                        </a>
-                    </li>
-          <li class="logout">
-            <a href="#">
-              <span>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                  stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out-icon lucide-log-out">
-                  <path d="m16 17 5-5-5-5" />
-                  <path d="M21 12H9" />
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                </svg>
-              </span>
-            </a>
-          </li>
-        </ul>
-        <label class="switch">
-          <input checked="true" id="checkbox" type="checkbox" />
-          <span class="slider">
-            <div class="star star_1"></div>
-            <div class="star star_2"></div>
-            <div class="star star_3"></div>
-            <svg viewBox="0 0 16 16" class="cloud_1 cloud">
-              <path transform="matrix(.77976 0 0 .78395-299.99-418.63)" fill="#fff"
-                d="m391.84 540.91c-.421-.329-.949-.524-1.523-.524-1.351 0-2.451 1.084-2.485 2.435-1.395.526-2.388 1.88-2.388 3.466 0 1.874 1.385 3.423 3.182 3.667v.034h12.73v-.006c1.775-.104 3.182-1.584 3.182-3.395 0-1.747-1.309-3.186-2.994-3.379.007-.106.011-.214.011-.322 0-2.707-2.271-4.901-5.072-4.901-2.073 0-3.856 1.202-4.643 2.925">
-              </path>
-            </svg>
-          </span>
-        </label>
-      </div>
-    </nav>
+
+<app-header active="history"></app-header>
     <div class="container">
       <div class="content-left">
         <div class="management-delivery">
           <table>
             <thead>
               <tr class="filter-row">
-                <th colspan="1"
-                  style="text-align: left; font-size: 18px; padding-bottom: 10px; text-transform: uppercase;">Delivery
-                  History</th>
-                <th colspan="2"><input class="searchText" type="text" name="searchTextDelivery" id="searchTextDelivery"
-                    placeholder="Search Mobis Code, Model ID"></th>
+                <!-- id để JS set text -->
+                <th id="th-history-title" colspan="1"
+                  style="text-align:left;font-size:18px;padding-bottom:10px;text-transform:uppercase;">
+                  Delivery History
+                </th>
                 <th colspan="2">
-                  <span>Factory:</span>
+                  <input class="searchText" type="text" id="searchTextDelivery"
+                    placeholder="Search Mobis Code, Model ID">
+                </th>
+                <th colspan="2">
+                  <span id="lbl-factory">Factory:</span>
                   <select name="factory" id="factorySelect">
                     <option value="V0" selected>V0</option>
                     <option value="V5">V5</option>
                   </select>
                 </th>
-                <th style="display: flex;">
-                  <div class="date"><input type="date" id="deliveryDateFrom" class="date-filter"
-                      name="deliveryDateFrom"></div>
-                  <div style="margin: 0 10px;"><span>~</span></div>
-                  <div class="date"><input type="date" id="deliveryDateTo" class="date-filter" name="deliveryDateTo">
-                  </div>
+                <th style="display:flex;">
+                  <div><input type="date" id="deliveryDateFrom" class="date-filter"></div>
+                  <div style="margin:0 10px;"><span>~</span></div>
+                  <div><input type="date" id="deliveryDateTo" class="date-filter"></div>
                 </th>
-                <th colspan="1"><button id="clearFilters"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                      class="lucide lucide-refresh-ccw-icon lucide-refresh-ccw">
+                <th colspan="1">
+                  <button id="clearFilters">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round">
                       <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
                       <path d="M3 3v5h5" />
                       <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
                       <path d="M16 16h5v5" />
-                    </svg></button></th>
+                    </svg>
+                  </button>
+                </th>
               </tr>
-              <tr class="tableHead">
-                <th>STT</th>
-                <th>Model Id</th>
-                <th>QR</th>
-                <th>Mobis Code</th>
-                <th>Model Name</th>
-                <th>Type</th>
-                <th>Target</th>
-                <th>Even Quantity</th>
-                <th>Shipping Date</th>
-                <th>Shipping Method</th>
-                <th>Event User</th>
-                <th>Event Time</th>
-              </tr>
+<tr class="tableHead">
+  <th id="th-his-stt">STT</th>
+  <th id="th-his-modelId">Model Id</th>
+  <th id="th-his-qr">QR</th>
+  <th id="th-his-mobisCode">Mobis Code</th>
+  <th id="th-his-modelName">Model Name</th>
+  <th id="th-his-type">Type</th>
+  <th id="th-his-target">Target</th>
+  <th id="th-his-evenQuantity">Even Quantity</th>
+  <th id="th-his-shippingDate">Shipping Date</th>
+  <th id="th-his-shippingMethod">Shipping Method</th>
+  <th id="th-his-eventUser">Event User</th>
+  <th id="th-his-eventTime">Event Time</th>
+</tr>
             </thead>
-            <tbody id="DeliveryTableBody">
-            </tbody>
+            <tbody id="DeliveryTableBody"></tbody>
           </table>
         </div>
         <div class="pagination">
           <button id="prevPage">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              class="lucide lucide-arrow-left-icon lucide-arrow-left">
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="m12 19-7-7 7-7" />
               <path d="M19 12H5" />
             </svg>
           </button>
           <button id="nextPage">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              class="lucide lucide-arrow-right-icon lucide-arrow-right">
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M5 12h14" />
               <path d="m12 5 7 7-7 7" />
             </svg>
@@ -1096,369 +698,10 @@
         </div>
       </div>
     </div>
-    <!-- Footer -->
-    <footer>
-      <p>&copy; 2025 Copyright for Partron VN</p>
-    </footer>
-    <script src="/js/dayjs.min.js"></script>
-    <script>
 
+  </div>
 
-
-      // Theme Toggle Logic
-      const themeToggle = document.getElementById('checkbox');
-      const body = document.body;
-
-      // Kiểm tra theme đã lưu
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'light') {
-        body.classList.add('light-theme');
-        themeToggle.checked = true;
-      } else {
-        themeToggle.checked = false;
-      }
-
-      themeToggle.addEventListener('change', (e) => {
-        body.classList.toggle('light-theme');
-        const isLight = body.classList.contains('light-theme');
-
-        // Lưu theme vào localStorage
-        localStorage.setItem('theme', isLight ? 'light' : 'dark');
-      });
-
-      const navLinks = document.querySelectorAll('.nav-menu a');
-      const logoLink = document.querySelector('.logo a');
-
-      // Khôi phục menu active
-      const savedMenu = sessionStorage.getItem('activeMenu');
-      if (savedMenu) {
-        navLinks.forEach(link => link.classList.remove('active'));
-        const target = document.querySelector(`.${savedMenu} a`);
-        if (target) target.classList.add('active');
-      }
-
-      logoLink.addEventListener('click', e => {
-        e.preventDefault();
-        navLinks.forEach(link => link.classList.remove('active'));
-        const homeLink = document.querySelector('.home a');
-        homeLink.classList.add('active');
-        sessionStorage.setItem('activeMenu', 'home');
-        window.location.href = '/home';
-      });
-
-      // Lắng nghe click cho toàn bộ menu
-      navLinks.forEach(link => {
-        link.addEventListener('click', e => {
-          e.preventDefault();
-          const parentClass = link.parentElement.classList[0];
-          navLinks.forEach(l => l.classList.remove('active'));
-          link.classList.add('active');
-          sessionStorage.setItem('activeMenu', parentClass);
-
-          // Xử lý hành động theo từng menu
-          switch (parentClass) {
-            case 'home':
-              window.location.href = '/home';
-              break;
-
-            case 'logout':
-              if (confirm('Are you sure you want to logout?')) {
-                sessionStorage.clear();
-                localStorage.clear();
-                fetch('/exportmanagement/logout', {
-                  method: 'POST',
-                  credentials: 'include'
-                }).then(() => {
-                  window.location.href = '/';
-                });
-
-              }
-              break;
-
-            case 'delivery':
-              window.location.href = '/delivery';
-              break;
-
-            case 'history':
-              window.location.href = '/deliveryHistory';
-              break;
-
-            case 'admin':
-              window.location.href = '/admin';
-              break;
-            default:
-              console.log('Unknown menu item:', parentClass);
-              break;
-          }
-        });
-      });
-      // initialize delivery data
-      async function initDelivery(page = 1) {
-        const searchTextDelivery = document.getElementById('searchTextDelivery');
-        const factorySelect = document.getElementById('factorySelect');
-        const searchDateFrom = document.getElementById('deliveryDateFrom');
-        const searchDateTo = document.getElementById('deliveryDateTo');
-        const prevPageBtn = document.getElementById('prevPage');
-        const nextPageBtn = document.getElementById('nextPage');
-
-        const specTableBody = document.getElementById('DeliveryTableBody');
-        specTableBody.innerHTML = '';
-        let user = null
-        //check auth
-        user = await getUserProfile();
-
-        if (!user) {
-          alert("please login to continue")
-          globalThis.location.href = '/'
-        }
-
-        async function getUserProfile() {
-          const res = await fetch("/exportmanagement/profile", {
-            method: "GET",
-            credentials: "include",
-          });
-
-          const data = await res.json();
-          return data.user;
-        }
-
-
-
-        // Call api with filters
-        const url = `/exportmanagement/delivery/history/${factorySelect.value}?page=${page}` +
-          `&search=${encodeURIComponent(searchTextDelivery.value.trim())}` +
-          `&dateFrom=${encodeURIComponent(searchDateFrom.value)}` +
-          `&dateTo=${encodeURIComponent(searchDateTo.value)}`;
-
-        const deliveryResponse = await fetch(url, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" }
-        });
-
-        if (!deliveryResponse.ok) {
-          console.error("Fetch error", await deliveryResponse.text());
-          alert("Không thể tải dữ liệu Delivery!");
-          return;
-        }
-
-        const deliveryResult = await deliveryResponse.json();
-        const deliveryData = deliveryResult.data || [];
-
-        let sttSpec = ((deliveryResult.page - 1) * deliveryResult.limit) + 1;
-
-        deliveryData.forEach(delivery => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${sttSpec++}</td>
-            <td class="model-id">${delivery.model_id || ''}</td>
-            <td class="qr">${delivery.qr || ''}</td>
-            <td class="mobis-code">${delivery.mobis_code || ''}</td>
-            <td class="model-name">${delivery.model_name || ''}</td>
-            <td class="type">${delivery.type || ''}</td>
-            <td class="target">${delivery.target || ''}</td>
-            <td class="quantity">${delivery.event_quantity || ''}</td>
-            <td class="shipment-date">${delivery.shipment_date ? dayjs(delivery.shipment_date).format('YYYY-MM-DD') : ''}</td>
-            <td class="shipping-method">${delivery.shipping_method || ''}</td>
-            <td class="event-user">${delivery.event_user || ''}</td>
-            <td class="event-time">${delivery.event_time ? dayjs(delivery.event_time).format('YYYY-MM-DD HH:mm:ss') : ''}</td>
-          `;
-          specTableBody.appendChild(row);
-        });
-
-        // Pagination
-        prevPageBtn.disabled = deliveryResult.page <= 1;
-        nextPageBtn.disabled = !deliveryResult.hasNextPage;
-        window.currentDeliveryPage = deliveryResult.page;
-
-        prevPageBtn.onclick = async () => {
-          if (window.currentDeliveryPage > 1) {
-            await initDelivery(window.currentDeliveryPage - 1);
-          }
-        };
-        nextPageBtn.onclick = async () => {
-          if (deliveryResult.hasNextPage) {
-            await initDelivery(window.currentDeliveryPage + 1);
-          }
-        };
-        let debounceTimeoutSearch;
-        if (!searchTextDelivery._boundSearchHandler) {
-          const handler = () => {
-            clearTimeout(debounceTimeoutSearch);
-            debounceTimeoutSearch = setTimeout(() => {
-              window.currentDeliveryPage = 1;
-              initDelivery(1);
-            }, 500);
-          };
-          searchTextDelivery.addEventListener('input', handler);
-          searchTextDelivery._boundSearchHandler = handler;
-        }
-
-        // Date change -> (reset page)
-        if (!searchDateFrom._boundChangeHandler) {
-          const handler = () => {
-            window.currentDeliveryPage = 1;
-            initDelivery(1);
-          };
-          searchDateFrom.addEventListener('change', handler);
-          searchDateFrom._boundChangeHandler = handler;
-        }
-        if (!searchDateTo._boundChangeHandler) {
-          const handler = () => {
-            window.currentDeliveryPage = 1;
-            initDelivery(1);
-          };
-          searchDateTo.addEventListener('change', handler);
-          searchDateTo._boundChangeHandler = handler;
-        }
-
-        // Factory select change -> gọi server (reset page)
-        if (!factorySelect._boundChangeHandler) {
-          const handler = async () => {
-            window.currentDeliveryPage = 1;
-            await initDelivery(1);
-          };
-          factorySelect.addEventListener('change', handler);
-          factorySelect._boundChangeHandler = handler;
-        }
-
-        // Clear filters button
-        const clearButton = document.getElementById('clearFilters');
-        if (clearButton && !clearButton._boundClearHandler) {
-          const handler = () => {
-            searchTextDelivery.value = '';
-            searchDateFrom.value = '';
-            searchDateTo.value = '';
-            window.currentDeliveryPage = 1;
-            initDelivery(1);
-          };
-          clearButton.addEventListener('click', handler);
-          clearButton._boundClearHandler = handler;
-        }
-      }
-
-      // Initialize everything on DOMContentLoaded
-      document.addEventListener('DOMContentLoaded', async () => {
-        try {
-          await initDelivery(1);
-        } catch (err) {
-          console.error("Error fetching data:", err);
-
-        }
-      });
-
-
-    </script>
-            <script>
-            // ===== CHANGE PASSWORD LOGIC =====
-
-            // Lấy user info từ token (đã decode sẵn trong app)
-            const userInfo = {
-                username: "ACM",       // thay bằng biến từ token của bạn
-                fullName: "NGUYET",
-                role: "MANAGER"
-            };
-
-            // Mở modal
-            document.getElementById("openChangePass").addEventListener("click", (e) => {
-                e.preventDefault();
-                document.getElementById("cpUsername").textContent = userInfo.username;
-                document.getElementById("cpFullName").textContent = userInfo.fullName;
-                document.getElementById("cpRole").textContent = userInfo.role;
-                document.getElementById("cpMsg").textContent = "";
-                document.getElementById("cpMsg").className = "cp-msg";
-                document.getElementById("cpNewPass").value = "";
-                document.getElementById("cpConfirmPass").value = "";
-                document.getElementById("changePassOverlay").classList.add("active");
-            });
-
-            // Đóng modal
-            document.getElementById("closeChangePass").addEventListener("click", () => {
-                document.getElementById("changePassOverlay").classList.remove("active");
-            });
-            document.getElementById("changePassOverlay").addEventListener("click", (e) => {
-                if (e.target === e.currentTarget)
-                    document.getElementById("changePassOverlay").classList.remove("active");
-            });
-
-            // Toggle hiện/ẩn mật khẩu
-            function togglePass(inputId, btn) {
-                const input = document.getElementById(inputId);
-                const isText = input.type === "text";
-                input.type = isText ? "password" : "text";
-                btn.style.opacity = isText ? "1" : ".5";
-            }
-
-            // Submit đổi mật khẩu
-            async function submitChangePass() {
-                const newPass = document.getElementById("cpNewPass").value.trim();
-                const confirmPass = document.getElementById("cpConfirmPass").value.trim();
-                const msgEl = document.getElementById("cpMsg");
-                const btn = document.getElementById("cpSubmitBtn");
-                const btnText = document.getElementById("cpBtnText");
-                const loader = document.getElementById("cpBtnLoader");
-
-                // Validation
-                msgEl.className = "cp-msg";
-                if (!newPass) {
-                    msgEl.textContent = "⚠ Vui lòng nhập mật khẩu mới.";
-                    msgEl.classList.add("error");
-                    return;
-                }
-                if (newPass.length < 6) {
-                    msgEl.textContent = "⚠ Mật khẩu phải có ít nhất 6 ký tự.";
-                    msgEl.classList.add("error");
-                    return;
-                }
-                if (newPass !== confirmPass) {
-                    msgEl.textContent = "⚠ Mật khẩu xác nhận không khớp.";
-                    msgEl.classList.add("error");
-                    return;
-                }
-
-                // Loading state
-                btn.disabled = true;
-                btnText.style.display = "none";
-                loader.style.display = "inline-block";
-
-                try {
-
-                    const res = await fetch("/exportmanagement/change-password", {
-                        method: "PUT",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            username: userInfo.username,
-                            password: newPass
-                        })
-                    });
-
-                    const data = await res.json();
-
-                    if (res.ok) {
-                        msgEl.textContent = "✅ " + data.message;
-                        msgEl.classList.add("success");
-                        document.getElementById("cpNewPass").value = "";
-                        document.getElementById("cpConfirmPass").value = "";
-                        setTimeout(() => {
-                            document.getElementById("changePassOverlay").classList.remove("active");
-                            msgEl.textContent = "";
-                            msgEl.className   = "cp-msg";
-                        }, 1500);
-                    } else {
-                        msgEl.textContent = "❌ " + (data.message || "Đổi mật khẩu thất bại.");
-                        msgEl.classList.add("error");
-                    }
-                } catch (err) {
-                    msgEl.textContent = "❌ Lỗi kết nối server.";
-                    msgEl.classList.add("error");
-                } finally {
-                    btn.disabled = false;
-                    btnText.style.display = "inline";
-                    loader.style.display = "none";
-                }
-            }
-        </script>
+  <script src="/js/dayjs.min.js"></script>
 </body>
 
 </html>
