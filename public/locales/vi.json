@@ -151,6 +151,8 @@
         "completeTime": "Thời gian hoàn thành",
         "shippingDate": "Ngày giao hàng",
         "shippingMethod": "Phương thức vận chuyển",
+        "arriveDate": "Ngày cập cảng",
+        "firstExport": "Xuất lần đầu",
         "actions": "Hành động"
       },
       "buttons": {
@@ -253,7 +255,9 @@
       "emptyFile": "⚠️ File rỗng hoặc không có dữ liệu hợp lệ",
       "emptyColumn": "Dòng {row} cột {column} không được để trống",
       "invalidValue": "Lỗi tại dòng {row}, cột \"{column}\": Giá trị không hợp lệ: \"{value}\"",
-      "qtyExceedsTarget": "Dòng {row} Quantity không được lớn hơn Target Quantity"
+      "qtyExceedsTarget": "Dòng {row} Quantity không được lớn hơn Target Quantity",
+      "notificationTitle": "Thông báo",
+      "seaNotificationMessage": "Mobiscode: <strong>{mobiscode}</strong><br>Số ngày đến nơi còn lại: <strong style=\"font-size: 1.1em;\">{days}</strong>"
     }
   }
 }

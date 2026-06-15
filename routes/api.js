@@ -692,12 +692,16 @@ router.get("/delivery/:factory", async (req, res) => {
   try {
     conn = await pool.getConnection();
     if (factory === "v0") {
-      sqlquery = "SELECT * FROM delivery_v0 ORDER BY create_at DESC LIMIT 100";
+      sqlquery = `SELECT *, DATEDIFF(arrive_date, CURDATE()) AS days_remaining FROM delivery_v0 ORDER BY create_at DESC LIMIT 100`;
     } else {
-      sqlquery = "SELECT * FROM delivery_v5 ORDER BY create_at DESC LIMIT 100";
+      sqlquery = `SELECT *, DATEDIFF(arrive_date, CURDATE()) AS days_remaining FROM delivery_v5 ORDER BY create_at DESC LIMIT 100`;
     }
     const rows = await conn.query(sqlquery);
-    res.json(rows);
+    const result = rows.map(({ days_remaining, ...rest }) => ({
+      ...rest,
+      arrive_date: days_remaining,
+    }));
+    res.json(result);
   } catch (err) {
     console.error("Error fetching delivery:", err);
     res
@@ -707,7 +711,6 @@ router.get("/delivery/:factory", async (req, res) => {
     if (conn) conn.release();
   }
 });
-
 router.get("/qr/:factory/:mobiscode/:type", authenticate, async (req, res) => {
   const conn = await pool.getConnection();
   const { factory, mobiscode, type } = req.params;
@@ -733,6 +736,54 @@ router.get("/qr/:factory/:mobiscode/:type", authenticate, async (req, res) => {
     conn.release();
   }
 });
+
+router.get(
+  "/firstExport/:mobiscode/:factory",
+  authenticate,
+  async (req, res) => {
+    const conn = await pool.getConnection();
+    const { factory, mobiscode } = req.params;
+
+    try {
+      const tableName = factory === "v0" ? "delivery_v0" : "delivery_v5";
+
+      const rows = await conn.query(
+        `SELECT DATEDIFF(arrive_date, CURDATE()) AS days_left, shipment_date
+          FROM ${tableName}
+          WHERE mobis_code = ?
+            AND shipping_method = 'SEA'
+            AND first_export = 1
+            AND arrive_date >= CURDATE()
+            AND EXISTS (
+              SELECT 1 FROM ${tableName}
+              WHERE mobis_code = ?
+                AND shipping_method = 'AIR'
+                AND status != 'Complete'
+            )
+          ORDER BY shipment_date DESC
+          LIMIT 1`,
+        [mobiscode, mobiscode],
+      );
+
+      if (rows.length === 0) {
+        return res.json({ firstExport: false });
+      }
+
+      return res.json({
+        firstExport: true,
+        seaData: {
+          arrive_date: rows[0].days_left, // ← dùng trực tiếp
+          shipment_date: rows[0].shipment_date,
+        },
+      });
+    } catch (error) {
+      console.error("Error in firstExport query:", error);
+      res.status(500).json({ message: "Internal server error" });
+    } finally {
+      conn.release();
+    }
+  },
+);
 
 router.delete("/delivery", authenticate, async (req, res) => {
   if (!["ADMIN", "MANAGER"].includes(req.user?.role)) {
@@ -854,19 +905,37 @@ router.post("/delivery/import", authenticate, async (req, res) => {
         `${delivery.mobiscode}-${formattedDate}-${countModel}`;
 
       const arriveDate =
-        delivery.firsteport === true
-          ? new Date(Date.now() + 16 * 24 * 60 * 60 * 1000)
+        delivery.shippingmethod?.toUpperCase() === "SEA"
+          ? new Date(
+              new Date(delivery.shipmentdate).getTime() +
+                16 * 24 * 60 * 60 * 1000,
+            )
               .toISOString()
               .split("T")[0]
           : null;
+
+      if (
+        delivery.shippingmethod?.toUpperCase() === "AIR" &&
+        String(delivery.firstexport).trim().toUpperCase() === "V"
+      ) {
+        await conn.rollback();
+        return res.status(400).json({
+          message: `Mobis code ${delivery.mobiscode} xuất AIR lần đầu không hợp lệ`,
+        });
+      }
+
+      const isFirstExport =
+        String(delivery.firstexport).trim().toUpperCase() === "V" ? 1 : 0;
+
       // Thêm vào bảng delivery
       const deliverySql = `
         INSERT INTO ${tableDelivereyName}
         (model_id, mobis_code, model_name, type, target, status,
-        quantity, shipping_method, shipment_date, arrive_date)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        quantity, shipping_method, shipment_date, arrive_date, first_export)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
+      delivery["arrivedate"] = arriveDate;
       await conn.query(deliverySql, [
         delivery.modelid,
         delivery.mobiscode,
@@ -878,6 +947,7 @@ router.post("/delivery/import", authenticate, async (req, res) => {
         delivery.shippingmethod,
         delivery.shipmentdate,
         arriveDate,
+        isFirstExport,
       ]);
       console.log(delivery.target);
       await addHistoryDelivery(conn, delivery, username, factory);
@@ -899,36 +969,36 @@ router.put("/delivery/update/quantity", authenticate, async (req, res) => {
   const { username, factory, delivery, qr } = req.body;
   const tableName = factory === "v0" ? "delivery_v0" : "delivery_v5";
   let conn;
-  conn = await pool.getConnection();
-  await conn.beginTransaction();
 
   try {
-    const queryUpdateRestStatus = `UPDATE ${tableName} SET status = 'Wait' WHERE status = 'Run' `;
-    await conn.query(queryUpdateRestStatus);
+    conn = await pool.getConnection();
+    await conn.beginTransaction();
 
-    const query = `UPDATE ${tableName} SET status = ?, quantity = ?, complete_time = ? WHERE model_id = ?`;
-    await conn.query(query, [
-      delivery.status,
-      delivery.quantity,
-      delivery.complete_time,
-      delivery.model_id,
-    ]);
+    await conn.query(
+      `UPDATE ${tableName} SET status = 'Wait' WHERE status = 'Run'`,
+    );
 
+    await conn.query(
+      `UPDATE ${tableName} SET status = ?, quantity = ?, complete_time = ? WHERE model_id = ?`,
+      [
+        delivery.status,
+        delivery.quantity,
+        delivery.complete_time,
+        delivery.model_id,
+      ],
+    );
+
+    // Chuẩn hóa key: loại bỏ dấu _ để khớp với addHistoryDelivery
+    const normalizedDelivery = {};
     for (const key in delivery) {
       const newKey = key.replaceAll("_", "");
-      let value = delivery[key];
-
-      if (newKey !== key) {
-        delivery[newKey] = value;
-        delete delivery[key];
-      } else {
-        delivery[key] = value;
-      }
+      normalizedDelivery[newKey] = delivery[key];
     }
 
-    await addHistoryDelivery(conn, delivery, username, factory, qr);
-    res.json({ status: 200, message: "Cập nhật số lượng hàng thành công" });
+    await addHistoryDelivery(conn, normalizedDelivery, username, factory, qr);
+
     await conn.commit();
+    res.json({ status: 200, message: "Cập nhật số lượng hàng thành công" });
   } catch (error) {
     console.error(error);
     if (conn) await conn.rollback();
@@ -937,7 +1007,6 @@ router.put("/delivery/update/quantity", authenticate, async (req, res) => {
     if (conn) conn.release();
   }
 });
-
 router.get("/qr/getvalue", authenticate, async (req, res) => {
   const conn = await pool.getConnection();
   const factory = req.query.factory;
@@ -1368,7 +1437,6 @@ router.get("/api/getstatuscount", authenticate, async (req, res) => {
   }
 });
 
-
 async function addHistoryDelivery(
   conn,
   delivery,
@@ -1376,15 +1444,12 @@ async function addHistoryDelivery(
   factory,
   qr = null,
 ) {
-  //  Thêm vào bảng history
   const historySql = `
-        INSERT INTO ${
-          factory === "v0" ? "delivery_history_v0" : "delivery_history_v5"
-        }
-        (model_id, qr, mobis_code, model_name, type, target, event_quantity,
-         shipment_date, shipping_method, event_user)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `;
+    INSERT INTO ${factory === "v0" ? "delivery_history_v0" : "delivery_history_v5"}
+    (model_id, qr, mobis_code, model_name, type, target, event_quantity,
+     shipment_date, shipping_method, event_user, arrive_date)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
 
   await conn.query(historySql, [
     delivery.modelid,
@@ -1397,6 +1462,7 @@ async function addHistoryDelivery(
     delivery.shipmentdate,
     delivery.shippingmethod,
     username,
+    delivery.arrivedate ?? null,
   ]);
 }
 

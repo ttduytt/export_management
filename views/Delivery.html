@@ -366,7 +366,7 @@
         .table-header,
         .table-row {
             display: grid;
-            grid-template-columns: 0.4fr 1.2fr 1.5fr 0.8fr 1fr 1fr 1fr 1.2fr 1.2fr 1.2fr;
+            grid-template-columns: 0.4fr 1.2fr 1.5fr 0.8fr 1fr 1fr 1fr 1.2fr 1.2fr 1.2fr 1.2fr;
             align-items: center;
             text-align: center;
             padding: 10px 0;
@@ -376,7 +376,7 @@
         .table-header {
             display: grid;
             text-transform: uppercase;
-            grid-template-columns: 0.4fr 1.2fr 1.5fr 0.8fr 1fr 1fr 1fr 1.2fr 1.2fr 1.2fr;
+            grid-template-columns: 0.4fr 1.2fr 1.5fr 0.8fr 1fr 1fr 1fr 1.2fr 1.2fr 1.2fr 1.2fr;
             align-items: center;
             text-align: center;
             padding: 10px 0;
@@ -631,6 +631,30 @@
             background-color: rgba(109, 213, 237, 0.5);
             color: white;
             border: 1px solid #0083B0;
+        }
+
+        /* First Export badge */
+        .first-export-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.15));
+            color: #34d399;
+            border: 1px solid rgba(52, 211, 153, 0.4);
+            box-shadow: 0 0 8px rgba(52, 211, 153, 0.2);
+            letter-spacing: 0.03em;
+        }
+
+        body.light-theme .first-export-badge {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1));
+            color: #059669;
+            border: 1px solid rgba(5, 150, 105, 0.4);
+            box-shadow: 0 0 8px rgba(5, 150, 105, 0.15);
         }
 
         .list-view.active {
@@ -1042,9 +1066,10 @@
                 <div>STATUS</div>
                 <div>TARGET</div>
                 <div>QUANTITY</div>
-                <div>COMPLETE TIME</div>
                 <div>SHIPPING DATE</div>
                 <div>SHIPPING METHOD</div>
+                <div>FIRST EXPORT</div>
+                 <div>ARRIVE DATE</div>
             </div>
 
             <div id="listView" class="list-view active">

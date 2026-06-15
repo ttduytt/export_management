@@ -352,6 +352,114 @@
       animation: spin .6s linear infinite;
       display: inline-block;
     }
+
+    /* ─── Light theme overrides ──────────────────────────────────── */
+    body.light-theme {
+      background: #f0f4f8;
+      color: #1e293b;
+    }
+
+    body.light-theme ::-webkit-scrollbar-track { background: #e2e8f0; }
+    body.light-theme ::-webkit-scrollbar-thumb { background: #94a3b8; }
+
+    body.light-theme .panel {
+      background: #ffffff;
+      border-color: #cbd5e1;
+    }
+
+    body.light-theme .panel-header {
+      background: #2980b9;
+      border-bottom-color: #bfdbfe;
+    }
+
+    body.light-theme thead th {
+      background: #2980b9;
+      color: #fff;
+      border-bottom-color: #bfdbfe;
+    }
+
+    body.light-theme tbody tr {
+      border-bottom-color: rgba(203,213,225,.5);
+    }
+    body.light-theme tbody tr:hover  { background: rgba(59,130,246,.06); }
+    body.light-theme tbody tr.active { background: rgba(59,130,246,.13); }
+
+    body.light-theme tbody td {
+      color: #334155;
+    }
+
+    body.light-theme .stt        { color: #94a3b8; }
+    body.light-theme .td-empty   { color: #94a3b8; }
+
+    /* Badges – giữ nguyên màu vì đã có nền màu riêng */
+
+    body.light-theme .editor-inner {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    body.light-theme .editor-body {
+      background: #f1f5f9;
+    }
+
+    body.light-theme .field-label {
+      color: #475569;
+    }
+
+    body.light-theme .edit-input,
+    body.light-theme .edit-select {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #1e293b;
+    }
+    body.light-theme .edit-input::placeholder { color: #94a3b8; }
+    body.light-theme .edit-input:focus,
+    body.light-theme .edit-select:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59,130,246,.15);
+    }
+    body.light-theme .edit-select option {
+      background: #ffffff;
+      color: #1e293b;
+    }
+
+    body.light-theme .combo-trigger {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #1e293b;
+    }
+    body.light-theme .combo-trigger:focus,
+    body.light-theme .combo-trigger.open {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59,130,246,.15);
+    }
+    body.light-theme .combo-trigger .arrow    { color: #94a3b8; }
+    body.light-theme .combo-trigger .placeholder { color: #94a3b8; }
+
+    body.light-theme .combo-list {
+      background: #ffffff;
+      border-color: rgba(100,116,139,.3);
+      box-shadow: 0 8px 24px rgba(0,0,0,.12);
+    }
+    body.light-theme .combo-option {
+      color: #334155;
+    }
+    body.light-theme .combo-option:hover      { background: rgba(59,130,246,.06); color: #1e293b; }
+    body.light-theme .combo-option.selected   { background: rgba(59,130,246,.1); color: #1d4ed8; }
+    body.light-theme .combo-option .check     { color: #3b82f6; }
+    body.light-theme .combo-option.opt-all    { border-bottom-color: rgba(100,116,139,.2); color: #7c3aed; }
+    body.light-theme .combo-option.opt-all:hover    { background: rgba(168,85,247,.06); }
+    body.light-theme .combo-option.opt-all.selected { background: rgba(168,85,247,.1); }
+
+    body.light-theme .error-banner {
+      background: rgba(239,68,68,.07);
+      border-color: rgba(239,68,68,.25);
+    }
+
+    body.light-theme .editor-actions {
+      background-color: #f1f5f9;
+      border-top-color: #e2e8f0;
+    }
   </style>
 </head>
 <body>

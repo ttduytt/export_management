@@ -1,6 +1,7 @@
 import * as XLSX from "./xlsx.js";
 import { formatDate } from "../js/utils.js";
 import I18n from "/i18n.js";
+import Modal from "./modal.js";
 
 const gridBtn = document.getElementById("gridBtn");
 const listBtn = document.getElementById("listBtn");
@@ -28,6 +29,7 @@ const columnMapping = {
   운송방식: "shippingmethod",
   일자: "shipmentdate",
   출하지: "factory",
+  "변경 초도품": "firstexport",
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -42,10 +44,8 @@ function getStatusText(status) {
 
 // ─── Apply language to static DOM elements ────────────────────────────────────
 async function applyLang() {
-  // Page Title
   document.title = t("title");
 
-  // Nav links
   const brandLink = document.querySelector(".logo a");
   if (brandLink) brandLink.textContent = t("nav.brand");
 
@@ -69,7 +69,6 @@ async function applyLang() {
     if (textNode) textNode.textContent = " " + t("nav.changePassword");
   }
 
-  // Toolbar
   const importBtnText = [...importBtn.childNodes].find(
     (n) => n.nodeType === Node.TEXT_NODE && n.textContent.trim(),
   );
@@ -89,9 +88,8 @@ async function applyLang() {
   );
   if (gridBtnText) gridBtnText.textContent = " " + t("grid");
 
-  // Table Headers
   const headerDivs = document.querySelectorAll("#tableHeader > div");
-  if (headerDivs.length >= 10) {
+  if (headerDivs.length >= 11) {
     headerDivs[0].textContent = t("admin.delivery.table.stt");
     headerDivs[1].textContent = t("admin.delivery.table.mobisCode");
     headerDivs[2].textContent = t("admin.delivery.table.modelName");
@@ -99,12 +97,12 @@ async function applyLang() {
     headerDivs[4].textContent = t("admin.delivery.table.status");
     headerDivs[5].textContent = t("admin.delivery.table.target");
     headerDivs[6].textContent = t("admin.delivery.table.quantity");
-    headerDivs[7].textContent = t("admin.delivery.table.completeTime");
-    headerDivs[8].textContent = t("admin.delivery.table.shippingDate");
-    headerDivs[9].textContent = t("admin.delivery.table.shippingMethod");
+    headerDivs[7].textContent = t("admin.delivery.table.shippingDate");
+    headerDivs[8].textContent = t("admin.delivery.table.shippingMethod");
+    headerDivs[9].textContent = t("admin.delivery.table.firstExport");
+    headerDivs[10].textContent = t("admin.delivery.table.arriveDate");
   }
 
-  // Change Password Modal Static Texts
   const cpHeader = document.querySelector(".cp-header h2");
   if (cpHeader) cpHeader.textContent = t("changePasswordModal.title");
 
@@ -152,7 +150,6 @@ async function getUserProfile() {
     method: "GET",
     credentials: "include",
   });
-
   const data = await res.json();
   return data.user;
 }
@@ -174,7 +171,11 @@ async function getAll() {
     renderList();
     renderGrid();
   } catch (error) {
-    alert(t("delivery.alerts.fetchError"));
+    Modal.show({
+      type: "error",
+      title: t("modal.title.error"),
+      message: t("delivery.alerts.fetchError"),
+    });
     console.error("Error fetching data:", error);
   }
 }
@@ -186,24 +187,15 @@ function validateShipmentDate(value, rowIndex) {
 
   let dateObj = null;
 
-  // ✅ Trường hợp Excel serial number
   if (typeof value === "number") {
     dateObj = new Date(Date.UTC(1899, 11, 30 + value));
-  }
-  // ✅ Trường hợp Date object
-  else if (value instanceof Date) {
-    if (Number.isNaN(value.getTime())) {
-      return false;
-    }
+  } else if (value instanceof Date) {
+    if (Number.isNaN(value.getTime())) return false;
     dateObj = new Date(value.getFullYear(), value.getMonth(), value.getDate());
-  }
-  // ✅ Trường hợp chuỗi
-  else if (typeof value === "string") {
+  } else if (typeof value === "string") {
     const str = value.trim();
     const match = str.match(/^(\d{1,4})[\/\-](\d{1,2})[\/\-](\d{1,4})$/);
-    if (!match) {
-      return false; // Sai format bỏ qua
-    }
+    if (!match) return false;
 
     const part1 = parseInt(match[1]);
     const part2 = parseInt(match[2]);
@@ -231,12 +223,8 @@ function validateShipmentDate(value, rowIndex) {
     dateObj = new Date(year, month - 1, day);
   }
 
-  // Nếu không parse được
-  if (!dateObj || Number.isNaN(dateObj.getTime())) {
-    return false;
-  }
+  if (!dateObj || Number.isNaN(dateObj.getTime())) return false;
 
-  // ✅ Kiểm tra ngày hợp lệ tồn tại thực tế
   const checkDate = new Date(
     dateObj.getFullYear(),
     dateObj.getMonth(),
@@ -250,28 +238,25 @@ function validateShipmentDate(value, rowIndex) {
     return false;
   }
 
-  // ✅ Kiểm tra < ngày hiện tại → bỏ qua
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  if (dateObj < today) {
-    return false;
-  }
+  if (dateObj < today) return false;
 
-  // ✅ Format chuẩn yyyy-mm-dd
   const y = dateObj.getFullYear();
   const m = String(dateObj.getMonth() + 1).padStart(2, "0");
   const d = String(dateObj.getDate()).padStart(2, "0");
-
   return `${y}-${m}-${d}`;
 }
 
 function validateRow(row, rowIndex) {
   for (const [key, value] of Object.entries(row)) {
-    if (value === null || value === undefined || value === "") {
-      alert(
+    if (
+      key !== "firstexport" &&
+      (value === null || value === undefined || value === "")
+    ) {
+      throw new Error(
         t("delivery.alerts.emptyColumn", { row: rowIndex + 2, column: key }),
       );
-      return;
     }
 
     switch (key) {
@@ -282,14 +267,13 @@ function validateRow(row, rowIndex) {
             t("delivery.alerts.invalidValue", {
               row: rowIndex + 2,
               column: key,
-              value: value,
+              value,
             }),
           );
         }
         row[key] = num;
         break;
       }
-
       case "quantity": {
         const num = Number(value);
         if (Number.isNaN(num) || num < 0) {
@@ -297,7 +281,7 @@ function validateRow(row, rowIndex) {
             t("delivery.alerts.invalidValue", {
               row: rowIndex + 2,
               column: key,
-              value: value,
+              value,
             }),
           );
         }
@@ -310,7 +294,13 @@ function validateRow(row, rowIndex) {
   }
 
   if (row.targetquantity < row.quantity) {
-    alert(t("delivery.alerts.qtyExceedsTarget", { row: rowIndex + 2 }));
+    Modal.show({
+      type: "warning",
+      title: t("modal.title.warning"),
+      message: t("delivery.alerts.qtyExceedsTarget", { row: rowIndex + 2 }),
+      autoClose: true,
+      duration: 2500,
+    });
   }
 }
 
@@ -319,37 +309,50 @@ async function addDeliveryAndHistory(rows) {
     const res = await fetch(`/exportmanagement/delivery/import`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        username: user.username,
-        deliveries: rows,
-      }),
+      body: JSON.stringify({ username: user.username, deliveries: rows }),
     });
 
     const result = await res.json();
-    alert(result.message);
+
+    if (!res.ok) {
+      Modal.show({
+        type: "error",
+        title: t("modal.title.error"),
+        message: result.message,
+      });
+      return;
+    }
+
+    Modal.show({
+      type: "success",
+      title: t("modal.title.success"),
+      message: result.message,
+      autoClose: true,
+      duration: 2500,
+    });
     await getAll();
   } catch (err) {
-    alert("Lỗi: " + err.message);
+    Modal.show({
+      type: "error",
+      title: t("modal.title.error"),
+      message: err.message,
+    });
   }
 }
 
 function validateSheet(workbook) {
-  // Lấy tháng năm hiện tại
   const now = new Date();
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const year = now.getFullYear();
   const currentValue = Number(`${year}${month}`);
 
-  // Tìm sheet có tên >= tháng năm hiện tại
-  const validSheets = workbook.SheetNames.filter((sheetName) => {
+  return workbook.SheetNames.filter((sheetName) => {
     const parts = sheetName.split(".");
     if (parts.length !== 2) return false;
     const [sheetMonth, sheetYear] = parts;
     const sheetValue = Number(`${sheetYear}${sheetMonth.padStart(2, "0")}`);
     return sheetValue >= currentValue;
   });
-
-  return validSheets;
 }
 
 function validateExcelFile(file) {
@@ -367,7 +370,9 @@ function validateExcelFile(file) {
         if (validSheets.length === 0) {
           return reject(new Error(t("delivery.alerts.invalidSheet")));
         }
+
         const requiredColumns = Object.keys(columnMapping);
+
         for (const sheetName of validSheets) {
           const sheet = workbook.Sheets[sheetName];
           let headerRowIndex = null;
@@ -378,11 +383,9 @@ function validateExcelFile(file) {
             defval: "",
           });
 
-          // Tìm dòng header chứa đủ các cột yêu cầu
           for (let i = 0; i < rawRows.length; i++) {
             const row = rawRows[i];
-            const matches = requiredColumns.every((col) => row.includes(col));
-            if (matches) {
+            if (requiredColumns.every((col) => row.includes(col))) {
               headerRowIndex = i;
               headerRow = row;
               break;
@@ -390,18 +393,16 @@ function validateExcelFile(file) {
           }
 
           if (headerRowIndex === -1 || headerRowIndex === null) {
-            alert(t("delivery.alerts.noHeader"));
+            reject(new Error(t("delivery.alerts.noHeader")));
             return;
           }
+
           const filteredHeader = headerRow.filter((col) =>
             requiredColumns.includes(col),
           );
-          // 3. Lấy index các cột cần thiết trong Excel dựa vào filteredHeader
           const columnIndexes = filteredHeader.map((col) =>
             headerRow.indexOf(col),
           );
-
-          // Ánh xạ headerRow sang tên chuẩn
           const mappedHeader = filteredHeader.map((col) => columnMapping[col]);
 
           const rows = rawRows
@@ -411,16 +412,11 @@ function validateExcelFile(file) {
               columnIndexes.forEach((colIndex, i) => {
                 const key = mappedHeader[i];
                 let value = row[colIndex] !== undefined ? row[colIndex] : "";
-
-                if (typeof value === "string") {
-                  value = value.trim();
-                }
-
+                if (typeof value === "string") value = value.trim();
                 obj[key] = value;
               });
               return obj;
             })
-            // Lọc bỏ các dòng không có dữ liệu thực sự
             .filter((row) =>
               Object.values(row).some(
                 (v) => v !== "" && v !== null && v !== undefined,
@@ -430,7 +426,6 @@ function validateExcelFile(file) {
           for (let index = 0; index < rows.length; index++) {
             const row = rows[index];
 
-            // Tạo chữ ký xác định dòng trùng
             const keySignature = [
               row.mobiscode,
               row.shipmentdate,
@@ -445,23 +440,16 @@ function validateExcelFile(file) {
               )
               .join("|");
 
-            if (seen.has(keySignature)) {
-              continue; // bỏ dòng trùng
-            }
+            if (seen.has(keySignature)) continue;
             seen.add(keySignature);
 
-            // Validate shipment date:
-            // - nếu sai định dạng => throw
-            // - nếu < ngày hiện tại => return false => bỏ dòng
             const result = validateShipmentDate(row.shipmentdate, index);
-            if (result === false) {
-              continue; // shipmentdate < ngày hiện tại
-            }
+            if (result === false) continue;
+
             row.shipmentdate = result;
             row.quantity = 0;
+            row.firstexport = String(row.firstexport ?? "").trim();
             validateRow(row, index);
-
-            // thêm vào danh sách hợp lệ
             validRows.push(row);
           }
         }
@@ -482,11 +470,9 @@ function validateExcelFile(file) {
 }
 
 function renderList() {
-  // Sort data: status "run" first, then others
   const sortedData = [...data].sort((a, b) => {
     const aIsRun = a.status.toLowerCase() === "run";
     const bIsRun = b.status.toLowerCase() === "run";
-
     if (aIsRun && !bIsRun) return -1;
     if (!aIsRun && bIsRun) return 1;
     return 0;
@@ -494,41 +480,43 @@ function renderList() {
 
   listView.innerHTML = sortedData
     .map((item, index) => {
-      const completeDate = item.complete_time
-        ? new Date(item.complete_time).toLocaleDateString("vi-VN")
-        : "";
+      const firstExportHtml =
+        item.first_export == 1
+          ? `<span class="first-export-badge"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg> </span>`
+          : "";
       const shipmentDate = item.shipment_date
         ? new Date(item.shipment_date).toLocaleDateString("vi-VN")
         : "";
+      const arriveDate =
+        item.arrive_date !== null &&
+        item.arrive_date !== undefined &&
+        item.arrive_date !== ""
+          ? `${item.arrive_date}`
+          : "";
 
       return `
-  <div class="table-row ${
-    item.status.toLowerCase() === "run" ? "running" : ""
-  }">
-    <div>${index + 1}</div>
-    <div>${item.mobis_code}</div>
-    <div>${item.model_name}</div>
-    <div>${item.type}</div>
-    <div><span class="status-badge ${item.status.toLowerCase()}">${getStatusText(
-      item.status,
-    )}</span></div>
-    <div>${item.target}</div>
-    <div>${item.quantity}</div>
-    <div>${completeDate}</div>
-    <div>${shipmentDate}</div>
-    <div>${item.shipping_method}</div>
-  </div>
-`;
+      <div class="table-row ${item.status.toLowerCase() === "run" ? "running" : ""}">
+        <div>${index + 1}</div>
+        <div>${item.mobis_code}</div>
+        <div>${item.model_name}</div>
+        <div>${item.type}</div>
+        <div><span class="status-badge ${item.status.toLowerCase()}">${getStatusText(item.status)}</span></div>
+        <div>${item.target}</div>
+        <div>${item.quantity}</div>
+        <div>${shipmentDate}</div>
+        <div>${item.shipping_method}</div>
+        <div>${firstExportHtml}</div>
+        <div>${arriveDate ? `<span style="color:red;font-weight:900;font-size:16px">${arriveDate}</span>` : ""}</div>
+      </div>
+    `;
     })
     .join("");
 }
 
 function renderGrid() {
-  // Sort data: status "run" first, then others
   const sortedData = [...data].sort((a, b) => {
     const aIsRun = a.status.toLowerCase() === "run";
     const bIsRun = b.status.toLowerCase() === "run";
-
     if (aIsRun && !bIsRun) return -1;
     if (!aIsRun && bIsRun) return 1;
     return 0;
@@ -536,34 +524,43 @@ function renderGrid() {
 
   gridView.innerHTML = sortedData
     .map((item) => {
-      const completeDate = item.complete_time
-        ? new Date(item.complete_time).toLocaleDateString("vi-VN")
-        : "";
+      const firstExportHtml =
+        item.first_export == 1
+          ? `<span class="first-export-badge"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span>`
+          : "";
       const shipmentDate = item.shipment_date
         ? new Date(item.shipment_date).toLocaleDateString("vi-VN")
         : "";
+      const arriveDate =
+        item.arrive_date !== null &&
+        item.arrive_date !== undefined &&
+        item.arrive_date !== ""
+          ? `${item.arrive_date}`
+          : "";
 
       return `
-         <div class="card ${item.status === "Run" ? "running" : ""}">
-    <div class="card-header">
-        <strong>${item.model_name}</strong>
-    </div>
-    <div class="card-body">
-        <div><strong>${t("admin.delivery.table.mobisCode")}:</strong> ${item.mobis_code}</div>
-        <div><strong>${t("admin.delivery.table.type")}:</strong> ${item.type}</div>
-        <div><strong>${t("admin.delivery.table.target")}:</strong> ${item.target}</div>
-        <div><strong>${t("admin.delivery.table.quantity")}:</strong> ${item.quantity}</div>
-        <strong>${t("admin.delivery.table.status")}:</strong> <div class="status-badge ${item.status.toLowerCase()}"> ${getStatusText(item.status)}</div>
-        <div><strong>${t("admin.delivery.table.completeTime")}:</strong> ${completeDate}</div>
-        <div><strong>${t("admin.delivery.table.shippingDate")}:</strong> ${shipmentDate}</div>
-        <div><strong>${t("admin.delivery.table.shippingMethod")}:</strong> ${item.shipping_method}</div>
-    </div>
-  </div>
+      <div class="card ${item.status === "Run" ? "running" : ""}">
+        <div class="card-header">
+          <strong>${item.model_name}</strong>
+        </div>
+        <div class="card-body">
+          <div><strong>${t("admin.delivery.table.mobisCode")}:</strong> ${item.mobis_code}</div>
+          <div><strong>${t("admin.delivery.table.type")}:</strong> ${item.type}</div>
+          <div><strong>${t("admin.delivery.table.target")}:</strong> ${item.target}</div>
+          <div><strong>${t("admin.delivery.table.quantity")}:</strong> ${item.quantity}</div>
+          <strong>${t("admin.delivery.table.status")}:</strong> <div class="status-badge ${item.status.toLowerCase()}"> ${getStatusText(item.status)}</div>
+          <div><strong>${t("admin.delivery.table.shippingDate")}:</strong> ${shipmentDate}</div>
+          <div><strong>${t("admin.delivery.table.shippingMethod")}:</strong> ${item.shipping_method}</div>
+          <div><strong>${t("admin.delivery.table.firstExport")}:</strong> ${firstExportHtml}</div>
+          <div><strong>${t("admin.delivery.table.arriveDate")}:</strong> ${arriveDate ? `<span style="color:red;font-weight:900;font-size:16px">${arriveDate}</span>` : ""}</div>
+        </div>
+      </div>
       `;
     })
     .join("");
 }
 
+// ─── Event Listeners ──────────────────────────────────────────────────────────
 gridBtn.addEventListener("click", () => {
   gridBtn.classList.add("active");
   listBtn.classList.remove("active");
@@ -571,25 +568,6 @@ gridBtn.addEventListener("click", () => {
   listView.classList.add("hidden");
   listView.classList.remove("active");
   tableHeader.classList.add("hidden");
-});
-
-importBtn.addEventListener("click", () => {
-  excelInput.click();
-});
-
-excelInput.addEventListener("change", async () => {
-  const file = excelInput.files[0];
-  if (!file) return alert(t("delivery.alerts.selectExcel"));
-
-  try {
-    const rows = await validateExcelFile(file);
-
-    await addDeliveryAndHistory(rows);
-  } catch (err) {
-    alert("Lỗi: " + err.message);
-  } finally {
-    excelInput.value = "";
-  }
 });
 
 listBtn.addEventListener("click", () => {
@@ -601,6 +579,37 @@ listBtn.addEventListener("click", () => {
   tableHeader.classList.remove("hidden");
 });
 
+importBtn.addEventListener("click", () => {
+  excelInput.click();
+});
+
+excelInput.addEventListener("change", async () => {
+  const file = excelInput.files[0];
+  if (!file) {
+    Modal.show({
+      type: "error",
+      title: t("modal.title.error"),
+      message: t("delivery.alerts.selectExcel"),
+      showClose: true,
+    });
+    return;
+  }
+
+  try {
+    const rows = await validateExcelFile(file);
+    await addDeliveryAndHistory(rows);
+  } catch (err) {
+    Modal.show({
+      type: "error",
+      title: t("modal.title.error"),
+      message: err.message,
+      showClose: true,
+    });
+  } finally {
+    excelInput.value = "";
+  }
+});
+
 async function checkQrExist(factory, qr) {
   try {
     const response = await fetch(
@@ -610,7 +619,6 @@ async function checkQrExist(factory, qr) {
       console.log(response.message);
       return null;
     }
-
     const data = await response.json();
     return data;
   } catch (error) {
@@ -622,9 +630,7 @@ async function checkQrExist(factory, qr) {
 async function findDelivery(qrData) {
   try {
     const response = await fetch(
-      `exportmanagement/qr/${user.factory.toLowerCase()}/${qrData.mobiscode}/${
-        qrData.type
-      }`,
+      `exportmanagement/qr/${factorySelected}/${qrData.mobiscode}/${qrData.type}`,
     );
     const data = await response.json();
     return data;
@@ -634,52 +640,46 @@ async function findDelivery(qrData) {
   }
 }
 
+async function checkFirstExport(mobiscode, factory) {
+  try {
+    const response = await fetch(
+      `exportmanagement/firstExport/${mobiscode}/${factory}`,
+    );
+    if (!response.ok) return { firstExport: false };
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Lỗi khi kiểm tra firstExport:", error);
+    return { firstExport: false };
+  }
+}
+
 function getQrData(qr) {
   const parts = qr.split("-");
-  let qrData = {};
   switch (parts.length) {
     case 7: {
-      if (!Number(parts[3])) {
-        throw new Error(t("delivery.alerts.invalidQr"));
-      }
-      qrData = {
-        mobiscode: parts[2],
-        quantity: parts[3],
-        type: parts[4],
-      };
-      return qrData;
+      if (!Number(parts[3])) throw new Error(t("delivery.alerts.invalidQr"));
+      return { mobiscode: parts[2], quantity: parts[3], type: parts[4] };
     }
-
     case 8: {
-      if (!Number(parts[4])) {
-        throw new Error(t("delivery.alerts.invalidQr"));
-      }
-      qrData = {
+      if (!Number(parts[4])) throw new Error(t("delivery.alerts.invalidQr"));
+      return {
         mobiscode: parts[2] + parts[3],
         quantity: parts[4],
         type: parts[5],
       };
-      return qrData;
     }
-
     case 9: {
-      if (!Number(parts[5])) {
-        throw new Error(t("delivery.alerts.invalidQr"));
-      }
-
+      if (!Number(parts[5])) throw new Error(t("delivery.alerts.invalidQr"));
       const startsWithNumber = /^\d/.test(parts[2]);
-
-      qrData = {
+      return {
         mobiscode: startsWithNumber
           ? parts[2] + parts[3] + parts[4]
           : parts[3] + parts[4],
         quantity: parts[5],
         type: parts[6],
       };
-
-      return qrData;
     }
-
     default:
       throw new Error(t("delivery.alerts.invalidQr"));
   }
@@ -689,20 +689,11 @@ async function updateDelivery(username, factory, delivery, qr) {
   try {
     const response = await fetch("exportmanagement/delivery/update/quantity", {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username,
-        factory,
-        delivery,
-        qr,
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, factory, delivery, qr }),
     });
 
-    if (!response.ok) {
-      throw new Error(`Lỗi HTTP: ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`Lỗi HTTP: ${response.status}`);
 
     const result = await response.json();
     return result;
@@ -715,98 +706,153 @@ async function updateDelivery(username, factory, delivery, qr) {
 let isProcessing = false;
 
 searchInput.addEventListener("keydown", async (e) => {
-  if (e.key === "Enter") {
-    if (isProcessing) return;
+  if (e.key !== "Enter") return;
+  if (isProcessing) return;
 
-    isProcessing = true; // ĐÁNH DẤU ĐANG XỬ LÝ
-    try {
-      const qrValue = searchInput.value.trim();
-      if (!qrValue) return;
+  isProcessing = true;
+  try {
+    const qrValue = searchInput.value.trim();
+    if (!qrValue) return;
 
-      // ✅ chỉ cho phép chữ, số và dấu - và khoảng trắng
-      const qrPattern = /^[A-Za-z0-9- ]+$/;
-
-      if (!qrPattern.test(qrValue)) {
-        playErrorSound();
-        alert(t("delivery.alerts.invalidQr"));
-        return;
-      }
-
-      const invalidLength = qrValue.length < 38 || qrValue.length > 48;
-
-      // phải bắt đầu bằng 1 trong 3 mã
-      const validPrefix =
-        qrValue.startsWith("R7A8") ||
-        qrValue.startsWith("N-") ||
-        qrValue.startsWith("NQ5");
-
-      // ký tự thứ 5 từ phải sang phải là '-'
-      const fifthFromRight = qrValue.slice(-5, -4);
-      const validDash = fifthFromRight === "-";
-
-      if (invalidLength || !validPrefix || !validDash) {
-        playErrorSound();
-        alert(t("delivery.alerts.invalidQr"));
-        return;
-      }
-
-      const qrData = getQrData(qrValue);
-
-      const isQrExist = await checkQrExist(user.factory.toLowerCase(), qrValue);
-
-      if (isQrExist) {
-        playErrorSound();
-        alert(t("delivery.alerts.qrExists"));
-        return;
-      }
-
-      const delivery = await findDelivery(qrData);
-
-      if (!delivery) {
-        playErrorSound();
-        alert(t("delivery.alerts.noMatchQr"));
-        return;
-      }
-
-      let newQuantity = Number(delivery.quantity) + Number(qrData.quantity);
-      if (newQuantity > delivery.target) {
-        playErrorSound();
-        alert(t("delivery.alerts.targetExceeded"));
-        return;
-      }
-
-      if (newQuantity === delivery.target) {
-        delivery.status = "Complete";
-        let completeTime = new Date();
-        delivery.complete_time = formatDate(completeTime);
-      }
-
-      if (newQuantity < delivery.target) {
-        delivery.status = "Run";
-      }
-
-      delivery.quantity = newQuantity;
-      delivery.shipment_date = formatDate(delivery.shipment_date);
-
-      const response = await updateDelivery(
-        user.username,
-        user.factory.toLowerCase(),
-        delivery,
-        qrValue,
-      );
-      if (response.status !== 200) {
-        alert(response.message);
-        return;
-      }
-      searchInput.value = "";
-      await getAll();
-    } catch (error) {
+    const qrPattern = /^[A-Za-z0-9- ]+$/;
+    if (!qrPattern.test(qrValue)) {
       playErrorSound();
-      alert(error.message || error);
-      searchInput.value = "";
-    } finally {
-      isProcessing = false;
+      Modal.show({
+        type: "error",
+        title: t("modal.title.error"),
+        message: t("delivery.alerts.invalidQr"),
+        showClose: true,
+      });
+      return;
     }
+
+    const invalidLength = qrValue.length < 38 || qrValue.length > 48;
+    const validPrefix =
+      qrValue.startsWith("R7A8") ||
+      qrValue.startsWith("N-") ||
+      qrValue.startsWith("NQ5");
+    const validDash = qrValue.slice(-5, -4) === "-";
+
+    if (invalidLength || !validPrefix || !validDash) {
+      playErrorSound();
+      Modal.show({
+        type: "error",
+        title: t("modal.title.error"),
+        message: t("delivery.alerts.invalidQr"),
+        showClose: true,
+      });
+      return;
+    }
+
+    const qrData = getQrData(qrValue);
+
+    const isQrExist = await checkQrExist(factorySelected, qrValue);
+    if (isQrExist) {
+      playErrorSound();
+      Modal.show({
+        type: "error",
+        title: t("modal.title.error"),
+        message: t("delivery.alerts.qrExists"),
+        showClose: true,
+      });
+      return;
+    }
+
+    const delivery = await findDelivery(qrData);
+    if (!delivery) {
+      playErrorSound();
+      Modal.show({
+        type: "error",
+        title: t("modal.title.error"),
+        message: t("delivery.alerts.noMatchQr"),
+        showClose: true,
+      });
+      return;
+    }
+
+    const isFirstExport = await checkFirstExport(
+      qrData.mobiscode,
+      factorySelected,
+    );
+    const storageKey = `firstExport_shown_${qrData.mobiscode}`;
+    const alreadyShown = sessionStorage.getItem(storageKey);
+
+    if (
+      isFirstExport.firstExport &&
+      isFirstExport.seaData?.arrive_date &&
+      !alreadyShown
+    ) {
+      const daysLeft = Number(isFirstExport.seaData.arrive_date);
+      const locale = I18n._lang === "vi" ? "vi-VN" : "en-GB";
+
+      sessionStorage.setItem(storageKey, "1");
+
+      const shipmentDate = new Date(
+        isFirstExport.seaData.shipment_date,
+      ).toLocaleDateString(locale);
+
+      Modal.show({
+        type: "warning",
+        title: t("delivery.alerts.notificationTitle"),
+        message: t("delivery.alerts.seaNotificationMessage", {
+          mobiscode: qrData.mobiscode,
+          days: daysLeft,
+        }),
+        showClose: true,
+        onClose: () => searchInput?.focus(),
+      });
+    }
+
+    let newQuantity = Number(delivery.quantity) + Number(qrData.quantity);
+    if (newQuantity > delivery.target) {
+      playErrorSound();
+      Modal.show({
+        type: "error",
+        title: t("modal.title.error"),
+        message: t("delivery.alerts.targetExceeded"),
+        showClose: true,
+      });
+      return;
+    }
+
+    if (newQuantity === delivery.target) {
+      delivery.status = "Complete";
+      delivery.complete_time = formatDate(new Date());
+    } else {
+      delivery.status = "Run";
+    }
+
+    delivery.quantity = newQuantity;
+    delivery.shipment_date = formatDate(delivery.shipment_date);
+
+    const response = await updateDelivery(
+      user.username,
+      factorySelected,
+      delivery,
+      qrValue,
+    );
+    if (response.status !== 200) {
+      Modal.show({
+        type: "error",
+        title: t("modal.title.error"),
+        message: response.message,
+      });
+      return;
+    }
+
+    searchInput.value = "";
+    await getAll();
+  } catch (error) {
+    playErrorSound();
+    Modal.show({
+      type: "error",
+      title: t("modal.title.error"),
+      message: error.message || String(error),
+      showClose: true,
+    });
+    searchInput.value = "";
+  } finally {
+    isProcessing = false;
   }
 });
 
@@ -817,28 +863,24 @@ cbbFactory.addEventListener("change", async () => {
 
 // ─── Bootstrap ────────────────────────────────────────────────────────────────
 async function bootstrap() {
-  // 1. Init i18n
   await I18n.init("en");
   t = (key, params) => I18n.t(key, params);
+  Modal.init(t);
+
   user = await getUserProfile();
   document.querySelector("app-header")?.setUser(user);
-  // 2. Fetch User Profile
-  user = await getUserProfile();
 
-  // 3. Set Active Factory Selection & visibility
-  if (user.role.toLowerCase() == "user") {
+  if (user.role.toLowerCase() === "user") {
     searchInput.classList.add("visible");
     cbbFactory.value = user.factory;
     cbbFactory.disabled = true;
   } else {
     importBtn.classList.add("visible");
+    searchInput.classList.add("visible");
   }
   factorySelected = cbbFactory.value.toLowerCase();
 
-  // 5. Apply Static Label Translations
   await applyLang();
-
-  // 6. Get data and render
   await getAll();
 }
 

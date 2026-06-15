@@ -162,7 +162,7 @@ function renderTable() {
 
     row.innerHTML = `
       <td class="stt">${String(i + 1).padStart(2, "0")}</td>
-      <td style="color:#e2e8f0;text-align:left;padding-left:20px">${u.user_name ?? ""}</td>
+      <td style="color:black;text-align:left;padding-left:20px">${u.user_name ?? ""}</td>
       <td><span class="badge ${roleCls}">${u.role ?? ""}</span></td>
       <td>${factHtml}</td>
       <td>${deptHtml}</td>

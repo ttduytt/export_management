@@ -151,6 +151,9 @@
         "completeTime": "완료 시간",
         "shippingDate": "출하일",
         "shippingMethod": "배송 방법",
+        "arriveDate": "도착일",
+        "firstExport": "초도품",
+        "firstBadge": "초도품",
         "actions": "작업"
       },
       "buttons": {
@@ -253,7 +256,9 @@
       "emptyFile": "⚠️ 파일이 비어 있거나 유효한 데이터가 없습니다",
       "emptyColumn": "{row}행의 {column} 열은 비어 있을 수 없습니다",
       "invalidValue": "{row}행의 \"{column}\" 열 오류: 유효하지 않은 값: \"{value}\"",
-      "qtyExceedsTarget": "{row}행의 Quantity는 Target Quantity보다 클 수 없습니다"
+      "qtyExceedsTarget": "{row}행의 Quantity는 Target Quantity보다 클 수 없습니다",
+      "notificationTitle": "알림",
+      "seaNotificationMessage": "Mobiscode: <strong>{mobiscode}</strong><br>남은 일수: <strong style=\"font-size: 1.1em;\">{days}</strong>일"
     }
   }
 }

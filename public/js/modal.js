@@ -162,9 +162,15 @@ const Modal = (() => {
     );
   }
 
+  let _t = null;
+
+  function init(tFn) {
+    _t = tFn;
+  }
+
   function show(options = {}) {
     const {
-      title = "Thông báo",
+      title = _t ? _t("modal.defaultTitle") : "Thông báo",
       message = "",
       type = "info",
       autoClose = false,
@@ -202,17 +208,19 @@ const Modal = (() => {
         </button>`
             : ""
         }
-        <div class="mn-icon-wrap" style="background:${theme.icon}18;">
-          <span style="color:${theme.icon}; display:flex;">${icon}</span>
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+          <div class="mn-icon-wrap" style="background:${theme.icon}18; margin-bottom:0; flex-shrink:0;">
+            <span style="color:${theme.icon}; display:flex;">${icon}</span>
+          </div>
+          <p class="mn-title" style="color:${theme.text}; margin:0;">${title}</p>
         </div>
-        <p class="mn-title" style="color:${theme.text};">${title}</p>
         <p class="mn-message" style="color:${theme.text};">${message}</p>
         ${
           showClose
             ? `
         <div class="mn-footer">
           <button class="mn-btn-close" style="background:${theme.icon}; color:#fff;">
-            Đóng
+            ${_t ? _t("modal.closeButton") : "Đóng"}
           </button>
         </div>`
             : ""
@@ -247,5 +255,7 @@ const Modal = (() => {
     return { close: closeModal };
   }
 
-  return { show };
+  return { show, init };
 })();
+
+export default Modal;

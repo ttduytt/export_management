@@ -8,7 +8,6 @@ import { fileURLToPath } from "url";
 import cookieParser from "cookie-parser";
 import { Server } from "socket.io";
 import http from "node:http";
-import { connectRedis } from "./public/js/redisClient.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -33,7 +32,6 @@ io.on("connection", (socket) => {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-await connectRedis();
 
 // Load biến môi trườnga
 dotenv.config();

@@ -148,6 +148,9 @@
         "completeTime": "Complete Time",
         "shippingDate": "Shipping Date",
         "shippingMethod": "Shipping Method",
+        "arriveDate": "Arrive Date",
+        "firstExport": "First Export",
+        "firstBadge": "FIRST",
         "actions": "Actions"
       },
       "buttons": {
@@ -250,7 +253,9 @@
       "emptyFile": "⚠️ File is empty or has no valid data",
       "emptyColumn": "Row {row} column {column} cannot be empty",
       "invalidValue": "Error at row {row}, column \"{column}\": Invalid value: \"{value}\"",
-      "qtyExceedsTarget": "Row {row} quantity cannot be greater than target quantity"
+      "qtyExceedsTarget": "Row {row} quantity cannot be greater than target quantity",
+      "notificationTitle": "Notification",
+      "seaNotificationMessage": "Mobiscode: <strong>{mobiscode}</strong><br>Arrive days remaining: <strong style=\"font-size: 1.1em;\">{days}</strong>"
     }
   }
 }
