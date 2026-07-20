@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             expiredAt: data.expiredAt,
           }),
         );
-        globalThis.location.href = "/home";
+        globalThis.location.href = "/delivery";
       } else {
         alert(data.message || t("login.invalidCredentials"));
       }

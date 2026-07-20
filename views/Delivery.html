@@ -24,96 +24,52 @@
             overflow-x: hidden;
         }
 
-        /* Light mode */
+        /* ─── Light mode ─────────────────────────────────────────────── */
         body.light-theme {
             background-color: white;
             color: #e3e2e9;
         }
 
-        /* nav */
         body.light-theme nav {
             background: linear-gradient(to right, #667db6, #0082c8, #0082c8, #667db6);
         }
 
-        body.light-theme .nav-menu li a.active {
-            background: #2a8f9e;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-            color: white;
-        }
+        body.light-theme .nav-menu li a { color: white; }
+        body.light-theme .logo a { color: white; }
+        body.light-theme .nav-menu li a::before { background: #6dd5ed; }
 
-        body.light-theme .nav-menu li a:hover {
-            background: #2a8f9e;
-            color: white;
-            transform: translateY(-2px);
-        }
+        body.light-theme .toolbar { background-color: #1a5276; }
 
-        body.light-theme .nav-menu li a {
-            color: white;
-        }
-
-        body.light-theme .logo a {
-            color: white;
-        }
-
-        body.light-theme .nav-menu li a::before {
-            background: #6dd5ed;
-        }
-
-
-        /* Hiệu ứng khi quantity được cập nhật */
-        .quantity-updated {
-            animation: highlightPulse 2s ease-in-out;
-        }
-
-        @keyframes highlightPulse {
-            0% {
-                background-color: #4ade80;
-                transform: scale(1);
-            }
-
-            50% {
-                background-color: #22c55e;
-                transform: scale(1.1);
-            }
-
-            100% {
-                background-color: transparent;
-                transform: scale(1);
-            }
-        }
-
-        /* Làm cho số nổi bật hơn khi animate */
-        .quantity-cell {
-            font-weight: bold;
-            transition: all 0.3s ease;
-            display: inline-block;
-        }
-
-        .quantity-updated .quantity-cell {
-            color: #fff;
-            text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
-        }
-
-        /* content*/
         body.light-theme .container {
             background-color: white;
             border: 1px solid #ccc;
         }
 
-        body.light-theme .table-header {
-            background-color: #2980b9;
-            color: white;
+body.light-theme .table-header {
+    background-color: white;
+    color: black;
+}
+
+body.light-theme .table-header > div {
+    border: 1px solid rgba(0, 0, 0, 0.45);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.45);
+}
+
+body.light-theme .table-row > div {
+    border-right: 1px solid rgba(0, 0, 0, 0.45);
+}
+        body.light-theme .table-header > div:last-child,
+        body.light-theme .table-row > div:last-child {
+            border-right: none;
         }
 
         body.light-theme .table-row {
-            border-bottom: 1px solid #ccc;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.45);;
             color: #333;
             font-weight: 500;
         }
 
-        body.light-theme .grid-view {
-            background-color: white;
-        }
+        body.light-theme .grid-view { background-color: white; }
 
         body.light-theme .card {
             background: white;
@@ -125,16 +81,9 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
         }
 
-
         body.light-theme .table-row.running {
-            position: relative;
             background: linear-gradient(white, white) padding-box,
-                linear-gradient(90deg,
-                    #00fff0 0%,
-                    #00d4ff 25%,
-                    #0084ff 50%,
-                    #00d4ff 75%,
-                    #00fff0 100%) border-box;
+                linear-gradient(90deg, #00fff0 0%, #00d4ff 25%, #0084ff 50%, #00d4ff 75%, #00fff0 100%) border-box;
             border: 2px solid transparent;
             border-radius: 4px;
             animation: borderMove 3s linear infinite;
@@ -143,38 +92,19 @@
 
         body.light-theme .table-row.running:hover {
             background: linear-gradient(rgba(42, 143, 158, 0.05), rgba(42, 143, 158, 0.05)) padding-box,
-                linear-gradient(90deg,
-                    #00fff0 0%,
-                    #00d4ff 25%,
-                    #0084ff 50%,
-                    #00d4ff 75%,
-                    #00fff0 100%) border-box;
+                linear-gradient(90deg, #00fff0 0%, #00d4ff 25%, #0084ff 50%, #00d4ff 75%, #00fff0 100%) border-box;
             border: 2px solid transparent;
         }
 
-        /* Sửa lại CSS cho light mode - card running */
         body.light-theme .card.running::after {
             background: white;
             border-radius: 11px;
         }
 
-
-        body.light-theme .card-header {
-            color: black;
-        }
-
-        body.light-theme .card-body {
-            color: black;
-        }
-
-        body.light-theme .card-body strong {
-            color: black;
-        }
-
-        body.light-theme .card-body span {
-            color: black;
-        }
-
+        body.light-theme .card-header { color: black; }
+        body.light-theme .card-body  { color: black; }
+        body.light-theme .card-body strong { color: black; }
+        body.light-theme .card-body span   { color: black; }
 
         body.light-theme .status-badge.complete {
             background-color: rgba(0, 128, 0, 0.3);
@@ -194,66 +124,76 @@
             border: 1px solid #0083B0;
         }
 
-        body.light-theme .grid-view::-webkit-scrollbar-track {
-            background: #f5f7fa;
+        body.light-theme .first-export-badge {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1));
+            color: #059669;
+            border: 1px solid rgba(5, 150, 105, 0.4);
+            box-shadow: 0 0 8px rgba(5, 150, 105, 0.15);
         }
 
-        body.light-theme .grid-view::-webkit-scrollbar-thumb {
-            background: #c0c0c0;
+        /* ─── Quantity animation ──────────────────────────────────────── */
+        .quantity-updated {
+            animation: highlightPulse 2s ease-in-out;
         }
 
-        body.light-theme .grid-view::-webkit-scrollbar-thumb:hover {
-            background: #a0a0a0;
+        @keyframes highlightPulse {
+            0%   { background-color: #4ade80; transform: scale(1); }
+            50%  { background-color: #22c55e; transform: scale(1.1); }
+            100% { background-color: transparent; transform: scale(1); }
         }
 
-        body.light-theme .list-view::-webkit-scrollbar-track {
-            background: #f0f0f0;
+        .quantity-cell {
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: inline-block;
         }
 
-        body.light-theme .list-view::-webkit-scrollbar-thumb {
-            background: #c0c0c0;
+        .quantity-updated .quantity-cell {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
         }
 
-        body.light-theme .list-view::-webkit-scrollbar-thumb:hover {
-            background: #a0a0a0;
-        }
-
-        /* content */
-        body.light-theme .toolbar {
-            background-color: #2980B9;
-        }
-
-        /* css table */
-        .container {
-            background: #060c21;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            margin: 40px;
-            display: flex;
-            flex-direction: column;
-            height: calc(100vh - 160px);
-        }
-
+        /* ─── Toolbar (tách riêng khỏi bảng) ─────────────────────────── */
         .toolbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 24px;
+            padding: 12px 24px;
             background: #3b4689;
+            border-radius: 12px;
+            margin: 10px;
             flex-shrink: 0;
-        }
-
-        .toolbar-right {
-            display: flex;
-            gap: 12px;
         }
 
         .toolbar-left {
             display: flex;
+            align-items: center;
             gap: 12px;
         }
 
+        .toolbar-right {
+            display: none;
+            gap: 12px;
+        }
+
+        /* ─── Factory select ──────────────────────────────────────────── */
+        .factory {
+            background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.1s ease;
+            appearance: none;
+            outline: none;
+        }
+
+        .factory option { color: black; }
+
+        /* ─── Buttons ─────────────────────────────────────────────────── */
         .btn {
             padding: 8px 16px;
             background: #3b4689;
@@ -268,9 +208,12 @@
             border: none;
         }
 
+        .btn:hover { background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%); }
+        .btn.active { background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%); }
+
         .btnImport {
             padding: 8px 16px;
-            background: #8f8ca3;
+            background: none;
             border-radius: 6px;
             cursor: pointer;
             font-size: 14px;
@@ -284,24 +227,14 @@
         }
 
         .btnImport:hover {
-            background: linear-gradient(90deg, #2193b0, #6dd5ed);
+            background:#2193b0;
             color: #fff;
             transition: background 0.3s ease-in-out;
         }
 
+        .btnImport.visible { visibility: visible; }
 
-        .btnImport.visible {
-            visibility: visible;
-        }
-
-        .btn:hover {
-            background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
-        }
-
-        .btn.active {
-            background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
-        }
-
+        /* ─── Search box ──────────────────────────────────────────────── */
         .search-box {
             position: relative;
             display: inline-block;
@@ -310,111 +243,105 @@
         .search-box input {
             padding-left: 20px;
             width: 700px;
-            height: 32px;
+            height: 36px;
             border: none;
             font-size: 14px;
-            border-radius: 4px;
+            border-radius: 6px;
             background-color: rgba(255, 255, 255, 0.1);
             color: white;
         }
 
-        .search-box input::placeholder {
-            color: #d1d5db;
-        }
+        .search-box input::placeholder { color: #d1d5db; }
 
         .search-box input:focus {
             outline: none;
             background: rgba(255, 255, 255, 0.2);
         }
 
-        .search-icon {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 16px;
-            height: 16px;
-            fill: #888;
-            pointer-events: none;
-        }
+        .searchInput { visibility: hidden; }
+        .searchInput.visible { visibility: visible; }
 
-        /* List View */
-        .list-view {
-            overflow-y: auto;
-            overflow-x: hidden;
-            flex: 1;
-            display: none;
-        }
-
-        .list-view::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .list-view::-webkit-scrollbar-track {
+        /* ─── Container (bảng riêng) ──────────────────────────────────── */
+        .container {
             background: #060c21;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 0 10px 10px;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 160px);
         }
 
-        .list-view::-webkit-scrollbar-thumb {
-            background: #3b4689;
-            border-radius: 4px;
-        }
-
-        .list-view::-webkit-scrollbar-thumb:hover {
-            background: #4a56a0;
-        }
-
+        /* ─── Table header + rows ─────────────────────────────────────── */
         .table-header,
         .table-row {
             display: grid;
-            grid-template-columns: 0.4fr 1.2fr 1.5fr 0.8fr 1fr 1fr 1fr 1.2fr 1.2fr 1.2fr 1.2fr;
-            align-items: center;
-            text-align: center;
-            padding: 10px 0;
+            grid-template-columns: 0.4fr 1.2fr 1.5fr 0.8fr 1fr 1fr 1fr 1.2fr 1.3fr 1.1fr 1.2fr;
+            align-items: stretch;
             width: 100%;
+            padding: 0;
         }
 
-        .table-header {
-            display: grid;
-            text-transform: uppercase;
-            grid-template-columns: 0.4fr 1.2fr 1.5fr 0.8fr 1fr 1fr 1fr 1.2fr 1.2fr 1.2fr 1.2fr;
+        /* Cell chung */
+        .table-row > div {
+            padding: 5px 8px;
+            font-size: 14px;
+            border-right: 1px solid rgba(255, 255, 255, 0.25);
+            display: flex;
             align-items: center;
-            text-align: center;
-            padding: 10px 0;
-            width: 100%;
+            justify-content: center;
+            box-sizing: border-box;
+            min-width: 0;
+        }
+
+        .table-header > div{
+            border-right: 1px solid rgba(255, 255, 255, 0.25);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.25);
+            display: flex;
+            padding: 10px 0px;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            min-width: 0;
+        }
+
+        .table-header > div:last-child,
+        .table-row > div:last-child {
+            border-right: none;
+        }
+
+        /* Header riêng */
+        .table-header {
+            text-transform: uppercase;
             font-weight: bold;
-            background-color: #3b4689;
+             background-color: #1e2235;
             color: #fff;
-            flex-shrink: 0;
             position: sticky;
             top: 0;
             z-index: 10;
         }
 
+        /* Row riêng */
         .table-row {
-            border-bottom: 1px solid #2a2a3a;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.25);
             color: #e3e2e9;
             transition: background 0.2s;
             position: relative;
         }
 
-        .table-row:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
+        .table-row:hover { background: rgba(255, 255, 255, 0.05); }
+        .table-row.selected { background: #f0f7ff; }
 
-        .table-row.selected {
-            background: #f0f7ff;
-        }
+        /* ─── Căn chỉnh cột ───────────────────────────────────────────── */
+        .col-num    { justify-content: flex-end !important; }
+        .col-text   { justify-content: flex-start !important; }
+        .col-center { justify-content: center !important; }
 
-        /* Hiệu ứng border gradient cho dòng có status 'Run' */
+        /* ─── Running row animation ───────────────────────────────────── */
         .table-row.running {
-            position: relative;
             background: linear-gradient(#060c21, #060c21) padding-box,
-                linear-gradient(90deg,
-                    #00fff0 0%,
-                    #00d4ff 25%,
-                    #0084ff 50%,
-                    #00d4ff 75%,
-                    #00fff0 100%) border-box;
+                linear-gradient(90deg, #00fff0 0%, #00d4ff 25%, #0084ff 50%, #00d4ff 75%, #00fff0 100%) border-box;
             border: 2px solid transparent;
             border-radius: 4px;
             animation: borderMove 3s linear infinite;
@@ -423,81 +350,29 @@
 
         .table-row.running:hover {
             background: linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05)) padding-box,
-                linear-gradient(90deg,
-                    #00fff0 0%,
-                    #00d4ff 25%,
-                    #0084ff 50%,
-                    #00d4ff 75%,
-                    #00fff0 100%) border-box;
-            color: black;
+                linear-gradient(90deg, #00fff0 0%, #00d4ff 25%, #0084ff 50%, #00d4ff 75%, #00fff0 100%) border-box;
             border: 2px solid transparent;
         }
 
         @keyframes borderMove {
-            0% {
-                background-position: 0% 0%;
-            }
-
-            100% {
-                background-position: 200% 0%;
-            }
+            0%   { background-position: 0% 0%; }
+            100% { background-position: 200% 0%; }
         }
 
-        .checkbox {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
+        /* ─── List View ───────────────────────────────────────────────── */
+        .list-view {
+            overflow-y: auto;
+            scrollbar-gutter: stable;  /* ← luôn giữ chỗ scrollbar, kể cả khi chưa scroll */
+            flex: 1;
+            display: none;
         }
 
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .list-view.active { display: block; }
 
-        .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 14px;
-            color: white;
-        }
+        .list-view::-webkit-scrollbar-track { background: #ccc; }
 
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-        }
 
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-            display: inline-block;
-        }
-
-        .status-admin {
-            background: #e8f0fe;
-            color: #1967d2;
-        }
-
-        .status-creator {
-            background: #e8f0fe;
-            color: #1967d2;
-        }
-
-        .status-general {
-            background: #e6f4ea;
-            color: #137333;
-        }
-
-        /* Grid View */
+        /* ─── Grid View ───────────────────────────────────────────────── */
         .grid-view {
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
@@ -509,27 +384,9 @@
             display: none;
         }
 
-        .grid-view.active {
-            display: grid;
-        }
+        .grid-view.active { display: grid; }
 
-        .grid-view::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .grid-view::-webkit-scrollbar-track {
-            background: #1e2044;
-        }
-
-        .grid-view::-webkit-scrollbar-thumb {
-            background: #3b4689;
-            border-radius: 4px;
-        }
-
-        .grid-view::-webkit-scrollbar-thumb:hover {
-            background: #4a56a0;
-        }
-
+        /* ─── Card ────────────────────────────────────────────────────── */
         .card {
             position: relative;
             background: #060c21;
@@ -538,25 +395,19 @@
             transition: all 0.2s;
         }
 
+        .card:hover { transform: translateY(-2px); }
+
         .card.running {
             box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
             overflow: hidden;
-            /* CHỈ thêm overflow: hidden cho card running */
         }
 
-
-        /* Tạo lớp border xoay */
         .card.running::before {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(transparent,
-                    transparent,
-                    transparent,
-                    #00d4ff);
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: conic-gradient(transparent, transparent, transparent, #00d4ff);
             animation: rotate 4s linear infinite;
             z-index: 0;
         }
@@ -570,32 +421,23 @@
             z-index: 1;
         }
 
-
-        .card:hover {
-            transform: translateY(-2px);
+        @keyframes rotate {
+            0%   { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .card-header {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 16px;
-            color: #e3e2e9;
+            position: relative; z-index: 2;
+            display: flex; align-items: center; justify-content: center;
+            gap: 12px; margin-bottom: 16px; color: #e3e2e9;
         }
 
         .card-body {
-            position: relative;
-            z-index: 2;
-            font-size: 14px;
-            color: #e3e2e9;
+            position: relative; z-index: 2;
+            font-size: 14px; color: #e3e2e9;
         }
 
-        .card-body div {
-            margin-bottom: 8px;
-        }
+        .card-body div { margin-bottom: 8px; }
 
         .card-body strong {
             color: #e3e2e9;
@@ -605,14 +447,13 @@
             margin-right: 26px;
         }
 
-        @keyframes rotate {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+        /* ─── Status badges ───────────────────────────────────────────── */
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
         }
 
         .status-badge.complete {
@@ -633,13 +474,13 @@
             border: 1px solid #0083B0;
         }
 
-        /* First Export badge */
+        /* ─── First Export badge ──────────────────────────────────────── */
         .first-export-badge {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 4px;
-            padding: 3px 10px;
+            padding: 1px 10px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
@@ -650,438 +491,252 @@
             letter-spacing: 0.03em;
         }
 
-        body.light-theme .first-export-badge {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1));
-            color: #059669;
-            border: 1px solid rgba(5, 150, 105, 0.4);
-            box-shadow: 0 0 8px rgba(5, 150, 105, 0.15);
+        /* ─── Misc ────────────────────────────────────────────────────── */
+        .hidden { display: none; }
+
+        .avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 600; font-size: 14px; color: white;
         }
 
-        .list-view.active {
-            display: block;
+        .avatar img {
+            width: 100%; height: 100%;
+            border-radius: 50%; object-fit: cover;
         }
 
-        .hidden {
-            display: none;
-        }
-
-        .searchInput {
-            visibility: hidden;
-        }
-
-        .searchInput.visible {
-            visibility: visible;
-        }
-
-        .factory {
-            background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 8px 16px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s ease, transform 0.1s ease;
-            appearance: none;
-            /* ẩn mũi tên mặc định */
-            outline: none;
-        }
-
-        .factory option {
-            color: black;
-        }
-
-        /* ===== CHANGE PASSWORD MODAL — DARK NAVY THEME ===== */
-
+        /* ─── Change Password Modal ───────────────────────────────────── */
         .cp-overlay {
             display: none;
-            position: fixed;
-            inset: 0;
+            position: fixed; inset: 0;
             background: rgba(5, 10, 30, 0.75);
             backdrop-filter: blur(6px);
             z-index: 9999;
-            align-items: center;
-            justify-content: center;
+            align-items: center; justify-content: center;
         }
 
-        .cp-overlay.active {
-            display: flex;
-        }
+        .cp-overlay.active { display: flex; }
 
         .cp-modal {
             background: #1a2a5e;
-            /* navy card — giống panel bảng */
             border: 1px solid #2e4080;
             border-radius: 16px;
             padding: 32px;
-            width: 440px;
-            max-width: 95vw;
+            width: 440px; max-width: 95vw;
             position: relative;
-            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55),
-                0 0 0 1px rgba(99, 179, 255, 0.08);
+            box-shadow: 0 24px 64px rgba(0,0,0,0.55), 0 0 0 1px rgba(99,179,255,0.08);
             animation: cpSlideIn .25s ease;
             color: #e8eeff;
         }
 
         @keyframes cpSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-18px) scale(.97);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            from { opacity: 0; transform: translateY(-18px) scale(.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        /* ── Close button ── */
         .cp-close {
-            position: absolute;
-            top: 14px;
-            right: 16px;
-            background: none;
-            border: none;
-            font-size: 22px;
-            cursor: pointer;
-            color: #7a8fcc;
-            line-height: 1;
-            transition: color .2s;
+            position: absolute; top: 14px; right: 16px;
+            background: none; border: none;
+            font-size: 22px; cursor: pointer;
+            color: #7a8fcc; line-height: 1; transition: color .2s;
         }
 
-        .cp-close:hover {
-            color: #e8eeff;
-        }
+        .cp-close:hover { color: #e8eeff; }
 
-        /* ── Header ── */
         .cp-header {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 22px;
+            display: flex; align-items: center;
+            gap: 14px; margin-bottom: 22px;
         }
 
         .cp-avatar {
-            width: 54px;
-            height: 54px;
-            border-radius: 50%;
+            width: 54px; height: 54px; border-radius: 50%;
             background: linear-gradient(135deg, #1de9c4, #0ea5e9);
-            /* teal → cyan như nav btn */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #0d1b3e;
-            flex-shrink: 0;
-            box-shadow: 0 0 16px rgba(29, 233, 196, 0.35);
+            display: flex; align-items: center; justify-content: center;
+            color: #0d1b3e; flex-shrink: 0;
+            box-shadow: 0 0 16px rgba(29,233,196,0.35);
         }
 
         .cp-header h2 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin: 0;
-            color: #ffffff;
-            letter-spacing: .02em;
+            font-size: 1.2rem; font-weight: 700;
+            margin: 0; color: #ffffff; letter-spacing: .02em;
         }
 
-        /* ── Info grid ── */
         .cp-info-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background: rgba(10, 20, 60, 0.55);
-            /* nền tối hơn một chút */
-            border: 1px solid #2a3f7e;
-            border-radius: 12px;
+            display: flex; flex-direction: column; gap: 10px;
+            background: rgba(10,20,60,0.55);
+            border: 1px solid #2a3f7e; border-radius: 12px;
             padding: 16px 18px;
         }
 
-        .cp-info-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .cp-info-item { display: flex; justify-content: space-between; align-items: center; }
 
         .cp-label {
-            font-size: .78rem;
-            font-weight: 600;
-            color: #6b83c4;
-            text-transform: uppercase;
-            letter-spacing: .06em;
+            font-size: .78rem; font-weight: 600;
+            color: #6b83c4; text-transform: uppercase; letter-spacing: .06em;
         }
 
-        .cp-value {
-            font-size: .95rem;
-            font-weight: 600;
-            color: #dde6ff;
-        }
+        .cp-value { font-size: .95rem; font-weight: 600; color: #dde6ff; }
 
         .cp-badge {
             background: linear-gradient(135deg, #1de9c4, #0ea5e9);
-            /* teal accent */
-            color: #0a1628;
-            font-size: .72rem;
-            font-weight: 800;
-            padding: 3px 12px;
-            border-radius: 20px;
-            letter-spacing: .07em;
-            text-transform: uppercase;
+            color: #0a1628; font-size: .72rem; font-weight: 800;
+            padding: 3px 12px; border-radius: 20px;
+            letter-spacing: .07em; text-transform: uppercase;
         }
 
-        /* ── Divider ── */
-        .cp-divider {
-            border: none;
-            border-top: 1px solid #2a3f7e;
-            margin: 20px 0;
-        }
+        .cp-divider { border: none; border-top: 1px solid #2a3f7e; margin: 20px 0; }
 
-        /* ── Form ── */
         .cp-form h3 {
-            font-size: .95rem;
-            font-weight: 700;
-            margin: 0 0 16px;
-            color: #a0b4e8;
-            text-transform: uppercase;
-            letter-spacing: .06em;
+            font-size: .95rem; font-weight: 700;
+            margin: 0 0 16px; color: #a0b4e8;
+            text-transform: uppercase; letter-spacing: .06em;
         }
 
-        .cp-field {
-            margin-bottom: 14px;
-        }
+        .cp-field { margin-bottom: 14px; }
 
         .cp-field label {
-            display: block;
-            font-size: .8rem;
-            font-weight: 600;
-            color: #6b83c4;
-            margin-bottom: 6px;
-            letter-spacing: .03em;
+            display: block; font-size: .8rem; font-weight: 600;
+            color: #6b83c4; margin-bottom: 6px; letter-spacing: .03em;
         }
 
-        .cp-input-wrap {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
+        .cp-input-wrap { position: relative; display: flex; align-items: center; }
 
         .cp-input-wrap input {
-            width: 100%;
-            padding: 10px 42px 10px 14px;
-            border: 1.5px solid #2a3f7e;
-            border-radius: 10px;
-            font-size: .95rem;
-            background: rgba(10, 20, 60, 0.6);
-            color: #e8eeff;
-            outline: none;
+            width: 100%; padding: 10px 42px 10px 14px;
+            border: 1.5px solid #2a3f7e; border-radius: 10px;
+            font-size: .95rem; background: rgba(10,20,60,0.6);
+            color: #e8eeff; outline: none;
             transition: border-color .2s, box-shadow .2s;
             box-sizing: border-box;
         }
 
-        .cp-input-wrap input::placeholder {
-            color: #4a5e9a;
-        }
+        .cp-input-wrap input::placeholder { color: #4a5e9a; }
 
         .cp-input-wrap input:focus {
             border-color: #1de9c4;
-            box-shadow: 0 0 0 3px rgba(29, 233, 196, 0.15);
+            box-shadow: 0 0 0 3px rgba(29,233,196,0.15);
         }
 
         .cp-eye {
-            position: absolute;
-            right: 10px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 4px;
-            color: #4a5e9a;
-            display: flex;
-            align-items: center;
-            transition: color .2s;
+            position: absolute; right: 10px;
+            background: none; border: none; cursor: pointer;
+            padding: 4px; color: #4a5e9a;
+            display: flex; align-items: center; transition: color .2s;
         }
 
-        .cp-eye:hover {
-            color: #1de9c4;
-        }
+        .cp-eye:hover { color: #1de9c4; }
 
-        /* ── Message ── */
-        .cp-msg {
-            min-height: 20px;
-            font-size: .85rem;
-            margin: 6px 0 10px;
-            font-weight: 500;
-        }
+        .cp-msg { min-height: 20px; font-size: .85rem; margin: 6px 0 10px; font-weight: 500; }
+        .cp-msg.error   { color: #f87171; }
+        .cp-msg.success { color: #4ade80; }
 
-        .cp-msg.error {
-            color: #f87171;
-        }
-
-        .cp-msg.success {
-            color: #4ade80;
-        }
-
-        /* xanh lá như badge Complete */
-
-        /* ── Submit button ── */
         .cp-btn {
-            width: 100%;
-            padding: 12px;
+            width: 100%; padding: 12px;
             background: linear-gradient(135deg, #1de9c4, #0ea5e9);
-            color: #0a1628;
-            border: none;
-            border-radius: 10px;
-            font-size: .95rem;
-            font-weight: 700;
-            cursor: pointer;
+            color: #0a1628; border: none; border-radius: 10px;
+            font-size: .95rem; font-weight: 700; cursor: pointer;
             letter-spacing: .04em;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
             transition: opacity .2s, transform .15s, box-shadow .2s;
-            box-shadow: 0 4px 20px rgba(29, 233, 196, 0.3);
+            box-shadow: 0 4px 20px rgba(29,233,196,0.3);
         }
 
         .cp-btn:hover:not(:disabled) {
-            opacity: .92;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 24px rgba(29, 233, 196, 0.45);
+            opacity: .92; transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(29,233,196,0.45);
         }
 
-        .cp-btn:active:not(:disabled) {
-            transform: translateY(0);
-        }
+        .cp-btn:active:not(:disabled) { transform: translateY(0); }
+        .cp-btn:disabled { opacity: .5; cursor: not-allowed; }
 
-        .cp-btn:disabled {
-            opacity: .5;
-            cursor: not-allowed;
-        }
-
-        /* ── Spinner ── */
         .cp-spinner {
-            width: 18px;
-            height: 18px;
-            border: 2.5px solid rgba(10, 22, 40, 0.3);
+            width: 18px; height: 18px;
+            border: 2.5px solid rgba(10,22,40,0.3);
             border-top-color: #0a1628;
             border-radius: 50%;
             animation: spin .7s linear infinite;
         }
 
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-
-        /* Footer */
+        /* ─── Footer ──────────────────────────────────────────────────── */
         footer {
-            color: white;
-            font-size: 12px;
-            text-align: right;
-            background-color: transparent;
-            padding: 20px 20px;
-            position: fixed;
-            bottom: 0;
-            right: 0;
-            left: auto;
-            width: 100%;
+            color: white; font-size: 12px;
+            text-align: right; background-color: transparent;
+            padding: 20px; position: fixed;
+            bottom: 0; right: 0; width: 100%;
         }
 
-        /* Responsive */
+        /* ─── Responsive ──────────────────────────────────────────────── */
         @media (max-width: 768px) {
-            .hamburger {
-                display: flex;
-            }
-
             .nav-menu {
-                position: fixed;
-                left: -100%;
-                top: 60px;
+                position: fixed; left: -100%; top: 60px;
                 flex-direction: column;
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                width: 100%;
-                text-align: center;
+                width: 100%; text-align: center;
                 transition: 0.3s;
-                box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
+                box-shadow: 0 10px 27px rgba(0,0,0,0.05);
             }
 
-            .nav-menu.active {
-                left: 0;
-            }
-
-            .nav-menu li {
-                margin: 0;
-            }
-
-            .nav-menu li a {
-                padding: 20px;
-            }
-
+            .nav-menu.active { left: 0; }
+            .nav-menu li { margin: 0; }
+            .nav-menu li a { padding: 20px; }
         }
     </style>
 </head>
 
 <body>
-
     <div class="all">
-        <!-- Navigation -->
-       <app-header active="delivery"></app-header>
-        <div class="container">
-            <div class="toolbar">
-                <div class="toolbar-left">
-                    <select id="factorySelect" class="factory">
-                        <option value="V0">V0</option>
-                        <option value="V5">V5</option>
-                    </select>
-                    <button class="btnImport">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="lucide lucide-import-icon lucide-import">
-                            <path d="M12 3v12" />
-                            <path d="m8 11 4 4 4-4" />
-                            <path d="M8 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4" />
-                        </svg>
-                        Import
-                    </button>
-                    <div class="search-box">
-                        <input class="searchInput" type="text" placeholder="Scan QR">
-                    </div>
-                    <input type="file" id="excelInput" accept=".xlsx,.xls" style="display:none;">
+        <app-header active="delivery"></app-header>
+
+        <!-- Toolbar tách riêng -->
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <select id="factorySelect" class="factory">
+                    <option value="V0">V0</option>
+                    <option value="V5">V5</option>
+                </select>
+                <button class="btnImport">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 3v12" />
+                        <path d="m8 11 4 4 4-4" />
+                        <path d="M8 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4" />
+                    </svg>
+                    Import
+                </button>
+                <div class="search-box">
+                    <input class="searchInput" type="text" placeholder="Scan QR">
                 </div>
-                <div class="toolbar-right">
-                    <button class="btn active" id="listBtn">
-                        <span>☰</span> List
-                    </button>
-                    <button class="btn" id="gridBtn">
-                        <span>⊞</span> Grid
-                    </button>
-                </div>
+                <input type="file" id="excelInput" accept=".xlsx,.xls" style="display:none;">
             </div>
-
-            <div class="table-header" id="tableHeader">
-                <div>STT</div>
-                <div>MOBIS CODE</div>
-                <div>MODEL NAME</div>
-                <div>TYPE</div>
-                <div>STATUS</div>
-                <div>TARGET</div>
-                <div>QUANTITY</div>
-                <div>SHIPPING DATE</div>
-                <div>SHIPPING METHOD</div>
-                <div>FIRST EXPORT</div>
-                 <div>ARRIVE DATE</div>
-            </div>
-
-            <div id="listView" class="list-view active">
-                <!-- List items will be inserted here -->
-            </div>
-
-            <div id="gridView" class="grid-view">
-                <!-- Grid cards will be inserted here -->
+            <div class="toolbar-right">
+                <button class="btn active" id="listBtn"><span>☰</span> List</button>
+                <button class="btn" id="gridBtn"><span>⊞</span> Grid</button>
             </div>
         </div>
 
-        <!-- Footer -->
+        <!-- Bảng riêng -->
+<div class="container">
+    <div id="listView" class="list-view active">
+        <div class="table-header" id="tableHeader">
+            <div>STT</div>
+            <div>MOBIS CODE</div>
+            <div>MODEL NAME</div>
+            <div>TYPE</div>
+            <div>STATUS</div>
+            <div>TARGET</div>
+            <div>QUANTITY</div>
+            <div>SHIPPING DATE</div>
+            <div>SHIPPING METHOD</div>
+            <div>FIRST EXPORT</div>
+            <div>ARRIVE DATE</div>
+        </div>
+    </div>
+    <div id="gridView" class="grid-view"></div>
+</div>
+
         <script type="module" src="/js/delivery.js"></script>
     </div>
 </body>

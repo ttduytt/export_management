@@ -17,10 +17,6 @@
       line-height: 1.5;
     }
 
-    ::-webkit-scrollbar { width: 4px; height: 4px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-
     /* ─── Page shell ─────────────────────────────────────────────────── */
     .page-root {
       display: flex;
@@ -51,7 +47,7 @@
     }
     .panel-header-icon { font-size: 16px; color: #60a5fa; }
     .panel-header-title {
-      font-size: 13px;
+      font-size: 20px;
       font-weight: 700;
       color: white;
       text-transform: uppercase;
@@ -61,40 +57,51 @@
     /* ─── LEFT: Table panel ──────────────────────────────────────────── */
     .table-panel { flex: 1; min-width: 0; }
 
-    .table-scroll { flex: 1; overflow-x: auto; overflow-y: auto; }
+    /* scrollbar-gutter: stable fix lệch border dọc */
+    .table-scroll {
+      flex: 1;
+      overflow-x: auto;
+      overflow-y: auto;
+    }
 
+    /* ─── Table header — dark mode ────────────────────────────────────── */
     table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; }
 
     thead th {
       padding: 10px 14px;
-      font-size: 11px;
+      font-size: 14px;
       font-weight: 700;
       color: white;
       text-transform: uppercase;
       letter-spacing: .08em;
-      border-bottom: 1px solid #30363D;
       white-space: nowrap;
       background: #3b4689;
       position: sticky;
       top: 0;
       z-index: 5;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-bottom: 2px solid rgba(255, 255, 255, 0.4);
     }
 
+    thead th:last-child { border-right: none; }
+
     tbody tr {
-      border-bottom: 1px solid rgba(48,54,61,.5);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.25);
       cursor: pointer;
       transition: background .12s;
     }
-    tbody tr:hover  { background: rgba(59,130,246,.06); }
-    tbody tr.active { background: rgba(59,130,246,.13); }
+    tbody tr:hover  { background: rgba(255, 255, 255, 0.05); }
+    tbody tr.active { background: rgba(59, 70, 137, .42); }
 
     tbody td {
       padding: 10px 14px;
-      color: #cbd5e1;
+      color: white;
       vertical-align: middle;
+      border-right: 1px solid rgba(255, 255, 255, 0.25);
     }
+    tbody td:last-child { border-right: none; }
 
-    .stt { color: #475569; font-family: monospace; }
+    .stt { color: white;}
     .td-empty { color: #475569; font-size: 13px; padding: 48px; text-align: center; }
 
     /* ─── Badges ─────────────────────────────────────────────────────── */
@@ -115,7 +122,6 @@
     .badge-chip     { background: rgba(100,116,139,.2);  color: #94a3b8; border-color: rgba(100,116,139,.25); font-size: 10px; margin: 1px 2px; }
     .badge-all      { background: rgba(168,85,247,.2);   color: #c084fc; border-color: rgba(168,85,247,.3); }
 
-    /* chips wrap in cell */
     .chips-cell { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; }
 
     /* ─── RIGHT: Editor panel ────────────────────────────────────────── */
@@ -201,11 +207,12 @@
     }
     .field-error.hidden { display: none; }
 
-    /* ─── Custom dropdown (factory / department) ─────────────────────── */
+    /* ─── Custom dropdown ────────────────────────────────────────────── */
     .combo-wrap { position: relative; }
 
     .combo-trigger {
       width: 100%;
+      min-height: 40px;
       background: #0d1520;
       border: 1px solid #334155;
       border-radius: 8px;
@@ -221,8 +228,7 @@
       gap: 6px;
       user-select: none;
     }
-    .combo-trigger:focus,
-    .combo-trigger.open {
+    .combo-trigger:focus, .combo-trigger.open {
       border-color: #3b82f6;
       box-shadow: 0 0 0 2px rgba(59,130,246,.2);
     }
@@ -234,10 +240,8 @@
       pointer-events: none;
     }
     .combo-trigger.open .arrow { transform: translateY(-50%) rotate(180deg); }
-
     .combo-trigger .placeholder { color: #475569; }
 
-    /* ALL pill inside trigger */
     .pill-all {
       display: inline-block;
       background: rgba(168,85,247,.2);
@@ -249,7 +253,6 @@
       font-weight: 700;
     }
 
-    /* dropdown list */
     .combo-list {
       display: none;
       position: absolute;
@@ -353,14 +356,11 @@
       display: inline-block;
     }
 
-    /* ─── Light theme overrides ──────────────────────────────────── */
+    /* ─── Light theme ────────────────────────────────────────────────── */
     body.light-theme {
       background: #f0f4f8;
       color: #1e293b;
     }
-
-    body.light-theme ::-webkit-scrollbar-track { background: #e2e8f0; }
-    body.light-theme ::-webkit-scrollbar-thumb { background: #94a3b8; }
 
     body.light-theme .panel {
       background: #ffffff;
@@ -368,43 +368,44 @@
     }
 
     body.light-theme .panel-header {
-      background: #2980b9;
+      background: #1a5276;
       border-bottom-color: #bfdbfe;
     }
 
+    /* Light mode — table header */
     body.light-theme thead th {
-      background: #2980b9;
-      color: #fff;
-      border-bottom-color: #bfdbfe;
+      background: white;
+      color: black;
+      border-right: 1px solid rgba(0, 0, 0, 0.45);
+      border-bottom: 2px solid rgba(0, 0, 0, 0.45);
     }
+    body.light-theme thead th:last-child { border-right: none; }
 
+    /* Light mode — rows */
     body.light-theme tbody tr {
-      border-bottom-color: rgba(203,213,225,.5);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.15);
     }
-    body.light-theme tbody tr:hover  { background: rgba(59,130,246,.06); }
-    body.light-theme tbody tr.active { background: rgba(59,130,246,.13); }
+    body.light-theme tbody tr:hover  { background: #e8f4fd; }
+    body.light-theme tbody tr.active { background: rgba(59,130,246,.1); }
 
     body.light-theme tbody td {
       color: #334155;
+      border-right: 1px solid rgba(0, 0, 0, 0.45);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.45);
     }
+    body.light-theme tbody td:last-child { border-right: none; }
 
-    body.light-theme .stt        { color: #94a3b8; }
-    body.light-theme .td-empty   { color: #94a3b8; }
-
-    /* Badges – giữ nguyên màu vì đã có nền màu riêng */
+    body.light-theme .stt      { color: black; }
+    body.light-theme .td-empty { color: #94a3b8; }
 
     body.light-theme .editor-inner {
       background: #f8fafc;
       border-color: #cbd5e1;
     }
 
-    body.light-theme .editor-body {
-      background: #f1f5f9;
-    }
+    body.light-theme .editor-body { background: #f1f5f9; }
 
-    body.light-theme .field-label {
-      color: #475569;
-    }
+    body.light-theme .field-label { color: #475569; }
 
     body.light-theme .edit-input,
     body.light-theme .edit-select {
@@ -441,9 +442,7 @@
       border-color: rgba(100,116,139,.3);
       box-shadow: 0 8px 24px rgba(0,0,0,.12);
     }
-    body.light-theme .combo-option {
-      color: #334155;
-    }
+    body.light-theme .combo-option { color: #334155; }
     body.light-theme .combo-option:hover      { background: rgba(59,130,246,.06); color: #1e293b; }
     body.light-theme .combo-option.selected   { background: rgba(59,130,246,.1); color: #1d4ed8; }
     body.light-theme .combo-option .check     { color: #3b82f6; }
@@ -506,18 +505,18 @@
           <!-- Username -->
           <div class="field-row">
             <label class="field-label">
-               <span id="lbl-username">Username</span><span class="req">*</span>
+               <span class="req">*</span><span id="lbl-username">Username</span>
             </label>
-            <input type="text" id="input-username" class="edit-input" placeholder="username" />
+            <input type="text" id="input-username" class="edit-input" />
             <span class="field-error hidden" id="err-username">⚠ Required</span>
           </div>
 
           <!-- Password -->
           <div class="field-row">
             <label class="field-label">
-               <span id="lbl-password">Password</span><span class="req" id="req-password">*</span>
+               <span class="req" id="req-password">*</span><span id="lbl-password">Password</span>
             </label>
-            <input type="password" id="input-password" class="edit-input" placeholder="••••••••" />
+            <input type="password" id="input-password" class="edit-input" />
             <span class="field-error hidden" id="err-password">⚠ Required</span>
           </div>
 
@@ -525,7 +524,7 @@
           <div class="row-2">
             <div class="field-row">
               <label class="field-label">
-                 <span id="lbl-role">Role</span><span class="req">*</span>
+                 <span class="req">*</span><span id="lbl-role">Role</span>
               </label>
               <select id="input-role" class="edit-select edit-input">
                 <option value="USER">USER</option>
@@ -544,14 +543,14 @@
             </div>
           </div>
 
-          <!-- Factory (custom dropdown with ALL) -->
+          <!-- Factory -->
           <div class="field-row">
             <label class="field-label">
-               <span id="lbl-factory">Factory</span><span class="req">*</span>
+               <span class="req">*</span><span id="lbl-factory">Factory</span>
             </label>
             <div class="combo-wrap" id="factory-combo-wrap">
               <button type="button" class="combo-trigger" id="factory-trigger">
-                <span id="factory-display" class="placeholder">— Select —</span>
+                <span id="factory-display" class="placeholder"></span>
                 <span class="arrow">▾</span>
               </button>
               <div class="combo-list" id="factory-list">
@@ -567,19 +566,17 @@
             <span class="field-error hidden" id="err-factory">⚠ Required</span>
           </div>
 
-          <!-- Department (custom dropdown with ALL, populated dynamically) -->
+          <!-- Department -->
           <div class="field-row">
             <label class="field-label">
-               <span id="lbl-department">Department</span><span class="req">*</span>
+               <span class="req">*</span><span id="lbl-department">Department</span>
             </label>
             <div class="combo-wrap" id="dept-combo-wrap">
               <button type="button" class="combo-trigger" id="dept-trigger">
-                <span id="dept-display" class="placeholder">— Select —</span>
+                <span id="dept-display" class="placeholder"></span>
                 <span class="arrow">▾</span>
               </button>
-              <div class="combo-list" id="dept-list">
-                <!-- populated by JS based on factory selection -->
-              </div>
+              <div class="combo-list" id="dept-list"></div>
             </div>
             <span class="field-error hidden" id="err-department">⚠ Required</span>
           </div>

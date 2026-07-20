@@ -39,11 +39,6 @@
       color: white;
     }
 
-    body.light-theme .nav-menu li a:hover {
-      background: #2a8f9e;
-      color: white;
-      transform: translateY(-2px);
-    }
 
     body.light-theme .nav-menu li a {
       color: white;
@@ -80,23 +75,29 @@
       background: #f9fafb;
     }
 
-    body.light-theme #factorySelect,
-    body.light-theme .date-filter,
-    body.light-theme .searchText {
+    body.light-theme .eh-toolbar .searchText,
+    body.light-theme .dh-toolbar .searchText {
       background: white;
       color: #1f2937;
       border: 1px solid #d1d5db;
     }
 
-    body.light-theme #factorySelect:focus,
-    body.light-theme .date-filter:focus,
-    body.light-theme .searchText:focus {
+    body.light-theme .eh-toolbar .searchText:focus,
+    body.light-theme .dh-toolbar .searchText:focus {
       background: white;
       border-color: #2a8f9e;
       outline: none;
     }
 
-    body.light-theme #factorySelect option {
+    body.light-theme .eh-factory-select,
+    body.light-theme #factorySelectDelivery {
+      background: white;
+      color: #1f2937;
+      border: 1px solid #d1d5db;
+    }
+
+    body.light-theme .eh-factory-select option,
+    body.light-theme #factorySelectDelivery option {
       background-color: white;
       color: #1f2937;
     }
@@ -109,11 +110,13 @@
       filter: invert(0);
     }
 
-    body.light-theme #clearFilters {
+    body.light-theme .eh-clear-btn,
+    body.light-theme #clearFiltersDelivery {
       background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
     }
 
-    body.light-theme #clearFilters:hover {
+    body.light-theme .eh-clear-btn:hover,
+    body.light-theme #clearFiltersDelivery:hover {
       background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
     }
 
@@ -130,16 +133,137 @@
       color: #9ca3af;
     }
 
-    body.light-theme .management-delivery tbody::-webkit-scrollbar-track {
-      background: #f3f4f6;
+    body.light-theme .tab-pill-bar {
+      background: rgba(0, 0, 0, 0.05);
     }
 
-    body.light-theme .management-delivery tbody::-webkit-scrollbar-thumb {
-      background: #d1d5db;
+    body.light-theme .tab-pill {
+      color: #4b5563;
     }
 
-    body.light-theme .management-delivery tbody::-webkit-scrollbar-thumb:hover {
-      background: #9ca3af;
+    body.light-theme .tab-pill.active {
+      background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+      color: white;
+    }
+
+    /* ── light theme: container text color ── */
+    body.light-theme .container {
+      color: #1f2937;
+    }
+
+    /* ── light theme cho dh-container ── */
+    body.light-theme .dh-container {
+      background: white;
+      border: 1px solid #e5e7eb;
+    }
+
+    body.light-theme .dh-table-header {
+      background: white;
+      color: black;
+    }
+
+    body.light-theme .dh-table-row {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.45);
+      color: #333;
+      font-weight: 500;
+    }
+
+    body.light-theme .dh-table-row:hover {
+      background: #f9fafb;
+    }
+
+    body.light-theme .dh-table-header>div {
+      border: 1px solid rgba(0, 0, 0, 0.45);
+      border-bottom: 2px solid rgba(0, 0, 0, 0.45);
+    }
+
+    body.light-theme .dh-table-row>div {
+      border-right: 1px solid rgba(0, 0, 0, 0.45);
+    }
+
+    body.light-theme .dh-table-header>div:last-child,
+    body.light-theme .dh-table-row>div:last-child {
+      border-right: none;
+    }
+
+    body.light-theme .dh-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+    }
+
+
+    /* ── light theme: date-filter ── */
+    body.light-theme .date-filter {
+      background: white;
+      color: #1f2937;
+      border: 1px solid #d1d5db;
+    }
+
+    body.light-theme .date-filter:focus {
+      border-color: #2a8f9e;
+      outline: none;
+    }
+
+    /* ── light theme: dh-status-badge ── */
+    body.light-theme .dh-status-badge.complete {
+      background-color: rgba(0, 128, 0, 0.12);
+      color: #15803d;
+      border: 1px solid #86efac;
+    }
+
+    body.light-theme .dh-status-badge.wait {
+      background-color: rgba(255, 165, 0, 0.12);
+      color: #b45309;
+      border: 1px solid #fcd34d;
+    }
+
+    body.light-theme .dh-status-badge.run {
+      background-color: rgba(14, 165, 233, 0.12);
+      color: #0369a1;
+      border: 1px solid #7dd3fc;
+    }
+
+    /* ── light theme: dh-first-export-badge ── */
+    body.light-theme .dh-first-export-badge {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(5, 150, 105, 0.08));
+      color: #059669;
+      border: 1px solid rgba(5, 150, 105, 0.3);
+    }
+
+    /* ── light theme cho eh-container ── */
+    body.light-theme .eh-container {
+      background: white;
+      border: 1px solid #e5e7eb;
+    }
+
+    body.light-theme .eh-table-header {
+      background: white;
+      color: black;
+    }
+
+
+    body.light-theme .eh-table-row {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.45);
+      color: #333;
+      font-weight: 500;
+    }
+
+    body.light-theme .eh-table-row:hover {
+      background: #f9fafb;
+    }
+
+    body.light-theme .eh-table-header>div {
+      border: 1px solid rgba(0, 0, 0, 0.45);
+      border-bottom: 2px solid rgba(0, 0, 0, 0.45);
+    }
+
+    body.light-theme .eh-table-row>div {
+      border-right: 1px solid rgba(0, 0, 0, 0.45);
+    }
+
+    body.light-theme .eh-table-header>div:last-child,
+    body.light-theme .eh-table-row>div:last-child {
+      border-right: none;
     }
 
     footer {
@@ -157,7 +281,7 @@
     .container {
       display: flex;
       flex-direction: column;
-      height: calc(100vh - 100px);
+      height: calc(100vh - 60px);
       color: white;
       width: 100%;
     }
@@ -166,105 +290,76 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      margin: 20px 40px;
+      margin: 10px;
       overflow: hidden;
     }
 
-    .management-delivery {
-      flex: 1;
-      width: 100%;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+    /* ─── Tab pill bar ─── */
+    .tab-pill-bar {
       display: flex;
-      flex-direction: column;
-      overflow: hidden;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 6px;
+      width: fit-content;
     }
 
-    .management-delivery table {
-      border-collapse: collapse;
+    .tab-pill {
+      padding: 8px 20px;
+      border-radius: 8px;
       border: none;
       background: transparent;
-      table-layout: fixed;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .management-delivery thead {
-      background: rgba(102, 126, 234, 0.4);
-      color: #fff;
+      color: #cbd5e1;
+      font-size: 14px;
       font-weight: 600;
-      text-transform: uppercase;
-      flex-shrink: 0;
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
 
-    .management-delivery tbody {
+    .tab-pill:hover {
+      color: white;
+    }
+
+    .tab-pill.active {
+      background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+      color: white;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
+    }
+
+    .tab-panel {
+      display: none;
       flex: 1;
-      display: block;
-      overflow-y: auto;
-      overflow-x: hidden;
+      flex-direction: column;
+      overflow: hidden;
     }
 
-    .filter-row {
+    .tab-panel.active {
+      display: flex;
+    }
+
+    /* ─── Shared toolbar style (dùng cho cả 2 tab) ─── */
+    .eh-toolbar,
+    .dh-toolbar {
       display: flex;
       justify-content: space-between;
-      border-bottom: 1px solid rgba(229, 231, 235, 0.3);
-      padding: 16px 12px;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      flex-shrink: 0;
+      flex-wrap: wrap;
     }
 
-    .management-delivery thead .tableHead,
-    .management-delivery tbody tr {
-      display: grid;
-      grid-template-columns: 40px minmax(180px, 180px) minmax(280px, 280px) repeat(9, minmax(0, 1fr));
+    .eh-toolbar-left,
+    .dh-toolbar-left {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
     }
 
-    .management-delivery th,
-    .management-delivery td {
-      padding: 12px 8px;
-      text-align: center;
-      font-size: 11px;
-      color: white;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
-    }
-
-    .management-delivery th:nth-child(3),
-    .management-delivery td:nth-child(3) {
-      padding-left: 12px;
-    }
-
-    .management-delivery th:nth-child(5),
-    .management-delivery td:nth-child(5) {
-      padding-left: 12px;
-    }
-
-    .management-delivery tr:last-child td {
-      border-bottom: none;
-    }
-
-    .management-delivery tbody::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-
-    .management-delivery tbody::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-    }
-
-    .management-delivery tbody::-webkit-scrollbar-thumb {
-      background: rgba(102, 126, 234, 0.6);
-      border-radius: 4px;
-    }
-
-    .management-delivery tbody::-webkit-scrollbar-thumb:hover {
-      background: rgba(102, 126, 234, 0.8);
-    }
-
-    #factorySelect {
+    /* ─── Shared select style ─── */
+    .eh-factory-select,
+    #factorySelectDelivery {
       padding: 6px 8px;
       border-radius: 4px;
       border: none;
@@ -273,17 +368,21 @@
       font-size: 14px;
     }
 
-    #factorySelect:focus {
+    .eh-factory-select:focus,
+    #factorySelectDelivery:focus {
       outline: none;
       background: rgba(255, 255, 255, 0.2);
     }
 
-    #factorySelect option {
+    .eh-factory-select option,
+    #factorySelectDelivery option {
       background-color: #2b2b2bb7;
       color: white;
     }
 
-    #clearFilters {
+    /* ─── Shared clear button ─── */
+    .eh-clear-btn,
+    #clearFiltersDelivery {
       background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
       border: none;
       color: white;
@@ -294,24 +393,12 @@
       transition: all 0.3s ease;
     }
 
-    #clearFilters:hover {
+    .eh-clear-btn:hover,
+    #clearFiltersDelivery:hover {
       background: linear-gradient(135deg, #05855c 0%, #225ad3 100%);
     }
 
-    .date-filter {
-      padding: 6px 8px;
-      border-radius: 4px;
-      border: none;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      font-size: 14px;
-      display: inline;
-    }
-
-    input[type="date"]::-webkit-calendar-picker-indicator {
-      filter: invert(1);
-    }
-
+    /* ─── Shared search input ─── */
     .searchText {
       padding: 8px 12px;
       border-radius: 4px;
@@ -331,6 +418,44 @@
       background: rgba(255, 255, 255, 0.2);
     }
 
+    /* ─── Date range picker ─── */
+    .date-filter {
+      padding: 8px;
+      border-radius: 4px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 14px;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+    }
+
+    .date-range-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .date-range-input {
+      cursor: pointer;
+      min-width: 200px;
+      caret-color: transparent;
+      user-select: none;
+    }
+
+    .date-range-hidden {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 1px;
+      pointer-events: none;
+      top: 100%;
+      left: 0;
+    }
+
+    /* ─── Pagination ─── */
     .pagination {
       display: flex;
       justify-content: center;
@@ -358,6 +483,261 @@
       background: rgba(102, 126, 234, 0.3);
       cursor: not-allowed;
       opacity: 0.5;
+    }
+
+    /* ─── Event History container (giống dh-container) ─── */
+    .eh-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #060c21;
+      border-radius: 12px;
+    }
+
+    .eh-table-header {
+      display: grid;
+      grid-template-columns: 0.3fr 2.5fr 1fr 1.2fr 0.5fr 0.5fr 1fr 1fr 0.9fr 0.6fr 1.4fr;
+      align-items: stretch;
+      text-align: center;
+      padding: 0;
+      text-transform: uppercase;
+      font-weight: bold;
+      font-size: 14px;
+      background-color: #1e2235;
+      color: #fff;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .eh-table-header>div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 6px;
+      border-right: 1px solid rgba(255, 255, 255, 0.25);
+      border-bottom: 2px solid rgba(255, 255, 255, 0.25);
+      box-sizing: border-box;
+    }
+
+    .eh-table-header>div:last-child {
+      border-right: none;
+    }
+
+    /* ─── Căn chỉnh cột ───────────────────────────────────────────── */
+    .col-num {
+      justify-content: flex-end !important;
+      text-align: right !important;
+    }
+
+    .col-text {
+      justify-content: flex-start !important;
+      text-align: left !important;
+    }
+
+    .col-center {
+      justify-content: center !important;
+      text-align: center !important;
+    }
+
+    .eh-table-body {
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex: 1;
+      scrollbar-gutter: stable;
+    }
+
+
+    .eh-table-row {
+      display: grid;
+      grid-template-columns: 0.3fr 2.5fr 1fr 1.2fr 0.5fr 0.5fr 1fr 1fr 0.9fr 0.6fr 1.4fr;
+      align-items: stretch;
+      text-align: center;
+      padding: 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+      color: #e3e2e9;
+      font-size: 14px;
+    }
+
+    .eh-table-row>div {
+      padding: 8px 6px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      border-right: 1px solid rgba(255, 255, 255, 0.25);
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .eh-table-row>div:last-child {
+      border-right: none;
+    }
+
+    .eh-table-row:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* ─── Delivery History container ─── */
+    .dh-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #060c21;
+      border-radius: 12px;
+    }
+
+    .dh-table-header,
+    .dh-table-row {
+      display: grid;
+      grid-template-columns: 0.4fr 1.2fr 1.5fr 0.8fr 1fr 1fr 1fr 1.2fr 1.2fr 1.2fr 1.2fr;
+      align-items: stretch;
+      text-align: center;
+      padding: 0;
+      width: 100%;
+    }
+
+    .dh-table-header {
+      text-transform: uppercase;
+      font-weight: bold;
+      font-size: 14px;
+      background-color: #1e2235;
+      color: #fff;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .dh-table-header>div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 10px 6px;
+      border-right: 1px solid rgba(255, 255, 255, 0.25);
+      border-bottom: 2px solid rgba(255, 255, 255, 0.25);
+      box-sizing: border-box;
+      min-width: 0;
+    }
+
+    .dh-table-header>div:last-child {
+      border-right: none;
+    }
+
+    .dh-table-row>div {
+      padding: 5px 8px;
+      border-right: 1px solid rgba(255, 255, 255, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      min-width: 0;
+    }
+
+    .dh-table-row>div:last-child {
+      border-right: none;
+    }
+
+    .dh-sortable {
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .dh-sortable:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #6dd5ed;
+    }
+
+    body.light-theme .dh-sortable:hover {
+      background: rgba(0, 0, 0, 0.06);
+      color: #1a5276;
+    }
+
+    .eh-table-body,
+    .dh-table-body {
+      overflow-y: scroll;
+      overflow-x: hidden;
+      flex: 1;
+    }
+
+
+    .dh-table-row {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+      color: #e3e2e9;
+      font-size: 14px;
+    }
+
+    .dh-table-row:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .dh-status-badge {
+      padding: 1px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+      display: inline-block;
+    }
+
+    .dh-status-badge.complete {
+      background-color: rgba(0, 128, 0, 0.5);
+      color: white;
+      border: 1px solid #159957;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+    }
+
+    .dh-status-badge.wait {
+      background-color: rgba(255, 165, 0, 0.5);
+      color: white;
+      border: 1px solid #f5af19;
+    }
+
+    .dh-status-badge.run {
+      background-color: rgba(109, 213, 237, 0.5);
+      color: white;
+      border: 1px solid #0083B0;
+    }
+
+    .dh-first-export-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.15));
+      color: #34d399;
+      border: 1px solid rgba(52, 211, 153, 0.4);
+    }
+
+    .search-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .search-wrap .search-icon {
+      position: absolute;
+      left: 10px;
+      color: #9ca3af;
+      pointer-events: none;
+      flex-shrink: 0;
+    }
+
+    .search-wrap .searchText {
+      padding-left: 32px;
+      /* đẩy text sang phải để không đè icon */
     }
 
     /* Change Password Modal */
@@ -617,91 +997,177 @@
 </head>
 
 <body>
-
-
   <div class="all">
-    <!-- Navigation -->
-
-<app-header active="history"></app-header>
+    <app-header active="history"></app-header>
     <div class="container">
       <div class="content-left">
-        <div class="management-delivery">
-          <table>
-            <thead>
-              <tr class="filter-row">
-                <!-- id để JS set text -->
-                <th id="th-history-title" colspan="1"
-                  style="text-align:left;font-size:18px;padding-bottom:10px;text-transform:uppercase;">
-                  Delivery History
-                </th>
-                <th colspan="2">
-                  <input class="searchText" type="text" id="searchTextDelivery"
-                    placeholder="Search Mobis Code, Model ID">
-                </th>
-                <th colspan="2">
-                  <span id="lbl-factory">Factory:</span>
-                  <select name="factory" id="factorySelect">
-                    <option value="V0" selected>V0</option>
-                    <option value="V5">V5</option>
-                  </select>
-                </th>
-                <th style="display:flex;">
-                  <div><input type="date" id="deliveryDateFrom" class="date-filter"></div>
-                  <div style="margin:0 10px;"><span>~</span></div>
-                  <div><input type="date" id="deliveryDateTo" class="date-filter"></div>
-                </th>
-                <th colspan="1">
-                  <button id="clearFilters">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                      stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                      <path d="M3 3v5h5" />
-                      <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
-                      <path d="M16 16h5v5" />
-                    </svg>
-                  </button>
-                </th>
-              </tr>
-            <tr class="tableHead">
-              <th id="th-his-stt">STT</th>
-              <th id="th-his-modelId">Model Id</th>
-              <th id="th-his-qr">QR</th>
-              <th id="th-his-mobisCode">Mobis Code</th>
-              <th id="th-his-modelName">Model Name</th>
-              <th id="th-his-type">Type</th>
-              <th id="th-his-target">Target</th>
-              <th id="th-his-evenQuantity">Even Quantity</th>
-              <th id="th-his-shippingDate">Shipping Date</th>
-              <th id="th-his-shippingMethod">Shipping Method</th>
-              <th id="th-his-eventUser">Event User</th>
-              <th id="th-his-eventTime">Event Time</th>
-            </tr>
-            </thead>
-            <tbody id="DeliveryTableBody"></tbody>
-          </table>
+
+        <!-- Tab pill switcher -->
+        <div class="tab-pill-bar">
+          <button class="tab-pill active" id="tabBtnEventHistory" data-tab="eventHistory">Event History</button>
+          <button class="tab-pill" id="tabBtnDeliveryHistory" data-tab="deliveryHistory">Delivery History</button>
         </div>
-        <div class="pagination">
-          <button id="prevPage">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="m12 19-7-7 7-7" />
-              <path d="M19 12H5" />
-            </svg>
-          </button>
-          <button id="nextPage">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M5 12h14" />
-              <path d="m12 5 7 7-7 7" />
-            </svg>
-          </button>
+
+        <!-- ─── TAB 1: Event History ─── -->
+        <div class="tab-panel active" id="panelEventHistory">
+
+          <!-- Toolbar ra ngoài bảng, đồng bộ với Delivery History -->
+          <div class="eh-toolbar">
+            <div class="eh-toolbar-left">
+              <select class="eh-factory-select" name="factory" id="factorySelect">
+                <option value="V0" selected>V0</option>
+                <option value="V5">V5</option>
+              </select>
+              <div class="search-wrap">
+                <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.35-4.35" />
+                </svg>
+                <input class="searchText" type="text" id="searchTextDelivery">
+              </div>
+              <input type="text" id="deliveryDateRangeText" class="date-filter" readonly placeholder="Chọn khoảng ngày"
+                style="cursor:pointer;min-width:200px;caret-color:transparent">
+
+              <button class="eh-clear-btn" id="clearFilters">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                  <path d="M3 3v5h5" />
+                  <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+                  <path d="M16 16h5v5" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Bảng dạng grid giống Delivery History -->
+          <div class="eh-container">
+            <div class="eh-table-body" id="DeliveryTableBody">
+              <div class="eh-table-header">
+                <div id="th-his-stt">STT</div>
+                <div id="th-his-qr">QR</div>
+                <div id="th-his-mobisCode">Mobis Code</div>
+                <div id="th-his-modelName">Model Name</div>
+                <div id="th-his-type">Type</div>
+                <div id="th-his-target">Target</div>
+                <div id="th-his-evenQuantity">Quantity</div>
+                <div id="th-his-shippingDate">Shipping Date</div>
+                <div id="th-his-shippingMethod">Ship Method</div>
+                <div id="th-his-eventUser">User</div>
+                <div id="th-his-eventTime">Event Time</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pagination">
+            <button id="prevPage">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m12 19-7-7 7-7" />
+                <path d="M19 12H5" />
+              </svg>
+            </button>
+            <button id="nextPage">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14" />
+                <path d="m12 5 7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- ─── TAB 2: Delivery History ─── -->
+        <div class="tab-panel" id="panelDeliveryHistory">
+          <div class="dh-toolbar">
+            <div class="dh-toolbar-left">
+              <select id="factorySelectDelivery">
+                <option value="v0" selected>V0</option>
+                <option value="v5">V5</option>
+              </select>
+              <div class="search-wrap">
+                <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.35-4.35" />
+                </svg>
+                <input class="searchText" type="text" id="dhSearchText">
+              </div>
+              <input type="text" id="dhDateRangeText" class="date-filter" readonly placeholder="Chọn khoảng ngày"
+                style="cursor:pointer;min-width:200px;caret-color:transparent">
+              <button id="clearFiltersDelivery">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                  <path d="M3 3v5h5" />
+                  <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+                  <path d="M16 16h5v5" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="dh-container">
+            <div class="dh-table-body" id="dhTableBody">
+              <div class="dh-table-header" id="dhTableHeader">
+                <div>STT</div>
+                <div>MOBIS CODE</div>
+                <div>MODEL NAME</div>
+                <div>TYPE</div>
+                <div>STATUS</div>
+                <div>TARGET</div>
+                <div>QUANTITY</div>
+                <div>SHIPPING DATE</div>
+                <div>SHIPPING METHOD</div>
+                <div class="dh-sortable" id="dhSortFirstExport">
+                  FIRST EXPORT
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m3 16 4 4 4-4" />
+                    <path d="M7 20V4" />
+                    <path d="m21 8-4-4-4 4" />
+                    <path d="M17 4v16" />
+                  </svg>
+                </div>
+                <div class="dh-sortable" id="dhSortArriveDate">
+                  ARRIVE DATE
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m3 16 4 4 4-4" />
+                    <path d="M7 20V4" />
+                    <path d="m21 8-4-4-4 4" />
+                    <path d="M17 4v16" />
+                  </svg>
+                </div>
+              </div>
+              <div class="dh-table-body" id="dhTableBody"></div>
+            </div>
+
+            <div class="pagination">
+              <button id="dhPrevPage">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m12 19-7-7 7-7" />
+                  <path d="M19 12H5" />
+                </svg>
+              </button>
+              <button id="dhNextPage">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14" />
+                  <path d="m12 5 7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
 
-  </div>
-
-  <script src="/js/dayjs.min.js"></script>
+    <script src="/js/history.js"></script>
+    <script src="/js/dayjs.min.js"></script>
 </body>
 
 </html>

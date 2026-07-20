@@ -114,6 +114,14 @@ const Modal = (() => {
         margin: 0 0 18px;
         opacity: 0.82;
       }
+      .mn-message .sea-label {
+        font-weight: 700;
+      }
+      .mn-message .sea-days {
+        font-weight: 700;
+        font-size: 4em;
+        color: #c0392b;
+      }
       .mn-footer {
         display: flex;
         justify-content: flex-end;
@@ -146,6 +154,58 @@ const Modal = (() => {
       @keyframes mn-fade-out  { from { opacity:1 } to { opacity:0 } }
       @keyframes mn-slide-in  { from { transform: translateY(-18px) scale(0.96); opacity:0 } to { transform: translateY(0) scale(1); opacity:1 } }
       @keyframes mn-slide-out { from { transform: scale(1); opacity:1 } to { transform: scale(0.94); opacity:0 } }
+
+      /* ─── Sea Alert Modal ─── */
+      .mn-box.mn-sea-box {
+        max-width: 560px;
+      }
+      .mn-sea-title {
+        font-size: 17px;
+        font-weight: 700;
+        margin: 0 0 18px;
+        line-height: 1.3;
+      }
+      .mn-sea-content {
+        display: flex;
+        align-items: stretch;
+        gap: 16px;
+        margin-bottom: 20px;
+        min-height: 140px;
+      }
+      .mn-sea-left {
+        flex: 1 1 50%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 8px;
+        font-size: 14.5px;
+        line-height: 1.7;
+      }
+      .mn-sea-left .sea-label {
+        font-weight: 700;
+      }
+      .mn-sea-right {
+        flex: 1 1 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .mn-sea-divider {
+        width: 1.5px;
+        align-self: stretch;
+        background: currentColor;
+        opacity: 0.6;
+      }
+      .mn-sea-days-number {
+        font-weight: 900;
+        font-size: 6em;
+        line-height: 1;
+        color: #c0392b;
+      }
+      .mn-sea-footer {
+        display: flex;
+        justify-content: center;
+      }
     `;
     document.head.appendChild(style);
   }
@@ -201,7 +261,7 @@ const Modal = (() => {
         ${
           showClose
             ? `
-        <button class="mn-close-btn" aria-label="Đóng">
+        <button class="mn-close-btn" aria-label="${_t ? _t("modal.closeButton") : "Đóng"}">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
           </svg>
@@ -255,7 +315,208 @@ const Modal = (() => {
     return { close: closeModal };
   }
 
-  return { show, init };
+  // ─── Sea Alert Modal ──────────────────────────────────────────────────────
+  // Dedicated layout for the first-export SEA shipment notification:
+  // left half shows mobiscode info, right half shows a large "days left"
+  // number, and the close button is centered at the bottom.
+  function showSeaAlert(options = {}) {
+    const {
+      title = _t ? _t("modal.defaultTitle") : "Thông báo",
+      mobiscode = "",
+      days = "",
+      daysLabel = "",
+      confirmLabel = _t ? _t("modal.confirmButton") : "Xác nhận",
+      type = "warning",
+      onClose,
+    } = options;
+
+    injectStyles();
+
+    const theme = THEME[type] || THEME.warning;
+    const icon = ICONS[type] || ICONS.warning;
+
+    const backdrop = document.createElement("div");
+    backdrop.className = "mn-backdrop";
+    backdrop.setAttribute("role", "dialog");
+    backdrop.setAttribute("aria-modal", "true");
+    backdrop.setAttribute("aria-label", title);
+
+    const closeModal = () => close(backdrop, onClose);
+
+    backdrop.addEventListener("click", (e) => {
+      if (e.target === backdrop) closeModal();
+    });
+
+    backdrop.innerHTML = `
+      <div class="mn-box mn-sea-box" style="background:${theme.bg}; border-color:${theme.border}; color:${theme.text};">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+          <div class="mn-icon-wrap" style="background:${theme.icon}18; margin-bottom:0; flex-shrink:0;">
+            <span style="color:${theme.icon}; display:flex;">${icon}</span>
+          </div>
+          <p class="mn-sea-title" style="color:${theme.text}; margin:0;">${title}</p>
+        </div>
+        <div class="mn-sea-content">
+          <div class="mn-sea-left">
+            <div><span class="sea-label">Mobis code:</span> ${mobiscode}</div>
+            ${daysLabel ? `<div class="sea-label">${daysLabel}:</div>` : ""}
+          </div>
+          <div class="mn-sea-divider"></div>
+          <div class="mn-sea-right">
+            <div class="mn-sea-days-number">${days}</div>
+          </div>
+        </div>
+        <div class="mn-sea-footer">
+          <button class="mn-btn-close" style="background:${theme.icon}; color:#fff;">
+            ${confirmLabel}
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(backdrop);
+
+    backdrop
+      .querySelector(".mn-btn-close")
+      .addEventListener("click", closeModal);
+
+    return { close: closeModal };
+  }
+
+  // ─── Confirm Modal (Yes/No, bắt buộc chọn) ────────────────────────────────
+  // Không có nút đóng, không tắt khi click backdrop — chỉ tắt khi chọn Yes/No.
+  // Trả về Promise<boolean>: true nếu chọn Yes, false nếu chọn No.
+  function showConfirm(options = {}) {
+    const {
+      title = _t ? _t("modal.defaultTitle") : "Thông báo",
+      message = "",
+      type = "warning",
+      yesLabel = _t ? _t("modal.yesButton") : "Có",
+      noLabel = _t ? _t("modal.noButton") : "Không",
+    } = options;
+
+    return new Promise((resolve) => {
+      injectStyles();
+
+      const theme = THEME[type] || THEME.warning;
+      const icon = ICONS[type] || ICONS.warning;
+
+      const backdrop = document.createElement("div");
+      backdrop.className = "mn-backdrop";
+      backdrop.setAttribute("role", "dialog");
+      backdrop.setAttribute("aria-modal", "true");
+      backdrop.setAttribute("aria-label", title);
+
+      const finish = (result) => {
+        close(backdrop, () => resolve(result));
+      };
+
+      backdrop.innerHTML = `
+        <div class="mn-box" style="background:${theme.bg}; border-color:${theme.border};">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+            <div class="mn-icon-wrap" style="background:${theme.icon}18; margin-bottom:0; flex-shrink:0;">
+              <span style="color:${theme.icon}; display:flex;">${icon}</span>
+            </div>
+            <p class="mn-title" style="color:${theme.text}; margin:0;">${title}</p>
+          </div>
+          <p class="mn-message" style="color:${theme.text};">${message}</p>
+          <div class="mn-footer">
+            <button class="mn-btn-no" style="padding:8px 22px;border-radius:8px;border:1.5px solid ${theme.border};cursor:pointer;font-size:14px;font-weight:600;background:transparent;color:${theme.text};">
+              ${noLabel}
+            </button>
+            <button class="mn-btn-yes" style="padding:8px 22px;border-radius:8px;border:none;cursor:pointer;font-size:14px;font-weight:600;background:${theme.icon};color:#fff;">
+              ${yesLabel}
+            </button>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(backdrop);
+
+      backdrop
+        .querySelector(".mn-btn-yes")
+        .addEventListener("click", () => finish(true));
+      backdrop
+        .querySelector(".mn-btn-no")
+        .addEventListener("click", () => finish(false));
+
+      // Không gắn click-outside-to-close, không có nút X — bắt buộc chọn.
+    });
+  }
+
+  // ─── Sea Confirm Modal (layout to + Yes/No bắt buộc chọn) ─────────────────
+  // Giống showSeaAlert về layout (mobiscode trái, số ngày to bên phải),
+  // nhưng có 2 nút Yes/No, không tắt khi click backdrop.
+  // Trả về Promise<boolean>.
+  function showSeaConfirm(options = {}) {
+    const {
+      title = _t ? _t("modal.defaultTitle") : "Thông báo",
+      mobiscode = "",
+      days = "",
+      daysLabel = "",
+      yesLabel = _t ? _t("modal.yesButton") : "Có",
+      noLabel = _t ? _t("modal.noButton") : "Không",
+      type = "warning",
+    } = options;
+
+    return new Promise((resolve) => {
+      injectStyles();
+
+      const theme = THEME[type] || THEME.warning;
+      const icon = ICONS[type] || ICONS.warning;
+
+      const backdrop = document.createElement("div");
+      backdrop.className = "mn-backdrop";
+      backdrop.setAttribute("role", "dialog");
+      backdrop.setAttribute("aria-modal", "true");
+      backdrop.setAttribute("aria-label", title);
+
+      const finish = (result) => {
+        close(backdrop, () => resolve(result));
+      };
+
+      backdrop.innerHTML = `
+        <div class="mn-box mn-sea-box" style="background:${theme.bg}; border-color:${theme.border}; color:${theme.text};">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+            <div class="mn-icon-wrap" style="background:${theme.icon}18; margin-bottom:0; flex-shrink:0;">
+              <span style="color:${theme.icon}; display:flex;">${icon}</span>
+            </div>
+            <p class="mn-sea-title" style="color:${theme.text}; margin:0;">${title}</p>
+          </div>
+          <div class="mn-sea-content">
+            <div class="mn-sea-left">
+              <div><span class="sea-label">Mobis code:</span> ${mobiscode}</div>
+              ${daysLabel ? `<div class="sea-label">${daysLabel}:</div>` : ""}
+            </div>
+            <div class="mn-sea-divider"></div>
+            <div class="mn-sea-right">
+              <div class="mn-sea-days-number">${days}</div>
+            </div>
+          </div>
+          <div class="mn-sea-footer" style="gap:10px;">
+            <button class="mn-btn-no" style="padding:8px 22px;border-radius:8px;border:1.5px solid ${theme.border};cursor:pointer;font-size:14px;font-weight:600;background:transparent;color:${theme.text};">
+              ${noLabel}
+            </button>
+            <button class="mn-btn-yes" style="padding:8px 22px;border-radius:8px;border:none;cursor:pointer;font-size:14px;font-weight:600;background:${theme.icon};color:#fff;">
+              ${yesLabel}
+            </button>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(backdrop);
+
+      backdrop
+        .querySelector(".mn-btn-yes")
+        .addEventListener("click", () => finish(true));
+      backdrop
+        .querySelector(".mn-btn-no")
+        .addEventListener("click", () => finish(false));
+
+      // Không gắn click-outside-to-close — bắt buộc chọn Yes/No.
+    });
+  }
+
+  return { show, showSeaAlert, showConfirm, showSeaConfirm, init };
 })();
 
 export default Modal;

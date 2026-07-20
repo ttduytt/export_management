@@ -56,10 +56,6 @@ function applyLang() {
   set("tl-editor-title", t("translations.editorTitle"));
   set("tl-lbl-description", t("translations.fieldDescription"));
 
-  // Field placeholders
-  if (fieldVi) fieldVi.placeholder = t("translations.placeholderVi");
-  if (fieldEn) fieldEn.placeholder = t("translations.placeholderEn");
-  if (fieldKr) fieldKr.placeholder = t("translations.placeholderKr");
 
   // Field error texts
   set("tl-err-vi-text", t("translations.fieldErrorEmpty"));

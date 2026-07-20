@@ -42,24 +42,71 @@ function getStatusText(status) {
   return status;
 }
 
+const FIRST_EXPORT_TTL = 24 * 60 * 60 * 1000;
+const FIRST_EXPORT_PREFIX = "firstExport_shown_";
+
+function setExpiry(key, value, ttl) {
+  const item = { value, expiry: Date.now() + ttl };
+  localStorage.setItem(key, JSON.stringify(item));
+  setTimeout(() => localStorage.removeItem(key), ttl);
+}
+
+function getExpiry(key) {
+  const raw = localStorage.getItem(key);
+  if (!raw) return null;
+  try {
+    const item = JSON.parse(raw);
+    if (Date.now() > item.expiry) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    return item.value;
+  } catch {
+    localStorage.removeItem(key);
+    return null;
+  }
+}
+
+function cleanupExpiredFirstExportKeys() {
+  for (let i = localStorage.length - 1; i >= 0; i--) {
+    const key = localStorage.key(i);
+    if (!key || !key.startsWith(FIRST_EXPORT_PREFIX)) continue;
+    try {
+      const item = JSON.parse(localStorage.getItem(key));
+      const remaining = item.expiry - Date.now();
+      if (remaining <= 0) {
+        localStorage.removeItem(key);
+      } else {
+        setTimeout(() => localStorage.removeItem(key), remaining);
+      }
+    } catch {
+      localStorage.removeItem(key);
+    }
+  }
+}
+
 // ─── Apply language to static DOM elements ────────────────────────────────────
 async function applyLang() {
   document.title = t("title");
 
-  const brandLink = document.querySelector(".logo a");
-  if (brandLink) brandLink.textContent = t("nav.brand");
+  // Helper: chỉ cập nhật text node trong link, giữ nguyên SVG icon
+  const setLinkText = (selector, text) => {
+    const el = document.querySelector(selector);
+    if (!el) return;
+    let textNode = [...el.childNodes].findLast(
+      (n) => n.nodeType === Node.TEXT_NODE,
+    );
+    if (textNode) {
+      textNode.textContent = " " + text;
+    } else {
+      el.appendChild(document.createTextNode(" " + text));
+    }
+  };
 
-  const homeLink = document.querySelector(".home a");
-  if (homeLink) homeLink.textContent = t("nav.home");
-
-  const deliveryLink = document.querySelector(".delivery a");
-  if (deliveryLink) deliveryLink.textContent = t("nav.delivery");
-
-  const historyLink = document.querySelector(".history a");
-  if (historyLink) historyLink.textContent = t("nav.history");
-
-  const adminLink = document.querySelector(".admin a");
-  if (adminLink) adminLink.textContent = t("nav.admin");
+  setLinkText(".home a", t("nav.home"));
+  setLinkText(".delivery a", t("nav.delivery"));
+  setLinkText(".history a", t("nav.history"));
+  setLinkText(".admin a", t("nav.admin"));
 
   const cpNavLink = document.querySelector(".change-password a");
   if (cpNavLink) {
@@ -74,9 +121,7 @@ async function applyLang() {
   );
   if (importBtnText) importBtnText.textContent = " " + t("import");
 
-  if (searchInput) {
-    searchInput.placeholder = t("scanQR");
-  }
+  if (searchInput) searchInput.placeholder = t("scanQR");
 
   const listBtnText = [...listBtn.childNodes].find(
     (n) => n.nodeType === Node.TEXT_NODE && n.textContent.trim(),
@@ -181,9 +226,7 @@ async function getAll() {
 }
 
 function validateShipmentDate(value, rowIndex) {
-  if (value === null || value === undefined || value === "") {
-    return false;
-  }
+  if (value === null || value === undefined || value === "") return false;
 
   let dateObj = null;
 
@@ -234,9 +277,8 @@ function validateShipmentDate(value, rowIndex) {
     checkDate.getDate() !== dateObj.getDate() ||
     checkDate.getMonth() !== dateObj.getMonth() ||
     checkDate.getFullYear() !== dateObj.getFullYear()
-  ) {
+  )
     return false;
-  }
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -258,11 +300,10 @@ function validateRow(row, rowIndex) {
         t("delivery.alerts.emptyColumn", { row: rowIndex + 2, column: key }),
       );
     }
-
     switch (key) {
       case "targetquantity": {
         const num = Number(value);
-        if (Number.isNaN(num) || num <= 0) {
+        if (Number.isNaN(num) || num <= 0)
           throw new Error(
             t("delivery.alerts.invalidValue", {
               row: rowIndex + 2,
@@ -270,13 +311,12 @@ function validateRow(row, rowIndex) {
               value,
             }),
           );
-        }
         row[key] = num;
         break;
       }
       case "quantity": {
         const num = Number(value);
-        if (Number.isNaN(num) || num < 0) {
+        if (Number.isNaN(num) || num < 0)
           throw new Error(
             t("delivery.alerts.invalidValue", {
               row: rowIndex + 2,
@@ -284,7 +324,6 @@ function validateRow(row, rowIndex) {
               value,
             }),
           );
-        }
         row[key] = num;
         break;
       }
@@ -304,6 +343,25 @@ function validateRow(row, rowIndex) {
   }
 }
 
+async function checkAirFirstExportConflict(items) {
+  try {
+    const response = await fetch(
+      "/exportmanagement/delivery/checkAirFirstExportConflict",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items }),
+      },
+    );
+    if (!response.ok)
+      return { errors: [], errorsConflictSea: [], warnings: [] };
+    return await response.json();
+  } catch (error) {
+    console.error("Lỗi khi kiểm tra AIR first export conflict:", error);
+    return { errors: [], errorsConflictSea: [], warnings: [] };
+  }
+}
+
 async function addDeliveryAndHistory(rows) {
   try {
     const res = await fetch(`/exportmanagement/delivery/import`, {
@@ -311,9 +369,7 @@ async function addDeliveryAndHistory(rows) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username: user.username, deliveries: rows }),
     });
-
     const result = await res.json();
-
     if (!res.ok) {
       Modal.show({
         type: "error",
@@ -322,7 +378,6 @@ async function addDeliveryAndHistory(rows) {
       });
       return;
     }
-
     Modal.show({
       type: "success",
       title: t("modal.title.success"),
@@ -345,7 +400,6 @@ function validateSheet(workbook) {
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const year = now.getFullYear();
   const currentValue = Number(`${year}${month}`);
-
   return workbook.SheetNames.filter((sheetName) => {
     const parts = sheetName.split(".");
     if (parts.length !== 2) return false;
@@ -358,18 +412,15 @@ function validateSheet(workbook) {
 function validateExcelFile(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-
     reader.onload = function (e) {
       try {
         const seen = new Set();
         const validRows = [];
         const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, { type: "array" });
-
         const validSheets = validateSheet(workbook);
-        if (validSheets.length === 0) {
+        if (validSheets.length === 0)
           return reject(new Error(t("delivery.alerts.invalidSheet")));
-        }
 
         const requiredColumns = Object.keys(columnMapping);
 
@@ -377,7 +428,6 @@ function validateExcelFile(file) {
           const sheet = workbook.Sheets[sheetName];
           let headerRowIndex = null;
           let headerRow = null;
-
           const rawRows = XLSX.utils.sheet_to_json(sheet, {
             header: 1,
             defval: "",
@@ -425,7 +475,6 @@ function validateExcelFile(file) {
 
           for (let index = 0; index < rows.length; index++) {
             const row = rows[index];
-
             const keySignature = [
               row.mobiscode,
               row.shipmentdate,
@@ -439,13 +488,10 @@ function validateExcelFile(file) {
                   .toLowerCase(),
               )
               .join("|");
-
             if (seen.has(keySignature)) continue;
             seen.add(keySignature);
-
             const result = validateShipmentDate(row.shipmentdate, index);
             if (result === false) continue;
-
             row.shipmentdate = result;
             row.quantity = 0;
             row.firstexport = String(row.firstexport ?? "").trim();
@@ -454,15 +500,13 @@ function validateExcelFile(file) {
           }
         }
 
-        if (validRows.length < 1) {
+        if (validRows.length < 1)
           return reject(new Error(t("delivery.alerts.emptyFile")));
-        }
         resolve(validRows);
       } catch (err) {
         reject(err instanceof Error ? err : new Error(String(err)));
       }
     };
-
     reader.onerror = (err) =>
       reject(err instanceof Error ? err : new Error(String(err)));
     reader.readAsArrayBuffer(file);
@@ -478,39 +522,43 @@ function renderList() {
     return 0;
   });
 
-  listView.innerHTML = sortedData
-    .map((item, index) => {
-      const firstExportHtml =
-        item.first_export == 1
-          ? `<span class="first-export-badge"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg> </span>`
-          : "";
-      const shipmentDate = item.shipment_date
-        ? new Date(item.shipment_date).toLocaleDateString("vi-VN")
-        : "";
-      const arriveDate =
-        item.arrive_date !== null &&
-        item.arrive_date !== undefined &&
-        item.arrive_date !== ""
-          ? `${item.arrive_date}`
-          : "";
+  const tableHeader = document.getElementById("tableHeader");
+  const existingRows = listView.querySelectorAll(".table-row");
+  existingRows.forEach((r) => r.remove());
 
-      return `
-      <div class="table-row ${item.status.toLowerCase() === "run" ? "running" : ""}">
-        <div>${index + 1}</div>
-        <div>${item.mobis_code}</div>
-        <div>${item.model_name}</div>
-        <div>${item.type}</div>
-        <div><span class="status-badge ${item.status.toLowerCase()}">${getStatusText(item.status)}</span></div>
-        <div>${item.target}</div>
-        <div>${item.quantity}</div>
-        <div>${shipmentDate}</div>
-        <div>${item.shipping_method}</div>
-        <div>${firstExportHtml}</div>
-        <div>${arriveDate ? `<span style="color:red;font-weight:900;font-size:16px">${arriveDate}</span>` : ""}</div>
-      </div>
+  sortedData.forEach((item, index) => {
+    const firstExportHtml =
+      item.first_export == 1
+        ? `<span class="first-export-badge"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span>`
+        : "";
+    const shipmentDate = item.shipment_date
+      ? new Date(item.shipment_date).toLocaleDateString("vi-VN")
+      : "";
+    const arriveDate =
+      item.first_export == 1 &&
+      item.arrive_date !== null &&
+      item.arrive_date !== undefined &&
+      item.arrive_date !== ""
+        ? `${item.arrive_date}`
+        : "";
+
+    const row = document.createElement("div");
+    row.className = `table-row ${item.status.toLowerCase() === "run" ? "running" : ""}`;
+    row.innerHTML = `
+      <div class="col-center">${index + 1}</div>
+      <div class="col-text">${item.mobis_code}</div>
+      <div class="col-text">${item.model_name}</div>
+      <div class="col-center">${item.type}</div>
+      <div class="col-center"><span class="status-badge ${item.status.toLowerCase()}">${getStatusText(item.status)}</span></div>
+      <div class="col-num">${item.target}</div>
+      <div class="col-num">${item.quantity}</div>
+      <div class="col-center">${shipmentDate}</div>
+      <div class="col-center">${item.shipping_method}</div>
+      <div class="col-center">${firstExportHtml}</div>
+      <div class="col-num">${arriveDate ? `<span style="color:red;font-weight:900;font-size:35px;line-height: 0;">${arriveDate}</span>` : ""}</div>
     `;
-    })
-    .join("");
+    listView.appendChild(row);
+  });
 }
 
 function renderGrid() {
@@ -526,12 +574,13 @@ function renderGrid() {
     .map((item) => {
       const firstExportHtml =
         item.first_export == 1
-          ? `<span class="first-export-badge"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg></span>`
+          ? `<span class="first-export-badge"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>`
           : "";
       const shipmentDate = item.shipment_date
         ? new Date(item.shipment_date).toLocaleDateString("vi-VN")
         : "";
       const arriveDate =
+        item.first_export == 1 &&
         item.arrive_date !== null &&
         item.arrive_date !== undefined &&
         item.arrive_date !== ""
@@ -540,11 +589,9 @@ function renderGrid() {
 
       return `
       <div class="card ${item.status === "Run" ? "running" : ""}">
-        <div class="card-header">
-          <strong>${item.model_name}</strong>
-        </div>
+        <div class="card-header"><strong>${item.model_name}</strong></div>
         <div class="card-body">
-          <div><strong>${t("admin.delivery.table.mobisCode")}:</strong> ${item.mobis_code}</div>
+          <div><strong>${t("admin.delivery.table.mobisCode")}:</strong> ${item.mobis_code}</div>l
           <div><strong>${t("admin.delivery.table.type")}:</strong> ${item.type}</div>
           <div><strong>${t("admin.delivery.table.target")}:</strong> ${item.target}</div>
           <div><strong>${t("admin.delivery.table.quantity")}:</strong> ${item.quantity}</div>
@@ -555,7 +602,7 @@ function renderGrid() {
           <div><strong>${t("admin.delivery.table.arriveDate")}:</strong> ${arriveDate ? `<span style="color:red;font-weight:900;font-size:16px">${arriveDate}</span>` : ""}</div>
         </div>
       </div>
-      `;
+    `;
     })
     .join("");
 }
@@ -579,9 +626,7 @@ listBtn.addEventListener("click", () => {
   tableHeader.classList.remove("hidden");
 });
 
-importBtn.addEventListener("click", () => {
-  excelInput.click();
-});
+importBtn.addEventListener("click", () => excelInput.click());
 
 excelInput.addEventListener("change", async () => {
   const file = excelInput.files[0];
@@ -594,9 +639,73 @@ excelInput.addEventListener("change", async () => {
     });
     return;
   }
-
   try {
     const rows = await validateExcelFile(file);
+
+    const airItems = rows
+      .filter((r) => r.shippingmethod?.toUpperCase() === "AIR")
+      .map((r) => ({
+        mobiscode: r.mobiscode,
+        shipmentdate: r.shipmentdate,
+        firstexport: r.firstexport,
+        factory: r.factory,
+      }));
+
+    if (airItems.length > 0) {
+      const { errors, errorsConflictSea, warnings } =
+        await checkAirFirstExportConflict(airItems);
+
+      if (errors.length > 0) {
+        const first = errors[0];
+
+        await new Promise((resolve) => {
+          Modal.showSeaAlert({
+            type: "error",
+            title: t("delivery.alerts.firstExportAirInvalid", {
+              mobiscode: first.mobiscode,
+              seaShipmentDate: first.sea_shipment_date,
+            }),
+            mobiscode: first.mobiscode,
+            days: first.days_left,
+            daysLabel: t("delivery.alerts.daysLeftLabel"),
+            confirmLabel: t("modal.closeButton"),
+            onClose: resolve,
+          });
+        });
+
+        return;
+      }
+
+      if (errorsConflictSea.length > 0) {
+        const first = errorsConflictSea[0];
+        await new Promise((resolve) => {
+          Modal.showSeaAlert({
+            type: "error",
+            title: t("delivery.alerts.airNotArrivedErrorTitle"),
+            mobiscode: first.mobiscode,
+            days: first.days_left,
+            daysLabel: t("delivery.alerts.daysLeftLabel"),
+            confirmLabel: t("modal.closeButton"),
+            onClose: resolve,
+          });
+        });
+        return;
+      }
+
+      if (warnings.length > 0) {
+        for (const w of warnings) {
+          const confirmed = await Modal.showSeaConfirm({
+            type: "warning",
+            title: t("delivery.alerts.airNotArrivedWarningTitle"),
+            mobiscode: w.mobiscode,
+            days: w.days_left,
+            daysLabel: t("delivery.alerts.daysLeftLabel"),
+          });
+          if (!confirmed) return; // chỉ cần 1 cái không xác nhận -> hủy import
+        }
+      }
+    }
+
     await addDeliveryAndHistory(rows);
   } catch (err) {
     Modal.show({
@@ -692,9 +801,7 @@ async function updateDelivery(username, factory, delivery, qr) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, factory, delivery, qr }),
     });
-
     if (!response.ok) throw new Error(`Lỗi HTTP: ${response.status}`);
-
     const result = await response.json();
     return result;
   } catch (error) {
@@ -774,33 +881,26 @@ searchInput.addEventListener("keydown", async (e) => {
       qrData.mobiscode,
       factorySelected,
     );
-    const storageKey = `firstExport_shown_${qrData.mobiscode}`;
-    const alreadyShown = sessionStorage.getItem(storageKey);
 
     if (
       isFirstExport.firstExport &&
       isFirstExport.seaData?.arrive_date &&
-      !alreadyShown
+      delivery.shipping_method === "AIR"
     ) {
-      const daysLeft = Number(isFirstExport.seaData.arrive_date);
-      const locale = I18n._lang === "vi" ? "vi-VN" : "en-GB";
+      const storageKey = `${FIRST_EXPORT_PREFIX}${qrData.mobiscode}_${isFirstExport.seaData.shipment_date}`;
+      const alreadyShown = getExpiry(storageKey);
 
-      sessionStorage.setItem(storageKey, "1");
-
-      const shipmentDate = new Date(
-        isFirstExport.seaData.shipment_date,
-      ).toLocaleDateString(locale);
-
-      Modal.show({
-        type: "warning",
-        title: t("delivery.alerts.notificationTitle"),
-        message: t("delivery.alerts.seaNotificationMessage", {
+      if (!alreadyShown) {
+        const daysLeft = Number(isFirstExport.seaData.arrive_date);
+        setExpiry(storageKey, "1", FIRST_EXPORT_TTL);
+        Modal.showSeaAlert({
+          title: t("delivery.alerts.notificationTitle"),
           mobiscode: qrData.mobiscode,
           days: daysLeft,
-        }),
-        showClose: true,
-        onClose: () => searchInput?.focus(),
-      });
+          daysLabel: t("delivery.alerts.daysLeftLabel"),
+          onClose: () => searchInput?.focus(),
+        });
+      }
     }
 
     let newQuantity = Number(delivery.quantity) + Number(qrData.quantity);
@@ -866,6 +966,7 @@ async function bootstrap() {
   await I18n.init("en");
   t = (key, params) => I18n.t(key, params);
   Modal.init(t);
+  cleanupExpiredFirstExportKeys();
 
   user = await getUserProfile();
   document.querySelector("app-header")?.setUser(user);

@@ -6,15 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="/images/logoweb.jpg" type="image/x-icon">
   <script src="/js/highcharts.js"></script>
-
-  <!-- ① Load header component (registers <app-header>) -->
   <script type="module" src="/js/header.js"></script>
-  <!-- ② Page-level JS -->
   <script type="module" src="/js/management.js"></script>
-
   <title>Delivery Management - Management Dashboard</title>
   <style>
-    /* ─── Reset & base ─────────────────────────────────────── */
     * {
       margin: 0;
       padding: 0;
@@ -28,7 +23,24 @@
       background-color: #040818;
     }
 
-    /* ─── Light theme (page-level) ─────────────────────────── */
+    :root {
+      --thead-bg: #3b4689;
+      --thead-border: rgba(255, 255, 255, 0.25);
+      --thead-color: #ffffff;
+      --tbody-border: rgba(255, 255, 255, 0.12);
+      --tbody-hover: rgba(255, 255, 255, 0.05);
+      --td-color: #ffffff;
+    }
+
+    body.light-theme {
+      --thead-bg: #1a5276;
+      --thead-border: rgba(255, 255, 255, 0.3);
+      --thead-color: #ffffff;
+      --tbody-border: rgba(0, 0, 0, 0.12);
+      --tbody-hover: #e8f4fd;
+      --td-color: #1f2937;
+    }
+
     body.light-theme {
       background-color: white;
       color: #e3e2e9;
@@ -70,50 +82,39 @@
       color: #6b7280;
     }
 
-    body.light-theme .management-user,
-    body.light-theme .management-delivery-spec,
-    body.light-theme .management-delivery {
+    body.light-theme footer {
+      color: #6b7280;
       background: white;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      border: 1px solid #e5e7eb;
+      border-top: 1px solid #e5e7eb;
     }
 
-    body.light-theme .management-user th,
-    body.light-theme .management-delivery-spec th,
-    body.light-theme .management-delivery th {
-      background: #f3f4f6;
-      color: #374151;
+    body.light-theme mark {
+      background-color: #fef08a;
+      color: #854d0e;
     }
 
-    body.light-theme .management-user td,
-    body.light-theme .management-delivery-spec td,
-    body.light-theme .management-delivery td {
-      color: #1f2937;
-      border-bottom: 1px solid #e5e7eb;
+    body.light-theme .highcharts-title,
+    body.light-theme .highcharts-subtitle,
+    body.light-theme .highcharts-axis-labels text,
+    body.light-theme .highcharts-legend-item text,
+    body.light-theme .highcharts-data-label text,
+    body.light-theme .highcharts-label text {
+      fill: #1f2937 !important;
     }
 
-    body.light-theme .management-user tr:hover,
-    body.light-theme .management-delivery-spec tr:hover,
-    body.light-theme .management-delivery tr:hover {
-      background: #f9fafb;
+    body.light-theme .highcharts-axis-line,
+    body.light-theme .highcharts-tick {
+      stroke: #9ca3af !important;
     }
 
-    body.light-theme .management-user tbody::-webkit-scrollbar-track,
-    body.light-theme .management-delivery-spec tbody::-webkit-scrollbar-track,
-    body.light-theme .management-delivery tbody::-webkit-scrollbar-track {
-      background: #f3f4f6;
+    body.light-theme .highcharts-grid-line {
+      stroke: #e5e7eb !important;
     }
 
-    body.light-theme .management-user tbody::-webkit-scrollbar-thumb,
-    body.light-theme .management-delivery-spec tbody::-webkit-scrollbar-thumb,
-    body.light-theme .management-delivery tbody::-webkit-scrollbar-thumb {
-      background: #d1d5db;
-    }
-
-    body.light-theme .management-user tbody::-webkit-scrollbar-thumb:hover,
-    body.light-theme .management-delivery-spec tbody::-webkit-scrollbar-thumb:hover,
-    body.light-theme .management-delivery tbody::-webkit-scrollbar-thumb:hover {
-      background: #9ca3af;
+    body.light-theme .grid-table-wrap {
+      background: white;
+      border: 1px solid #b0c4d8;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
 
     body.light-theme #factorySelect,
@@ -150,7 +151,7 @@
     body.light-theme .import,
     body.light-theme .export,
     body.light-theme .add-spec {
-      background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+      background: none;
     }
 
     body.light-theme .add-user:hover,
@@ -212,36 +213,31 @@
       border: 1px solid #f59e0b;
     }
 
-    body.light-theme footer {
-      color: #6b7280;
-      background: white;
-      border-top: 1px solid #e5e7eb;
+
+
+    body.light-theme .grid-tr {
+      background-color: #ffffff;
     }
 
-    body.light-theme mark {
-      background-color: #fef08a;
-      color: #854d0e;
+    body.light-theme .grid-tr:hover {
+      background: #f9fafb;
     }
 
-    body.light-theme .highcharts-title,
-    body.light-theme .highcharts-subtitle,
-    body.light-theme .highcharts-axis-labels text,
-    body.light-theme .highcharts-legend-item text,
-    body.light-theme .highcharts-data-label text,
-    body.light-theme .highcharts-label text {
-      fill: #1f2937 !important;
+    body.light-theme .grid-tr:not(:last-child) .grid-td {
+      border-bottom: none;
     }
 
-    body.light-theme .highcharts-axis-line,
-    body.light-theme .highcharts-tick {
-      stroke: #9ca3af !important;
+    body.light-theme .grid-td {
+      border: 1px solid rgba(0, 0, 0, 0.45);
+      ;
+      color: #1f2937;
     }
 
-    body.light-theme .highcharts-grid-line {
-      stroke: #e5e7eb !important;
+    body.light-theme .grid-th {
+      border-bottom: 2px solid rgba(0, 0, 0, 0.45);
     }
 
-    /* ─── Layout ────────────────────────────────────────────── */
+    /* ── Layout ── */
     footer {
       color: white;
       font-size: 12px;
@@ -256,23 +252,20 @@
     .container {
       display: flex;
       color: white;
+      flex-direction: column;
+      height: auto;
       margin-top: 16px;
     }
 
-    .logout span {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
     .top-row {
+      display: flex;
+      flex-direction: column;
       gap: 20px;
       width: 40%;
       height: 100%;
       flex: 1;
       color: white;
       flex-wrap: wrap;
-      margin: 0 0 0 20px;
     }
 
     .bottom-row {
@@ -283,20 +276,26 @@
       flex: 1;
       color: white;
       flex-wrap: wrap;
-      margin: 0 20px 0 0;
-      padding-left: 24px;
     }
 
-    /* ─── Welcome card ──────────────────────────────────────── */
+    .top-row,
+    .bottom-row {
+      width: calc(100% - 20px);
+      margin: 10px;
+    }
+
+    /* ── Welcome card ── */
     .welcome-card {
-      width: 100.7%;
       display: flex;
-      height: 200px;
       justify-content: space-between;
       align-items: center;
       background: linear-gradient(135deg, rgba(102, 126, 234, .25) 0%, rgba(118, 75, 162, .25) 100%);
       border-radius: 8px;
       padding: 30px 20px;
+      flex-direction: row;
+      height: auto;
+      text-align: center;
+      width: auto;
     }
 
     .welcome-left {
@@ -341,16 +340,18 @@
     }
 
     .welcome-right img {
-      width: 340px;
-      height: auto;
+      width: 100%;
+      max-width: 350px;
+      margin-top: 20px;
     }
 
-    /* ─── Charts ────────────────────────────────────────────── */
+    /* ── Charts ── */
     .chart-row {
       display: flex;
+      flex-direction: row;
       gap: 20px;
       width: 100%;
-      margin: 10px 0;
+      margin: 0;
     }
 
     .chart-card {
@@ -386,92 +387,218 @@
       height: 100% !important;
     }
 
-    /* ─── User management table ─────────────────────────────── */
-    .management-user {
-      flex: 1;
-      width: 100%;
+    .grid-table-wrap {
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, .05);
-      background: linear-gradient(135deg, rgba(102, 126, 234, .25) 0%, rgba(118, 75, 162, .25) 100%);
-      max-height: 300px;
       overflow: hidden;
+      background: linear-gradient(135deg, rgba(102, 126, 234, .25) 0%, rgba(118, 75, 162, .25) 100%);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .05);
       display: flex;
       flex-direction: column;
-    }
-
-    .management-user table {
-      border-collapse: collapse;
-      width: 100%;
-      border: none;
-      background: transparent;
       flex: 1;
+      max-height: 400px;
     }
 
-    .management-user .table-container {
-      flex: 1;
-      overflow-y: auto;
-      max-height: 300px;
+    /* Toolbar */
+    .grid-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px 10px;
+      background-color: var(--thead-bg);
+      flex-wrap: wrap;
     }
 
-    .management-user th,
-    .management-user td {
-      padding: 12px 16px;
-      text-align: center;
-      border: none;
-      border-bottom: 1px solid #e5e7eb83;
-      font-size: 12px;
-    }
-
-    .management-user th {
-      background: rgba(102, 126, 234, .4);
-      color: #fff;
-      font-weight: 600;
-      position: sticky;
-      top: 0;
+    .grid-toolbar-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--thead-color);
       text-transform: uppercase;
-      z-index: 5;
+      white-space: nowrap;
+      margin-right: 20px;
     }
 
-    .management-user tbody {
-      display: block;
-      max-height: 200px;
+    /* Header */
+    .grid-thead {
+      background-color: var(--thead-bg);
+      border-top: 1px solid var(--thead-border);
+    }
+
+    .grid-row {
+      display: flex;
+      margin-right: 15px;
+    }
+
+    .grid-th {
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: bold;
+      color: var(--thead-color);
+      text-transform: uppercase;
+      text-align: center;
+      border-right: 1px solid var(--thead-border);
+      border-bottom: 2px solid var(--thead-border);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .grid-th:last-child {
+      border-right: none;
+    }
+
+    /* Body scroll */
+    .grid-tbody {
       overflow-y: auto;
-      overflow-x: hidden;
+      flex: 1;
     }
 
-    .management-user thead {
-      display: block;
+    .grid-tr {
+      display: flex;
+      transition: background .15s;
+      background-color: #060c21;
     }
 
-    .management-user tr {
-      display: table;
-      width: 100%;
-      table-layout: fixed;
+    .grid-tr:hover {
+      background: rgba(59, 70, 137, .18);
     }
 
-    .management-user tbody::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    .management-user tbody::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, .1);
-      border-radius: 4px;
-    }
-
-    .management-user tbody::-webkit-scrollbar-thumb {
-      background: rgba(102, 126, 234, .6);
-      border-radius: 4px;
-    }
-
-    .management-user tbody::-webkit-scrollbar-thumb:hover {
-      background: rgba(102, 126, 234, .8);
-    }
-
-    .management-user tr:last-child td {
+    .grid-tr:last-child .grid-td {
       border-bottom: none;
     }
 
-    /* ─── Buttons (table actions) ───────────────────────────── */
+    .grid-td {
+      padding: 4px 6px;
+      font-size: 13px;
+      color: var(--td-color);
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .col-left {
+      justify-content: flex-start;
+      text-align: left;
+    }
+
+    .col-right {
+      justify-content: flex-end;
+      text-align: right;
+    }
+
+    .grid-td:last-child {
+      border-right: none;
+    }
+
+    /* ── Spec table column widths ── */
+    .spec-col-stt {
+      flex: 0 0 60px;
+      min-width: 60px;
+    }
+
+    /* giữ nguyên */
+    .spec-col-type {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .spec-col-mobis {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .spec-col-partron {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .spec-col-name {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .spec-col-actions {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    /* ── Delivery table column widths ── */
+    .del-col-stt {
+      flex: 0 0 60px;
+      min-width: 60px;
+    }
+
+    .del-col-modelid {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .del-col-mobis {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .del-col-name {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .del-col-type {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .del-col-target {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .del-col-qty {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .del-col-status {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .del-col-complete {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .del-col-shipdate {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .del-col-shipmethod {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .del-col-actions {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .spec-grid-body {
+      flex: 1;
+      min-height: 0;
+    }
+
+    .delivery-grid-body {
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* ── Buttons ── */
     .edit-user,
     .delete-user,
     .edit-model,
@@ -479,12 +606,11 @@
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       border: none;
       color: white;
-      padding: 6px 12px;
-      margin-right: 6px;
-      margin-bottom: 8px;
+      padding: 5px 10px;
+      margin: 2px;
       border-radius: 4px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 13px;
       transition: all .3s ease;
     }
 
@@ -510,93 +636,13 @@
       background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
     }
 
-    /* ─── Model spec table ──────────────────────────────────── */
-    .management-delivery-spec {
-      flex: 1;
-      width: 100%;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, .05);
-      background: linear-gradient(135deg, rgba(102, 126, 234, .25) 0%, rgba(118, 75, 162, .25) 100%);
-      max-height: 320px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .management-delivery-spec table {
-      border-collapse: collapse;
-      width: 100%;
-      border: none;
-      background: transparent;
-      flex: 1;
-    }
-
-    .management-delivery-spec th,
-    .management-delivery-spec td {
-      padding: 12px 16px;
-      text-align: center;
-      border: none;
-      border-bottom: 1px solid #e5e7eb83;
-      font-size: 12px;
-    }
-
-    .management-delivery-spec th {
-      background: rgba(102, 126, 234, .4);
-      color: #fff;
-      font-weight: 600;
-      position: sticky;
-      top: 0;
-      text-transform: uppercase;
-      z-index: 5;
-    }
-
-    .management-delivery-spec tbody {
-      display: block;
-      max-height: 200px;
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
-
-    .management-delivery-spec thead {
-      display: block;
-    }
-
-    .management-delivery-spec tr {
-      display: table;
-      width: 100%;
-      table-layout: fixed;
-    }
-
-    .management-delivery-spec tbody::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    .management-delivery-spec tbody::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, .1);
-      border-radius: 4px;
-    }
-
-    .management-delivery-spec tbody::-webkit-scrollbar-thumb {
-      background: rgba(102, 126, 234, .6);
-      border-radius: 4px;
-    }
-
-    .management-delivery-spec tbody::-webkit-scrollbar-thumb:hover {
-      background: rgba(102, 126, 234, .8);
-    }
-
-    .management-delivery-spec tr:last-child td {
-      border-bottom: none;
-    }
-
     .import,
     .export,
     .add-spec {
-      background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+      background: none;
       border: none;
       color: white;
       padding: 8px 16px;
-      margin-right: 8px;
       border-radius: 4px;
       cursor: pointer;
       font-size: 14px;
@@ -609,14 +655,37 @@
       background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
     }
 
+    /* ── Search ── */
+    .search-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .search-wrap .search-icon {
+      position: absolute;
+      left: 10px;
+      color: #9ca3af;
+      pointer-events: none;
+      flex-shrink: 0;
+    }
+
+    body.light-theme .search-wrap .search-icon {
+      color: #6b7280;
+    }
+
+    .search-wrap .searchText {
+      padding-left: 32px;
+    }
+
     .searchText {
-      padding: 8px 12px;
+      padding: 6px 12px;
       border-radius: 4px;
       border: none;
-      width: 100%;
-      max-width: 300px;
+      width: 200px;
       background: rgba(255, 255, 255, .1);
       color: white;
+      font-size: 14px;
     }
 
     .searchText::placeholder {
@@ -632,11 +701,11 @@
       background: rgba(255, 255, 255, .9);
       border: 1px solid #667eea;
       border-radius: 4px;
-      padding: 6px 8px;
+      padding: 5px 7px;
       color: #333;
       font-size: 12px;
       width: 100%;
-      min-width: 80px;
+      min-width: 70px;
     }
 
     .edit-input:focus {
@@ -645,96 +714,7 @@
       background: white;
     }
 
-    /* ─── Delivery table ────────────────────────────────────── */
-    .bottom-row3 {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      width: 100%;
-      color: white;
-      margin: 0 20px 0 0;
-      flex-wrap: wrap;
-    }
-
-    .management-delivery {
-      flex: 1;
-      width: 100%;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, .05);
-      background: linear-gradient(135deg, rgba(102, 126, 234, .25) 0%, rgba(118, 75, 162, .25) 100%);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .management-delivery table {
-      border-collapse: collapse;
-      width: 100%;
-      table-layout: fixed;
-      border: none;
-      background: transparent;
-    }
-
-    .management-delivery thead,
-    .management-delivery tbody tr {
-      display: table;
-      width: 100%;
-      table-layout: fixed;
-    }
-
-    .management-delivery thead tr {
-      display: table;
-      width: calc(100% - 8px);
-      table-layout: fixed;
-    }
-
-    .management-delivery tbody {
-      display: block;
-      max-height: 200px;
-      overflow-y: auto;
-    }
-
-    .management-delivery thead {
-      background: rgba(102, 126, 234, .4);
-      color: #fff;
-      font-weight: 600;
-      text-transform: uppercase;
-      position: sticky;
-      top: 0;
-      z-index: 5;
-    }
-
-    .management-delivery th,
-    .management-delivery td {
-      padding: 12px 16px;
-      text-align: center;
-      border-bottom: 1px solid rgba(229, 231, 235, .3);
-      font-size: 12px;
-      color: white;
-    }
-
-    .management-delivery tr:last-child td {
-      border-bottom: none;
-    }
-
-    .management-delivery tbody::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    .management-delivery tbody::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, .1);
-      border-radius: 4px;
-    }
-
-    .management-delivery tbody::-webkit-scrollbar-thumb {
-      background: rgba(102, 126, 234, .6);
-      border-radius: 4px;
-    }
-
-    .management-delivery tbody::-webkit-scrollbar-thumb:hover {
-      background: rgba(102, 126, 234, .8);
-    }
-
+    /* ── Factory select / date ── */
     #factorySelect {
       padding: 6px 8px;
       border-radius: 4px;
@@ -758,7 +738,7 @@
       background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
       border: none;
       color: white;
-      padding: 8px 16px;
+      padding: 6px 10px;
       border-radius: 4px;
       cursor: pointer;
       font-size: 14px;
@@ -782,7 +762,30 @@
       filter: invert(1);
     }
 
-    /* ─── Badges ────────────────────────────────────────────── */
+    .date-range-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .date-range-input {
+      cursor: pointer;
+      min-width: 170px;
+      caret-color: transparent;
+      user-select: none;
+    }
+
+    .date-range-hidden {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+      top: 0;
+      left: 0;
+    }
+
+    /* ── Badges ── */
     .role-badge {
       display: inline-block;
       padding: 4px 12px;
@@ -831,68 +834,17 @@
       border: 1px solid #0083B0;
     }
 
-    /* ─── Responsive ────────────────────────────────────────── */
-    @media screen and (max-width: 1600px) {
-      .container {
-        flex-direction: column;
-        height: auto;
-      }
-
-      .top-row,
-      .bottom-row {
-        width: 100%;
-        margin: 0 0 20px;
-      }
-
-      .welcome-card {
-        flex-direction: row;
-        height: auto;
-        text-align: center;
-      }
-
-      .welcome-right img {
-        width: 100%;
-        max-width: 350px;
-        margin-top: 20px;
-      }
-
-      .chart-row {
-        flex-direction: row;
-      }
-
-      .bottom-row {
-        padding-left: 0;
-      }
-
-      .management-delivery-spec,
-      .management-user {
-        margin: 0;
-        padding: 0;
-      }
-
-      .management-user th,
-      .management-user td,
-      .management-delivery-spec th,
-      .management-delivery-spec td {
-        font-size: 14px;
-      }
-
-      .bottom-row3 {
-        width: 100%;
-        margin: 0;
-      }
-    }
-
-    @media screen and (min-width: 1700px) {
-      .bottom-row3 {
-        padding: 12px 20px 24px 20px;
-      }
+    .bottom-row3 {
+      display: flex;
+      flex-direction: column;
+      color: white;
+      flex-wrap: wrap;
+      margin: 10px;
     }
   </style>
 </head>
 
 <body>
-  <!-- ① Header component — set active="management" for this page -->
   <app-header active="management"></app-header>
 
   <div class="all">
@@ -920,7 +872,6 @@
             <img src="/images/admin.svg" alt="user" />
           </div>
         </div>
-
         <div class="chart-row">
           <div class="chart-card">
             <div class="chart-header">
@@ -943,106 +894,100 @@
         </div>
       </div>
 
-      <!-- Hàng 2: Management tables -->
+      <!-- Hàng 2: Model Spec -->
       <div class="bottom-row">
+        <div class="grid-table-wrap">
 
+          <!-- Toolbar -->
+          <div class="grid-toolbar">
+            <span class="grid-toolbar-title" id="th-model-spec"></span>
+            <div class="search-wrap">
+              <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+              </svg>
+              <input class="searchText" type="text" id="searchText" />
+            </div>
+            <button class="add-spec" id="btn-add-spec"></button>
+            <button class="import" id="importButton"></button>
+            <button class="export" id="exportButton"></button>
+          </div>
 
-        <!-- Model Spec -->
-        <div class="management-delivery-spec">
-          <table>
-            <thead>
-              <tr>
-                <th id="th-model-spec" colspan="1"
-                  style="text-align:left;font-size:20px;padding-bottom:10px;text-transform:uppercase;"></th>
-                <th colspan="2">
-                  <input class="searchText" type="text" id="searchText" placeholder="Search All" />
-                </th>
-                <th colspan="1" style="text-align:right;">
-                  <button class="add-spec" id="btn-add-spec"></button>
-                </th>
-                <th colspan="1" style="text-align:right;">
-                  <button class="import" id="importButton"></button>
-                </th>
-                <th colspan="1" style="text-align:right;">
-                  <button class="export" id="exportButton"></button>
-                </th>
-              </tr>
-              <tr>
-<th id="th-spec-stt">STT</th>
-<th id="th-spec-modelType">Model Type</th>
-<th id="th-spec-mobisCode">Mobis Code</th>
-<th id="th-spec-partronCode">Partron Code</th>
-<th id="th-spec-modelName">Model Name</th>
-<th id="th-spec-actions">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="specTableBody"></tbody>
-          </table>
+          <!-- Header -->
+          <div class="grid-thead">
+            <div class="grid-row">
+              <div class="grid-th spec-col-stt" id="th-spec-stt">STT</div>
+              <div class="grid-th spec-col-type" id="th-spec-modelType">Model Type</div>
+              <div class="grid-th spec-col-mobis" id="th-spec-mobisCode">Mobis Code</div>
+              <div class="grid-th spec-col-partron" id="th-spec-partronCode">Partron Code</div>
+              <div class="grid-th spec-col-name" id="th-spec-modelName">Model Name</div>
+              <div class="grid-th spec-col-actions" id="th-spec-actions">Actions</div>
+            </div>
+          </div>
+
+          <!-- Body -->
+          <div class="grid-tbody spec-grid-body" id="specTableBody"></div>
         </div>
       </div>
     </div>
 
-    <!-- Hàng 3: Delivery Management -->
+    <!-- Hàng 3: Delivery -->
     <div class="bottom-row3">
-      <div class="management-delivery">
-        <table>
-          <thead>
-            <tr>
-              <th id="th-delivery" colspan="1"
-                style="text-align:left;font-size:20px;padding-bottom:10px;text-transform:uppercase;"></th>
-              <th colspan="3">
-                <input class="searchText" type="text" id="searchTextDelivery"
-                  placeholder="Search Model ID, Mobis Code, Model Name" />
-              </th>
-              <th colspan="3">
-                <span id="lbl-factory"></span>
-                <select id="factorySelect">
-                  <option value="V0" selected>V0</option>
-                  <option value="V5">V5</option>
-                </select>
-              </th>
-              <th colspan="2">
-                <span id="lbl-from">
-                  <input type="date" id="deliveryDateFrom" class="date-filter" />
-                </span>
-              </th>
-              <th colspan="2">
-                <span id="lbl-to">
-                  <input type="date" id="deliveryDateTo" class="date-filter" />
-                </span>
-              </th>
-              <th colspan="1">
-                <button id="clearFilters">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                    <path d="M3 3v5h5" />
-                    <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
-                    <path d="M16 16h5v5" />
-                  </svg>
-                </button>
-              </th>
-            </tr>
-            <tr>
-<th id="th-del-stt">STT</th>
-<th id="th-del-modelId">Model Id</th>
-<th id="th-del-mobisCode">Mobis Code</th>
-<th id="th-del-modelName">Model Name</th>
-<th id="th-del-type">Type</th>
-<th id="th-del-target">Target</th>
-<th id="th-del-quantity">Quantity</th>
-<th id="th-del-status">Status</th>
-<th id="th-del-completeTime">Complete Time</th>
-<th id="th-del-shippingDate">Shipping Date</th>
-<th id="th-del-shippingMethod">Shipping Method</th>
-<th id="th-del-actions">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="DeliveryTableBody"></tbody>
-        </table>
+      <div class="grid-table-wrap">
+
+        <!-- Toolbar -->
+        <div class="grid-toolbar">
+          <span class="grid-toolbar-title" id="th-delivery"></span>
+          <select id="factorySelect">
+            <option value="V0" selected>V0</option>
+            <option value="V5">V5</option>
+          </select>
+          <div class="search-wrap">
+            <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+            </svg>
+            <input class="searchText" type="text" id="searchTextDelivery" />
+          </div>
+          <div class="date-range-wrap">
+            <input type="text" id="deliveryDateRangeText" class="date-filter date-range-input" readonly
+              placeholder="Chọn khoảng ngày">
+            <input type="date" id="deliveryDateFrom" class="date-range-hidden">
+            <input type="date" id="deliveryDateTo" class="date-range-hidden">
+          </div>
+          <button id="clearFilters">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+              <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+              <path d="M16 16h5v5" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Header -->
+        <div class="grid-thead">
+          <div class="grid-row">
+            <div class="grid-th del-col-stt" id="th-del-stt">STT</div>
+            <div class="grid-th del-col-mobis" id="th-del-mobisCode">Mobis Code</div>
+            <div class="grid-th del-col-name" id="th-del-modelName">Model Name</div>
+            <div class="grid-th del-col-type" id="th-del-type">Type</div>
+            <div class="grid-th del-col-target" id="th-del-target">Target</div>
+            <div class="grid-th del-col-qty" id="th-del-quantity">Quantity</div>
+            <div class="grid-th del-col-status" id="th-del-status">Status</div>
+            <div class="grid-th del-col-shipdate" id="th-del-shippingDate">Shipping Date</div>
+            <div class="grid-th del-col-shipmethod" id="th-del-shippingMethod">Shipping Method</div>
+            <div class="grid-th del-col-actions" id="th-del-actions">Actions</div>
+          </div>
+        </div>
+
+        <!-- Body -->
+        <div class="grid-tbody delivery-grid-body" id="DeliveryTableBody"></div>
       </div>
     </div>
-
   </div>
 
   <script src="/js/dayjs.min.js"></script>

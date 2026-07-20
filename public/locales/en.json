@@ -255,7 +255,7 @@
       "invalidValue": "Error at row {row}, column \"{column}\": Invalid value: \"{value}\"",
       "qtyExceedsTarget": "Row {row} quantity cannot be greater than target quantity",
       "notificationTitle": "Notification",
-      "seaNotificationMessage": "Mobiscode: <strong>{mobiscode}</strong><br>Arrive days remaining: <strong style=\"font-size: 1.1em;\">{days}</strong>"
+      "seaNotificationMessage": "Mobis code: {mobiscode}\nArrive days remaining: {days}"
     }
   }
 }

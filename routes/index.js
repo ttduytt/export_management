@@ -16,9 +16,6 @@ router.get("/", checkRememberLogin, (req, res) => {
   res.sendFile(path.join(__dirname, "../views/Login.html"));
 });
 
-router.get("/home", (req, res) => {
-  res.sendFile(path.join(__dirname, "../views/Home.html"));
-});
 
 router.get("/delivery", authenticate, (req, res) => {
   res.sendFile(path.join(__dirname, "../views/Delivery.html"));

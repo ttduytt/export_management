@@ -35,7 +35,7 @@ async function applyLang() {
 
   // Buttons
   setText("lbl-btn-create", t("admin.userManagement.buttons.add"));
-  setText("lbl-btn-save", t("admin.userManagement.buttons.save"));
+  setText("lbl-btn-save", t("admin.modelSpec.buttons.save"));
   setText("lbl-btn-delete", t("admin.userManagement.buttons.delete"));
 
   // Inline field error messages
@@ -47,30 +47,13 @@ async function applyLang() {
     t("admin.userManagement.alerts.departmentRequired"),
   );
 
-  // Combo placeholders
-  setPlaceholder(
-    "factory-display",
-    t("admin.userManagement.form.selectPlaceholder"),
-  );
-  setPlaceholder(
-    "dept-display",
-    t("admin.userManagement.form.selectPlaceholder"),
-  );
 
-  // Password placeholder (create mode default)
-  const pwInput = document.getElementById("input-password");
-  if (pwInput && !pwInput.dataset.editMode)
-    pwInput.placeholder = t("admin.userManagement.form.passwordPlaceholder");
+
 }
 
 function setText(id, text) {
   const el = document.getElementById(id);
   if (el && text) el.textContent = text;
-}
-
-function setPlaceholder(id, text) {
-  const el = document.getElementById(id);
-  if (el && text && el.classList.contains("placeholder")) el.textContent = text;
 }
 
 // ─── User profile ─────────────────────────────────────────────────────────────
@@ -162,7 +145,7 @@ function renderTable() {
 
     row.innerHTML = `
       <td class="stt">${String(i + 1).padStart(2, "0")}</td>
-      <td style="color:black;text-align:left;padding-left:20px">${u.user_name ?? ""}</td>
+      <td style="text-align:left;padding-left:20px;font-weight:600">${u.user_name ?? ""}</td>
       <td><span class="badge ${roleCls}">${u.role ?? ""}</span></td>
       <td>${factHtml}</td>
       <td>${deptHtml}</td>

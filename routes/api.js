@@ -683,23 +683,125 @@ router.get("/delivery/history/:factory", authenticate, async (req, res) => {
   }
 });
 
+router.get("/delivery-history/:factory", async (req, res) => {
+  let conn;
+  const factory = req.params.factory.toLocaleLowerCase();
+  const {
+    startDate,
+    endDate,
+    search,
+    page = 1,
+    limit = 50,
+    sortBy,
+    sortDir,
+  } = req.query;
+
+  const pageNum = Math.max(1, Number.parseInt(page));
+  const limitNum = Math.min(100, Math.max(1, Number.parseInt(limit)));
+  const offset = (pageNum - 1) * limitNum;
+
+  const tableName = factory === "v0" ? "delivery_v0" : "delivery_v5";
+
+  const allowedSortCols = {
+    first_export: "first_export",
+    arrive_date: "arrive_date",
+  };
+  const sortCol = allowedSortCols[sortBy] || null;
+  const sortDirection = sortDir === "desc" ? "DESC" : "ASC";
+
+  try {
+    conn = await pool.getConnection();
+
+    let whereClause = `WHERE 1=1`;
+    const params = [];
+
+    if (startDate) {
+      whereClause += ` AND shipment_date >= ?`;
+      params.push(startDate);
+    }
+    if (endDate) {
+      whereClause += ` AND shipment_date <= ?`;
+      params.push(endDate);
+    }
+    if (search) {
+      whereClause += ` AND (mobis_code LIKE ? OR model_name LIKE ?)`;
+      params.push(`%${search}%`, `%${search}%`);
+    }
+
+    const countSql = `SELECT COUNT(*) AS total FROM ${tableName} ${whereClause}`;
+    const countRows = await conn.query(countSql, params);
+    const total = Number(countRows[0].total);
+
+    let dataSql = `
+      SELECT *, DATEDIFF(arrive_date, CURDATE()) AS days_remaining
+      FROM ${tableName}
+      ${whereClause}
+    `;
+
+    if (sortCol === "arrive_date") {
+      dataSql += ` ORDER BY (first_export = 1 AND UPPER(shipping_method) = 'SEA') DESC, CASE WHEN first_export = 1 AND UPPER(shipping_method) = 'SEA' THEN arrive_date ELSE NULL END ${sortDirection}`;
+    } else if (sortCol) {
+      dataSql += ` ORDER BY ${sortCol} ${sortDirection}`;
+    } else {
+      dataSql += ` ORDER BY FIELD(LOWER(status), 'run') DESC, create_at DESC`;
+    }
+
+    dataSql += ` LIMIT ? OFFSET ?`;
+    params.push(limitNum, offset);
+
+    const rows = await conn.query(dataSql, params);
+    const data = rows.map(({ days_remaining, ...rest }) => ({
+      ...rest,
+      arrive_date: days_remaining,
+    }));
+
+    res.json({
+      data,
+      page: pageNum,
+      limit: limitNum,
+      total,
+      hasNextPage: pageNum * limitNum < total,
+    });
+  } catch (err) {
+    console.error("Error fetching delivery history:", err);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: err.message });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
 // delivery
 router.get("/delivery/:factory", async (req, res) => {
   let conn;
   const factory = req.params.factory.toLocaleLowerCase();
+  const { startDate, endDate } = req.query;
   let sqlquery;
+  const params = [];
 
   try {
     conn = await pool.getConnection();
-    if (factory === "v0") {
-      sqlquery = `SELECT *, DATEDIFF(arrive_date, CURDATE()) AS days_remaining FROM delivery_v0 ORDER BY create_at DESC LIMIT 100`;
-    } else {
-      sqlquery = `SELECT *, DATEDIFF(arrive_date, CURDATE()) AS days_remaining FROM delivery_v5 ORDER BY create_at DESC LIMIT 100`;
+
+    const tableName = factory === "v0" ? "delivery_v0" : "delivery_v5";
+
+    sqlquery = `SELECT *, DATEDIFF(arrive_date, CURDATE()) AS days_remaining FROM ${tableName} WHERE 1=1`;
+
+    if (startDate) {
+      sqlquery += ` AND shipment_date >= ?`;
+      params.push(startDate);
     }
-    const rows = await conn.query(sqlquery);
+    if (endDate) {
+      sqlquery += ` AND shipment_date <= ?`;
+      params.push(endDate);
+    }
+
+    sqlquery += ` ORDER BY create_at DESC LIMIT 100`;
+
+    const rows = await conn.query(sqlquery, params);
     const result = rows.map(({ days_remaining, ...rest }) => ({
       ...rest,
-      arrive_date: days_remaining,
+      arrive_date: Math.max(days_remaining, 0),
     }));
     res.json(result);
   } catch (err) {
@@ -711,6 +813,7 @@ router.get("/delivery/:factory", async (req, res) => {
     if (conn) conn.release();
   }
 });
+
 router.get("/qr/:factory/:mobiscode/:type", authenticate, async (req, res) => {
   const conn = await pool.getConnection();
   const { factory, mobiscode, type } = req.params;
@@ -847,11 +950,11 @@ router.post("/delivery/import", authenticate, async (req, res) => {
       const tableDelivereyName = `delivery_${factory}`;
       const isSpecExist = await conn.query(
         `SELECT COUNT(*) AS count
-   FROM delivery_spec
-   WHERE mobis_code = ?
-     AND model_type = ?
-     AND partron_code = ?
-     AND model_name = ?`,
+          FROM delivery_spec
+          WHERE mobis_code = ?
+            AND model_type = ?
+            AND partron_code = ?
+            AND model_name = ?`,
         [
           delivery.mobiscode,
           delivery.modeltype,
@@ -869,12 +972,12 @@ router.post("/delivery/import", authenticate, async (req, res) => {
 
       const isDeliveryExist = await conn.query(
         `SELECT COUNT(*) AS count
-   FROM ${tableDelivereyName}
-   WHERE mobis_code = ?
-     AND target = ?
-     AND shipment_date = ?
-     AND shipping_method = ?
-     AND type = ?`,
+          FROM ${tableDelivereyName}
+          WHERE mobis_code = ?
+            AND target = ?
+            AND shipment_date = ?
+            AND shipping_method = ?
+            AND type = ?`,
         [
           delivery.mobiscode,
           delivery.target,
@@ -908,21 +1011,11 @@ router.post("/delivery/import", authenticate, async (req, res) => {
         delivery.shippingmethod?.toUpperCase() === "SEA"
           ? new Date(
               new Date(delivery.shipmentdate).getTime() +
-                16 * 24 * 60 * 60 * 1000,
+                20 * 24 * 60 * 60 * 1000,
             )
               .toISOString()
               .split("T")[0]
           : null;
-
-      if (
-        delivery.shippingmethod?.toUpperCase() === "AIR" &&
-        String(delivery.firstexport).trim().toUpperCase() === "V"
-      ) {
-        await conn.rollback();
-        return res.status(400).json({
-          message: `Mobis code ${delivery.mobiscode} xuất AIR lần đầu không hợp lệ`,
-        });
-      }
 
       const isFirstExport =
         String(delivery.firstexport).trim().toUpperCase() === "V" ? 1 : 0;
@@ -953,7 +1046,7 @@ router.post("/delivery/import", authenticate, async (req, res) => {
       await addHistoryDelivery(conn, delivery, username, factory);
     }
 
-    await conn.commit(); // ✅ commit
+    await conn.commit();
     res.status(201).json({ message: "Import delivery thành công!" });
   } catch (error) {
     if (conn) await conn.rollback(); // rollback nếu bất kỳ dòng nào lỗi
@@ -963,6 +1056,167 @@ router.post("/delivery/import", authenticate, async (req, res) => {
     if (conn) conn.release();
   }
 });
+
+// Hàm xử lý conflict cho 1 nhóm items thuộc cùng 1 factory
+async function checkFactoryAirConflict(conn, tableName, factoryItems) {
+  const mobiscodes = [...new Set(factoryItems.map((i) => i.mobiscode))];
+  const placeholders = mobiscodes.map(() => "?").join(",");
+
+  const seaFirstExportRows = await conn.query(
+    `SELECT mobis_code, arrive_date, shipment_date,
+            DATEDIFF(arrive_date, CURDATE()) AS days_left
+     FROM ${tableName}
+     WHERE mobis_code IN (${placeholders})
+       AND shipping_method = 'SEA'
+       AND first_export = 1`,
+    mobiscodes,
+  );
+
+  const seaAllRows = await conn.query(
+    `SELECT mobis_code, arrive_date, shipment_date,
+            DATEDIFF(arrive_date, CURDATE()) AS days_left
+     FROM ${tableName}
+     WHERE mobis_code IN (${placeholders})
+       AND shipping_method = 'SEA'`,
+    mobiscodes,
+  );
+
+  // MỚI: lấy các dòng AIR đã từng first_export = 1, dùng để loại trừ conflict lặp lại
+  const airFirstExportRows = await conn.query(
+    `SELECT mobis_code, shipment_date
+     FROM ${tableName}
+     WHERE mobis_code IN (${placeholders})
+       AND shipping_method = 'AIR'
+       AND first_export = 1`,
+    mobiscodes,
+  );
+
+  const errors = [];
+  const errorsConflictSea = [];
+  const warnings = [];
+
+  for (const item of factoryItems) {
+    const airShipmentDate = new Date(item.shipmentdate);
+    const isMarkedV =
+      String(item.firstexport ?? "")
+        .trim()
+        .toUpperCase() === "V";
+
+    const matchedSea = seaFirstExportRows.filter(
+      (sea) =>
+        sea.mobis_code === item.mobiscode &&
+        new Date(sea.arrive_date) >= airShipmentDate,
+    );
+
+    if (matchedSea.length === 0) {
+      if (isMarkedV) {
+        const matchedSeaAny = seaAllRows.filter(
+          (sea) =>
+            sea.mobis_code === item.mobiscode &&
+            new Date(sea.arrive_date) >= airShipmentDate,
+        );
+
+        if (matchedSeaAny.length > 0) {
+          const farthestSeaAny = matchedSeaAny.reduce((latest, sea) =>
+            new Date(sea.arrive_date) > new Date(latest.arrive_date)
+              ? sea
+              : latest,
+          );
+
+          errors.push({
+            mobiscode: item.mobiscode,
+            air_shipment_date: item.shipmentdate,
+            sea_shipment_date: farthestSeaAny.shipment_date,
+            sea_arrive_date: farthestSeaAny.arrive_date,
+            days_left: farthestSeaAny.days_left,
+          });
+        }
+      }
+    } else {
+      const farthestSea = matchedSea.reduce((latest, sea) =>
+        new Date(sea.arrive_date) > new Date(latest.arrive_date) ? sea : latest,
+      );
+
+      // MỚI: nếu đã từng xuất AIR first_export trong khoảng shipment_date -> arrive_date
+      // của farthestSea rồi thì bỏ qua, coi như không lỗi
+      const hasAirFirstExportInRange = airFirstExportRows.some(
+        (air) =>
+          air.mobis_code === item.mobiscode &&
+          new Date(air.shipment_date) >= new Date(farthestSea.shipment_date) &&
+          new Date(air.shipment_date) <= new Date(farthestSea.arrive_date),
+      );
+
+      if (hasAirFirstExportInRange) {
+        continue;
+      }
+
+      const conflict = {
+        mobiscode: item.mobiscode,
+        air_shipment_date: item.shipmentdate,
+        sea_shipment_date: farthestSea.shipment_date,
+        sea_arrive_date: farthestSea.arrive_date,
+        days_left: farthestSea.days_left,
+      };
+
+      if (isMarkedV) {
+        warnings.push(conflict);
+      } else {
+        errorsConflictSea.push(conflict);
+      }
+    }
+  }
+
+  return { errors, errorsConflictSea, warnings };
+}
+
+router.post(
+  "/delivery/checkAirFirstExportConflict",
+  authenticate,
+  async (req, res) => {
+    const { items } = req.body;
+    // items: [{ mobiscode, shipmentdate, firstexport, factory }, ...]
+
+    const conn = await pool.getConnection();
+
+    try {
+      if (!Array.isArray(items) || items.length === 0) {
+        return res.json({ errors: [], errorsConflictSea: [], warnings: [] });
+      }
+
+      const itemsByFactory = new Map();
+      for (const item of items) {
+        const key = item.factory;
+        if (!itemsByFactory.has(key)) itemsByFactory.set(key, []);
+        itemsByFactory.get(key).push(item);
+      }
+
+      const errors = [];
+      const errorsConflictSea = [];
+      const warnings = [];
+
+      for (const [factory, factoryItems] of itemsByFactory) {
+        const tableName =
+          factory?.toUpperCase() === "V0" ? "delivery_v0" : "delivery_v5";
+        const result = await checkFactoryAirConflict(
+          conn,
+          tableName,
+          factoryItems,
+        );
+
+        errors.push(...result.errors);
+        errorsConflictSea.push(...result.errorsConflictSea);
+        warnings.push(...result.warnings);
+      }
+
+      res.json({ errors, errorsConflictSea, warnings });
+    } catch (error) {
+      console.error("Error checking air first export conflict:", error);
+      res.status(500).json({ message: "Internal server error" });
+    } finally {
+      conn.release();
+    }
+  },
+);
 
 // update delivery quantity
 router.put("/delivery/update/quantity", authenticate, async (req, res) => {

@@ -258,7 +258,7 @@
       "invalidValue": "{row}행의 \"{column}\" 열 오류: 유효하지 않은 값: \"{value}\"",
       "qtyExceedsTarget": "{row}행의 Quantity는 Target Quantity보다 클 수 없습니다",
       "notificationTitle": "알림",
-      "seaNotificationMessage": "Mobiscode: <strong>{mobiscode}</strong><br>남은 일수: <strong style=\"font-size: 1.1em;\">{days}</strong>일"
+      "seaNotificationMessage": "Mobis code: {mobiscode}\n남은 일수: {days}일"
     }
   }
 }

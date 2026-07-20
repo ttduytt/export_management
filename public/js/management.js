@@ -1,11 +1,30 @@
 import I18n from "/i18n.js";
+import DateRangePicker from "/js/dateRangePicker.js";
 
 // ─── Global translation handle ────────────────────────────────────────────────
 let t = (key, params) => key;
+let deliveryDatePickerRef = null;
+
+// ─── Helper: tạo grid row cho spec table ─────────────────────────────────────
+function makeSpecRow(spec, index) {
+  const div = document.createElement("div");
+  div.className = "grid-tr";
+  div.dataset.id = spec.id;
+  div.innerHTML = `
+    <div class="grid-td spec-col-stt">${index + 1}</div>
+    <div class="grid-td spec-col-type col-left model-type">${spec.model_type || ""}</div>
+    <div class="grid-td spec-col-mobis col-left mobis-code">${spec.mobis_code || ""}</div>
+    <div class="grid-td spec-col-partron col-left partron-code">${spec.partron_code || ""}</div>
+    <div class="grid-td spec-col-name col-left model-name">${spec.model_name || ""}</div>
+    <div class="grid-td spec-col-actions">
+      <button class="edit-model"   data-id="${spec.id}">${t("admin.modelSpec.buttons.edit")}</button>
+      <button class="delete-model" data-id="${spec.id}">${t("admin.modelSpec.buttons.delete")}</button>
+    </div>`;
+  return div;
+}
 
 // ─── Apply language to static DOM elements ────────────────────────────────────
 async function applyLang() {
-  // Welcome card stats
   document.getElementById("lbl-total-in-day").textContent = t(
     "admin.stats.totalInDay",
   );
@@ -13,7 +32,6 @@ async function applyLang() {
     "admin.stats.performance",
   );
 
-  // Chart headers
   document.getElementById("lbl-chart-monthly-title").textContent = t(
     "admin.charts.monthlyPerformance.title",
   );
@@ -27,14 +45,8 @@ async function applyLang() {
     "admin.charts.shipmentStatus.subtitle",
   );
 
-
-
-  // Model Spec
   document.getElementById("th-model-spec").textContent = t(
     "admin.modelSpec.title",
-  );
-  document.getElementById("searchText").placeholder = t(
-    "admin.modelSpec.searchPlaceholder",
   );
   document.getElementById("btn-add-spec").textContent = t(
     "admin.modelSpec.addModel",
@@ -46,26 +58,10 @@ async function applyLang() {
     "admin.modelSpec.exportFile",
   );
 
-  // Delivery
   document.getElementById("th-delivery").textContent = t(
     "admin.delivery.title",
   );
-  document.getElementById("searchTextDelivery").placeholder = t(
-    "admin.delivery.searchPlaceholder",
-  );
-  document.getElementById("lbl-factory").textContent = t(
-    "admin.delivery.factoryLabel",
-  );
-  document.getElementById("lbl-from").childNodes[0].textContent = t(
-    "admin.delivery.fromLabel",
-  );
-  document.getElementById("lbl-to").childNodes[0].textContent = t(
-    "admin.delivery.toLabel",
-  );
 
-
-
-  // ── Model Spec table headers ────────────────────────────────────────
   document.getElementById("th-spec-stt").textContent = t(
     "admin.modelSpec.table.stt",
   );
@@ -85,12 +81,8 @@ async function applyLang() {
     "admin.modelSpec.table.actions",
   );
 
-  // ── Delivery table headers ──────────────────────────────────────────
   document.getElementById("th-del-stt").textContent = t(
     "admin.delivery.table.stt",
-  );
-  document.getElementById("th-del-modelId").textContent = t(
-    "admin.delivery.table.modelId",
   );
   document.getElementById("th-del-mobisCode").textContent = t(
     "admin.delivery.table.mobisCode",
@@ -109,9 +101,6 @@ async function applyLang() {
   );
   document.getElementById("th-del-status").textContent = t(
     "admin.delivery.table.status",
-  );
-  document.getElementById("th-del-completeTime").textContent = t(
-    "admin.delivery.table.completeTime",
   );
   document.getElementById("th-del-shippingDate").textContent = t(
     "admin.delivery.table.shippingDate",
@@ -327,7 +316,6 @@ function rerenderCharts() {
   });
 }
 
-
 // ─── Model Spec ───────────────────────────────────────────────────────────────
 async function initSpecModel() {
   const specTableBody = document.getElementById("specTableBody");
@@ -353,28 +341,19 @@ async function initSpecModel() {
   const data = await res.json();
 
   data.forEach((spec, i) => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${i + 1}</td>
-      <td class="model-type">${spec.model_type || ""}</td>
-      <td class="mobis-code">${spec.mobis_code || ""}</td>
-      <td class="partron-code">${spec.partron_code || ""}</td>
-      <td class="model-name">${spec.model_name || ""}</td>
-      <td>
-        <button class="edit-model"   data-id="${spec.id}">${t("admin.modelSpec.buttons.edit")}</button>
-        <button class="delete-model" data-id="${spec.id}">${t("admin.modelSpec.buttons.delete")}</button>
-      </td>`;
-    specTableBody.appendChild(row);
+    specTableBody.appendChild(makeSpecRow(spec, i));
   });
 
+  // ── Search ──
   searchText.addEventListener("input", function () {
     const filter = this.value.trim().toLowerCase();
-    Array.from(specTableBody.getElementsByTagName("tr")).forEach((row) => {
-      const cells = Array.from(row.getElementsByTagName("td")).slice(0, -1);
+    specTableBody.querySelectorAll(".grid-tr").forEach((row) => {
+      // Các cột có thể search: type, mobis, partron, name (index 1-4 trong grid-td)
+      const cells = Array.from(row.querySelectorAll(".grid-td")).slice(1, -1);
       let match = false;
       cells.forEach((cell) => {
         const orig =
-          cell.getAttribute("data-original-text") || cell.textContent;
+          cell.getAttribute("data-original-text") || cell.textContent.trim();
         if (!cell.getAttribute("data-original-text"))
           cell.setAttribute("data-original-text", orig);
         if (filter && orig.toLowerCase().includes(filter)) {
@@ -399,6 +378,7 @@ async function initSpecModel() {
   addSpecBtn.addEventListener("click", handleAddSpec);
 }
 
+// ─── Add new spec row ─────────────────────────────────────────────────────────
 function handleAddSpec() {
   const specTableBody = document.getElementById("specTableBody");
   if (specTableBody.querySelector(".add-new-row")) {
@@ -407,19 +387,28 @@ function handleAddSpec() {
   }
 
   const nextStt =
-    specTableBody.querySelectorAll("tr:not(.add-new-row)").length + 1;
-  const newRow = document.createElement("tr");
-  newRow.classList.add("add-new-row");
+    specTableBody.querySelectorAll(".grid-tr:not(.add-new-row)").length + 1;
+
+  const newRow = document.createElement("div");
+  newRow.className = "grid-tr add-new-row";
   newRow.innerHTML = `
-    <td>${nextStt}</td>
-    <td class="model-type">  <input type="text" placeholder="${t("admin.modelSpec.form.modelTypePlaceholder")}"   class="edit-input model-type-input"   required/></td>
-    <td class="mobis-code">  <input type="text" placeholder="${t("admin.modelSpec.form.mobisCodePlaceholder")}"   class="edit-input mobis-code-input"   required/></td>
-    <td class="partron-code"><input type="text" placeholder="${t("admin.modelSpec.form.partronCodePlaceholder")}" class="edit-input partron-code-input" required/></td>
-    <td class="model-name">  <input type="text" placeholder="${t("admin.modelSpec.form.modelNamePlaceholder")}"   class="edit-input model-name-input"   required/></td>
-    <td>
+    <div class="grid-td spec-col-stt">${nextStt}</div>
+    <div class="grid-td spec-col-type  model-type">
+      <input type="text" placeholder="${t("admin.modelSpec.form.modelTypePlaceholder")}"   class="edit-input model-type-input"   required/>
+    </div>
+    <div class="grid-td spec-col-mobis  mobis-code">
+      <input type="text" placeholder="${t("admin.modelSpec.form.mobisCodePlaceholder")}"   class="edit-input mobis-code-input"   required/>
+    </div>
+    <div class="grid-td spec-col-partron partron-code">
+      <input type="text" placeholder="${t("admin.modelSpec.form.partronCodePlaceholder")}" class="edit-input partron-code-input" required/>
+    </div>
+    <div class="grid-td spec-col-name   model-name">
+      <input type="text" placeholder="${t("admin.modelSpec.form.modelNamePlaceholder")}"   class="edit-input model-name-input"   required/>
+    </div>
+    <div class="grid-td spec-col-actions">
       <button class="edit-model save-new-model">${t("admin.modelSpec.buttons.save")}</button>
       <button class="delete-model cancel-new-model">${t("admin.modelSpec.buttons.cancel")}</button>
-    </td>`;
+    </div>`;
 
   specTableBody.appendChild(newRow);
   newRow.querySelector(".model-type-input").focus();
@@ -482,9 +471,9 @@ async function saveNewModel(row) {
       alert(t("admin.modelSpec.alerts.addSuccess"));
       await initSpecModel();
     } else {
-      const data = await res.json();
+      const d = await res.json();
       alert(
-        "Error: " + (data.message || t("admin.modelSpec.alerts.unknownError")),
+        "Error: " + (d.message || t("admin.modelSpec.alerts.unknownError")),
       );
       saveBtn.textContent = t("admin.modelSpec.buttons.save");
       saveBtn.disabled = false;
@@ -500,21 +489,24 @@ function cancelNewModel(row) {
   if (confirm(t("admin.modelSpec.alerts.confirmCancelModel"))) row.remove();
 }
 
+// ─── Edit / Delete spec ───────────────────────────────────────────────────────
 async function handleModelTableClick(e) {
-  const row = e.target.closest("tr");
+  const row = e.target.closest(".grid-tr");
+  if (!row) return;
   const id = e.target.dataset.id;
 
+  // ── Edit ──
   if (e.target.classList.contains("edit-model")) {
     if (e.target.textContent === t("admin.modelSpec.buttons.edit")) {
-      const modelTypeTd = row.querySelector(".model-type");
-      const mobisCodeTd = row.querySelector(".mobis-code");
-      const partronCodeTd = row.querySelector(".partron-code");
-      const modelNameTd = row.querySelector(".model-name");
+      const typeTd = row.querySelector(".model-type");
+      const mobisTd = row.querySelector(".mobis-code");
+      const partronTd = row.querySelector(".partron-code");
+      const nameTd = row.querySelector(".model-name");
 
-      modelTypeTd.innerHTML = `<input type="text" value="${modelTypeTd.textContent.trim()}"   class="edit-input model-type-input"/>`;
-      mobisCodeTd.innerHTML = `<input type="text" value="${mobisCodeTd.textContent.trim()}"   class="edit-input mobis-code-input"/>`;
-      partronCodeTd.innerHTML = `<input type="text" value="${partronCodeTd.textContent.trim()}" class="edit-input partron-code-input"/>`;
-      modelNameTd.innerHTML = `<input type="text" value="${modelNameTd.textContent.trim()}"   class="edit-input model-name-input"/>`;
+      typeTd.innerHTML = `<input type="text" value="${typeTd.textContent.trim()}"    class="edit-input model-type-input"/>`;
+      mobisTd.innerHTML = `<input type="text" value="${mobisTd.textContent.trim()}"   class="edit-input mobis-code-input"/>`;
+      partronTd.innerHTML = `<input type="text" value="${partronTd.textContent.trim()}" class="edit-input partron-code-input"/>`;
+      nameTd.innerHTML = `<input type="text" value="${nameTd.textContent.trim()}"    class="edit-input model-name-input"/>`;
 
       e.target.textContent = t("admin.modelSpec.buttons.save");
       e.target.nextElementSibling.textContent = t(
@@ -545,7 +537,7 @@ async function handleModelTableClick(e) {
           body: JSON.stringify(updatedModel),
         });
         if (res.ok) {
-          alert(t("admin.modelSpec.alerts.updateSuccess"));
+          alert(t("admin.userManagement.alerts.updateSuccess"));
         } else {
           const d = await res.json();
           alert(
@@ -559,6 +551,7 @@ async function handleModelTableClick(e) {
     }
   }
 
+  // ── Delete ──
   if (e.target.classList.contains("delete-model")) {
     if (e.target.textContent === t("admin.modelSpec.buttons.delete")) {
       if (confirm(t("admin.modelSpec.alerts.confirmDeleteModel"))) {
@@ -589,7 +582,9 @@ async function handleModelTableClick(e) {
 
 // ─── CSV Export / Import ──────────────────────────────────────────────────────
 async function exportToCSV() {
-  const rows = document.getElementById("specTableBody").querySelectorAll("tr");
+  const rows = document
+    .getElementById("specTableBody")
+    .querySelectorAll(".grid-tr");
   if (rows.length === 0) {
     alert(t("admin.modelSpec.alerts.noDataExport"));
     return;
@@ -598,7 +593,8 @@ async function exportToCSV() {
   let csv =
     "data:text/csv;charset=utf-8,ModelType,MobisCode,PartronCode,ModelName\n";
   rows.forEach((row) => {
-    const cells = Array.from(row.querySelectorAll("td")).slice(1, -1);
+    // Lấy cell 1-4 (bỏ STT và Actions)
+    const cells = Array.from(row.querySelectorAll(".grid-td")).slice(1, -1);
     csv +=
       cells.map((td) => td.textContent.trim().replace(/,/g, "")).join(",") +
       "\n";
@@ -680,9 +676,18 @@ async function initDelivery() {
   const tbody = document.getElementById("DeliveryTableBody");
   const searchInput = document.getElementById("searchTextDelivery");
   const factorySelect = document.getElementById("factorySelect");
-  const dateFrom = document.getElementById("deliveryDateFrom");
-  const dateTo = document.getElementById("deliveryDateTo");
   tbody.innerHTML = "";
+
+  if (!deliveryDatePickerRef) {
+    deliveryDatePickerRef = new DateRangePicker({
+      inputId: "deliveryDateRangeText",
+      onChange: () => applyFilters(),
+    });
+    // Set mặc định 3 tuần gần nhất
+    const defaultFrom = dayjs().subtract(21, "day").format("YYYY-MM-DD");
+    const defaultTo = dayjs().format("YYYY-MM-DD");
+    deliveryDatePickerRef._setRange(defaultFrom, defaultTo);
+  }
 
   const res = await fetch(`/exportmanagement/delivery/${factorySelect.value}`, {
     headers: { "Content-Type": "application/json" },
@@ -690,49 +695,65 @@ async function initDelivery() {
   const data = await res.json();
 
   data.forEach((d, i) => {
-    const row = document.createElement("tr");
+    const shipDate = dayjs(d.shipment_date).format("YYYY-MM-DD");
+    const completeTime = dayjs(d.complete_time).format("YYYY-MM-DD HH:mm:ss");
+    const statusClass = (d.status || "").toLowerCase();
+
+    const row = document.createElement("div");
+    row.className = "grid-tr";
     row.innerHTML = `
-      <td>${i + 1}</td>
-      <td class="model-type">${d.model_id || ""}</td>
-      <td class="mobis-code">${d.mobis_code || ""}</td>
-      <td class="partron-code">${d.model_name || ""}</td>
-      <td class="model-name">${d.type || ""}</td>
-      <td class="model-name">${d.target || ""}</td>
-      <td class="model-name">${d.quantity || ""}</td>
-      <td class="model-name"><span class="status-badge ${d.status.toLowerCase()}">${d.status || ""}</span></td>
-      <td class="model-name">${dayjs(d.complete_time).format("YYYY-MM-DD HH:mm:ss") || ""}</td>
-      <td class="model-name">${dayjs(d.shipment_date).format("YYYY-MM-DD") || ""}</td>
-      <td class="model-name">${d.shipping_method || ""}</td>
-      <td>
-        <button class="delete-model" data-model-id="${d.model_id}" data-factory="${factorySelect.value}">
+      <div class="grid-td del-col-stt">${i + 1}</div>
+      <div class="grid-td del-col-mobis col-left mobis-code">${d.mobis_code || ""}</div>
+      <div class="grid-td del-col-name col-left model-name">${d.model_name || ""}</div>
+      <div class="grid-td del-col-type">${d.type || ""}</div>
+      <div class="grid-td del-col-target col-right">${d.target || ""}</div>
+      <div class="grid-td del-col-qty col-right">${d.quantity || ""}</div>
+      <div class="grid-td del-col-status">
+        <span class="status-badge ${statusClass}">${d.status || ""}</span>
+      </div>
+      <div class="grid-td del-col-shipdate ship-date">${shipDate}</div>
+      <div class="grid-td del-col-shipmethod">${d.shipping_method || ""}</div>
+      <div class="grid-td del-col-actions">
+        <button class="delete-model"
+          data-model-id="${d.model_id}"
+          data-factory="${factorySelect.value}">
           ${t("admin.delivery.buttons.delete")}
         </button>
-      </td>`;
+      </div>`;
     tbody.appendChild(row);
   });
 
+  // ── Date filter helper ──
   function checkDateFilter(row) {
-    const from = dateFrom.value ? dayjs(dateFrom.value).startOf("day") : null;
-    const to = dateTo.value ? dayjs(dateTo.value).endOf("day") : null;
+    const from = deliveryDatePickerRef?.getFrom();
+    const to = deliveryDatePickerRef?.getTo();
     if (!from && !to) return true;
-    if (!row.cells || row.cells.length < 9) return true;
-    const cell = row.cells[8].textContent.trim();
-    if (!cell) return false;
-    const d = dayjs(cell, "YYYY-MM-DD HH:mm:ss");
+    const cell = row.querySelector(".ship-date");
+    if (!cell) return true;
+    const cellText = cell.textContent.trim();
+    if (!cellText) return false;
+    const d = dayjs(cellText, "YYYY-MM-DD");
     if (!d.isValid()) return false;
-    if (from && d.isBefore(from)) return false;
-    if (to && d.isAfter(to)) return false;
+    if (from && d.isBefore(dayjs(from))) return false;
+    if (to && d.isAfter(dayjs(to).endOf("day"))) return false;
     return true;
   }
 
+  // ── Text + date filter ──
   function applyFilters() {
     const filter = searchInput.value.trim().toLowerCase();
-    Array.from(tbody.getElementsByTagName("tr")).forEach((row) => {
-      const cells = row.getElementsByTagName("td");
+    tbody.querySelectorAll(".grid-tr").forEach((row) => {
+      // Search trên: model-id, mobis-code, model-name
+      const searchCells = [
+        row.querySelector(".model-id"),
+        row.querySelector(".mobis-code"),
+        row.querySelector(".model-name"),
+      ];
       let textMatch = false;
-      [cells[1], cells[2], cells[3]].forEach((cell) => {
+      searchCells.forEach((cell) => {
+        if (!cell) return;
         const orig =
-          cell.getAttribute("data-original-text") || cell.textContent;
+          cell.getAttribute("data-original-text") || cell.textContent.trim();
         if (!cell.getAttribute("data-original-text"))
           cell.setAttribute("data-original-text", orig);
         if (filter && orig.toLowerCase().includes(filter)) {
@@ -752,17 +773,11 @@ async function initDelivery() {
 
   function clearAllFilters() {
     searchInput.value = "";
-    dateFrom.value = "";
-    dateTo.value = "";
-    applyFilters();
+    deliveryDatePickerRef?.clear();
   }
 
   searchInput.removeEventListener("input", applyFilters);
   searchInput.addEventListener("input", applyFilters);
-  dateFrom.removeEventListener("change", applyFilters);
-  dateTo.removeEventListener("change", applyFilters);
-  dateFrom.addEventListener("change", applyFilters);
-  dateTo.addEventListener("change", applyFilters);
 
   const clearBtn = document.getElementById("clearFilters");
   if (clearBtn) {
@@ -808,29 +823,22 @@ async function handleDeliveryTableClick(e) {
 
 // ─── Bootstrap ────────────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", async () => {
-  // 1. Init i18n
   await I18n.init("en");
   t = (key, params) => I18n.t(key, params);
-
-  // 2. Apply static labels
   await applyLang();
 
   try {
-    // 3. Load user profile
     const user = await getUserProfile();
     localStorage.setItem("user", JSON.stringify(user));
 
-    // 4. Pass user to <app-header> so the change-password modal is pre-filled
     const header = document.querySelector("app-header");
     if (header?.setUser) header.setUser(user);
 
-    // 5. Welcome message
     document.getElementById("welcome").textContent =
       user.role === "MANAGER"
         ? t("admin.welcomeManager", { name: user.username || "Admin" })
         : t("admin.welcomeUser");
 
-    // 6. Init all sections
     await initOverview(user);
     await initSpecModel();
     await initDelivery();

@@ -24,6 +24,7 @@
             background-color: #040818;
         }
 
+        /* ─── Light theme ─────────────────────────────────────── */
         body.light-theme {
             background-color: #f0f4f8;
             color: #333;
@@ -35,37 +36,53 @@
         }
 
         body.light-theme .toolbar {
-            background-color: #2980b9;
+            background-color: #1a5276;
         }
 
+        /* Light mode — table header */
         body.light-theme .table-header {
-            background-color: #2980b9;
-            color: white;
+            background-color: white;
+            color: black;
         }
 
+        body.light-theme .table-header > div {
+            border: 1px solid rgba(0, 0, 0, 0.45);
+            border-bottom: 2px solid rgba(0, 0, 0, 0.45);
+            color: white;
+            background-color: #1a5276;
+        }
+
+        body.light-theme .table-header > div:last-child {
+            border-right: none;
+        }
+
+        /* Light mode — rows */
         body.light-theme .tl-row {
             color: #333;
-            border-bottom: 1px solid #ccc;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+        }
+
+        body.light-theme .tl-row > div {
+            border-right: 1px solid rgba(0, 0, 0, 0.45);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.45);
+        }
+
+        body.light-theme .tl-row > div:last-child {
+            border-right: none;
         }
 
         body.light-theme .tl-row:hover {
-            background: #f0f4f8;
+            background: #e8f4fd;
         }
 
         body.light-theme .tl-row.active {
             background: #dbeafe;
-            border-left: 3px solid #2193b0;
         }
 
         body.light-theme .tl-row .col-key,
+        body.light-theme .tl-row .col-no,
         body.light-theme .tl-row .col-lang {
             color: #1e293b;
-        }
-
-        body.light-theme .col-key,
-        body.light-theme .col-lang,
-        body.light-theme .col-no {
-            color: #fff;
         }
 
         body.light-theme .empty-state {
@@ -94,7 +111,7 @@
         }
 
         body.light-theme .editor-header {
-            background-color: #2980b9;
+            background-color: #1a5276;
         }
 
         body.light-theme .field-readonly {
@@ -110,8 +127,8 @@
         }
 
         body.light-theme textarea.field-input:focus {
-            border-color: #2193b0;
-            box-shadow: 0 0 0 3px rgba(33, 147, 176, .12);
+            border-color: #1a5276;
+            box-shadow: 0 0 0 3px rgba(26, 82, 118, .12);
         }
 
         body.light-theme .field-label {
@@ -122,31 +139,16 @@
             border-top-color: #e5e7eb;
         }
 
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+        body.light-theme .search-input {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
         }
 
-        ::-webkit-scrollbar-track {
-            background: #060c21;
+        body.light-theme .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
         }
 
-        ::-webkit-scrollbar-thumb {
-            background: #3b4689;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #4a56a0;
-        }
-
-        body.light-theme ::-webkit-scrollbar-track {
-            background: #f0f0f0;
-        }
-
-        body.light-theme ::-webkit-scrollbar-thumb {
-            background: #c0c0c0;
-        }
+        /* ─── Scrollbar — về mặc định OS ─────────────────────── */
 
         .page-wrapper {
             display: flex;
@@ -167,6 +169,7 @@
             overflow: hidden;
         }
 
+        /* ─── Toolbar ─────────────────────────────────────────── */
         .toolbar {
             display: flex;
             justify-content: space-between;
@@ -175,12 +178,13 @@
             background: #3b4689;
             flex-shrink: 0;
             gap: 12px;
+            border-radius: 10px 10px 0 0;
         }
 
         .toolbar-left {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 20px;
         }
 
         .toolbar-right {
@@ -190,7 +194,7 @@
         }
 
         .toolbar-title {
-            font-size: 17px;
+            font-size: 20px;
             font-weight: 700;
             letter-spacing: .13em;
             text-transform: uppercase;
@@ -227,13 +231,9 @@
             transition: background .2s;
         }
 
-        .search-input::placeholder {
-            color: #d1d5db;
-        }
+        .search-input::placeholder { color: #d1d5db; }
 
-        .search-input:focus {
-            background: rgba(255, 255, 255, .18);
-        }
+        .search-input:focus { background: rgba(255, 255, 255, .18); }
 
         .search-clear {
             position: absolute;
@@ -250,13 +250,8 @@
             padding: 2px;
         }
 
-        .search-clear:hover {
-            color: #fff;
-        }
-
-        .search-clear.visible {
-            display: flex;
-        }
+        .search-clear:hover { color: #fff; }
+        .search-clear.visible { display: flex; }
 
         .btn {
             padding: 7px 16px;
@@ -275,7 +270,7 @@
         }
 
         .btn-import {
-            background: #8f8ca3;
+            background: none;
             text-transform: none;
             color: white;
         }
@@ -286,15 +281,14 @@
         }
 
         .btn-export {
-            background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+            background: none;
             text-transform: none;
             color: white;
         }
 
         .btn-export:hover:not(:disabled) {
-            opacity: .88;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 14px rgba(59, 130, 246, .35);
+            background: linear-gradient(90deg, #2193b0, #6dd5ed);
+            box-shadow: 0 4px 14px rgba(33, 147, 176, .35);
         }
 
         .btn:disabled {
@@ -303,47 +297,80 @@
             transform: none !important;
         }
 
+        /* ─── Table header — dark mode ────────────────────────── */
         .table-header {
             display: grid;
             grid-template-columns: 64px 210px 1fr 1fr 1fr;
             align-items: center;
-            padding: 10px 0;
+            padding: 0;
             font-size: 13px;
             font-weight: 700;
             letter-spacing: .1em;
             text-transform: uppercase;
             color: #fff;
-            background: #3b4689;
             flex-shrink: 0;
+            scrollbar-gutter: stable; 
+            overflow-y: scroll;       
+            scrollbar-color: transparent transparent;
+            background-color: #3b4689;
         }
 
-        .table-scroll {
-            overflow-y: auto;
-            overflow-x: hidden;
-            flex: 1;
+        .table-header > div {
+            padding: 10px 6px;
+            font-size: 14px;
+            font-weight: bold;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
         }
 
+        .table-header > div:last-child {
+            border-right: none;
+        }
+
+        /* ─── Table scroll ────────────────────────────────────── */
+.table-scroll {
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+    scrollbar-gutter: stable; 
+}
+
+
+        /* ─── Rows ────────────────────────────────────────────── */
         .tl-row {
             display: grid;
             grid-template-columns: 64px 210px 1fr 1fr 1fr;
             align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #2a2a3a;
+            padding: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.25);
             color: #e3e2e9;
             cursor: pointer;
             transition: background .12s;
         }
 
-        .tl-row:hover {
-            background: rgba(59, 70, 137, .18);
+        .tl-row > div {
+            padding: 10px 6px;
+            border-right: 1px solid rgba(255, 255, 255, 0.25);
+            display: flex;
+            align-items: center;
+            box-sizing: border-box;
+            min-width: 0;
         }
+
+        .tl-row > div:last-child {
+            border-right: none;
+        }
+
+        .tl-row:hover { background: rgba(59, 70, 137, .18); }
 
         .tl-row.active {
             background: rgba(59, 70, 137, .42);
-            border-left: 3px solid #667eea;
         }
 
-        /* MỚI */
         .col-key,
         .col-lang,
         .col-no {
@@ -351,14 +378,13 @@
             font-weight: 600;
             color: white;
             overflow: hidden;
-            padding: 0 6px;
-            text-align: center;
+            justify-content: center;
         }
 
-        /* Chỉ căn trái ở data row, không ảnh hưởng table-header */
         .tl-row .col-key,
         .tl-row .col-lang {
-            text-align: left;
+            justify-content: flex-start;
+            color: #e3e2e9;
         }
 
         .cell-text {
@@ -375,6 +401,7 @@
             font-size: 13px;
         }
 
+        /* ─── Editor panel ────────────────────────────────────── */
         .editor-wrapper {
             width: 380px;
             flex-shrink: 0;
@@ -390,7 +417,7 @@
             padding: 14px 20px;
             background: #3b4689;
             flex-shrink: 0;
-            font-size: 15px;
+            font-size: 20px;
             font-weight: 700;
             letter-spacing: .12em;
             text-transform: uppercase;
@@ -426,9 +453,7 @@
             gap: 5px;
         }
 
-        .field-label .required {
-            color: #f87171;
-        }
+        .field-label .required { color: #f87171; }
 
         .field-readonly {
             background: rgba(0, 0, 0, .35);
@@ -457,9 +482,7 @@
             line-height: 1.5;
         }
 
-        textarea.field-input::placeholder {
-            color: #4e4d66;
-        }
+        textarea.field-input::placeholder { color: #4e4d66; }
 
         textarea.field-input:focus {
             border-color: #2193b0;
@@ -482,9 +505,7 @@
             gap: 4px;
         }
 
-        .field-error.visible {
-            display: flex;
-        }
+        .field-error.visible { display: flex; }
 
         .error-banner {
             display: none;
@@ -498,9 +519,7 @@
             color: #f87171;
         }
 
-        .error-banner.visible {
-            display: flex;
-        }
+        .error-banner.visible { display: flex; }
 
         .editor-actions {
             padding: 14px 20px;
@@ -550,11 +569,7 @@
             display: inline-block;
         }
 
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         #toast {
             position: fixed;
@@ -659,7 +674,7 @@
 
             <!-- Table header -->
             <div class="table-header">
-                <div class="col-no" id="th-tl-no"></div>
+                <div class="col-no" id="th-tl-no">NO</div>
                 <div class="col-key" id="th-tl-key">DESCRIPTION</div>
                 <div class="col-lang">VI</div>
                 <div class="col-lang">EN</div>
@@ -697,9 +712,9 @@
                 </div>
 
                 <div class="field">
-                    <div class="field-label">VI <span class="required">*</span></div>
+                    <div class="field-label"><span class="required">*</span>VI</div>
                     <textarea class="field-input" id="fieldVi" rows="3"
-                        placeholder="Nhập nội dung tiếng Việt..."></textarea>
+                        ></textarea>
                     <div class="field-error" id="errVi">
                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2.5">
@@ -712,9 +727,9 @@
                 </div>
 
                 <div class="field">
-                    <div class="field-label">EN <span class="required">*</span></div>
+                    <div class="field-label"><span class="required">*</span>EN</div>
                     <textarea class="field-input" id="fieldEn" rows="3"
-                        placeholder="Enter English content..."></textarea>
+                        ></textarea>
                     <div class="field-error" id="errEn">
                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2.5">
@@ -727,8 +742,8 @@
                 </div>
 
                 <div class="field">
-                    <div class="field-label">KR <span class="required">*</span></div>
-                    <textarea class="field-input" id="fieldKr" rows="3" placeholder="한국어 내용 입력..."></textarea>
+                    <div class="field-label"><span class="required">*</span>KR</div>
+                    <textarea class="field-input" id="fieldKr" rows="3"></textarea>
                     <div class="field-error" id="errKr">
                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2.5">

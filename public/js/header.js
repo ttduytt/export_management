@@ -74,51 +74,71 @@ const NAV_HTML = /* html */ `
 <nav>
   <div class="nav-container">
     <div class="logo">
-      <span><img style="width:80px" src="/images/logo.png" alt=""/></span>
+      <span><img style="width:120px" src="/images/logo.png" alt=""/></span>
     </div>
     <ul class="nav-menu" id="navMenu">
-      <li class="home">         <a href="/home"            class="nav-link">Home</a></li>
-      <li class="delivery">     <a href="/delivery"        class="nav-link">Delivery</a></li>
-      <li class="history">      <a href="/deliveryHistory" class="nav-link">History</a></li>
-      <li class="management">   <a href="/management"      class="nav-link">Management</a></li>
-      <li class="translations"> <a href="/translations"    class="nav-link">Language</a></li>
-      <li class="user">         <a href="/user"            class="nav-link">User</a></li>
+      <li class="delivery">
+        <a href="/delivery" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></svg>
+          Delivery
+        </a>
+      </li>
+      <li class="history">
+        <a href="/deliveryHistory" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
+          History
+        </a>
+      </li>
+      <li class="management">
+        <a href="/management" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          Management
+        </a>
+      </li>
+      <li class="translations">
+        <a href="/translations" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+          Language
+        </a>
+      </li>
+      <li class="user">
+        <a href="/user" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          User
+        </a>
+      </li>
       <li class="change-password">
         <a href="#" id="openChangePass" class="nav-link">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
           Change Password
         </a>
       </li>
-      <li class="logout">
-        <a href="#" class="nav-link">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-          </svg>
-        </a>
-      </li>
     </ul>
-    <label class="switch">
-      <input id="themeCheckbox" type="checkbox"/>
-      <span class="slider">
-        <div class="star star_1"></div>
-        <div class="star star_2"></div>
-        <div class="star star_3"></div>
-        <svg viewBox="0 0 16 16" class="cloud_1 cloud">
-          <path transform="matrix(.77976 0 0 .78395-299.99-418.63)" fill="#fff"
-            d="m391.84 540.91c-.421-.329-.949-.524-1.523-.524-1.351 0-2.451 1.084-2.485
-               2.435-1.395.526-2.388 1.88-2.388 3.466 0 1.874 1.385 3.423 3.182
-               3.667v.034h12.73v-.006c1.775-.104 3.182-1.584 3.182-3.395
-               0-1.747-1.309-3.186-2.994-3.379.007-.106.011-.214.011-.322
-               0-2.707-2.271-4.901-5.072-4.901-2.073 0-3.856 1.202-4.643 2.925"/>
-        </svg>
-      </span>
-    </label>
+    <div class="nav-actions">
+          <label class="switch">
+            <input id="themeCheckbox" type="checkbox"/>
+            <span class="slider">
+              <div class="star star_1"></div>
+              <div class="star star_2"></div>
+              <div class="star star_3"></div>
+              <svg viewBox="0 0 16 16" class="cloud_1 cloud">
+                <path transform="matrix(.77976 0 0 .78395-299.99-418.63)" fill="#fff"
+                  d="m391.84 540.91c-.421-.329-.949-.524-1.523-.524-1.351 0-2.451 1.084-2.485
+                    2.435-1.395.526-2.388 1.88-2.388 3.466 0 1.874 1.385 3.423 3.182
+                    3.667v.034h12.73v-.006c1.775-.104 3.182-1.584 3.182-3.395
+                    0-1.747-1.309-3.186-2.994-3.379.007-.106.011-.214.011-.322
+                    0-2.707-2.271-4.901-5.072-4.901-2.073 0-3.856 1.202-4.643 2.925"/>
+              </svg>
+            </span>
+          </label>
+          <a href="#" class="nav-link logout-btn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            </svg>
+          </a>
+        </div>
   </div>
 </nav>`;
 
@@ -209,13 +229,17 @@ class AppHeader extends HTMLElement {
           translations: "/translations",
         };
 
-        if (parentClass === "logout") {
-          this._handleLogout();
-          return;
-        }
         if (routes[parentClass]) window.location.href = routes[parentClass];
       });
     });
+
+    const logoutBtn = this.querySelector(".logout-btn");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        this._handleLogout();
+      });
+    }
   }
 
   async _handleLogout() {
@@ -395,32 +419,38 @@ class AppHeader extends HTMLElement {
   }
 
   _applyI18nLabels() {
+    // Helper cập nhật text node cuối trong link (giữ SVG)
+    const setLinkText = (sel, val) => {
+      const el = this.querySelector(sel);
+      if (!el) return;
+      // Tìm text node cuối, nếu không có thì tạo mới
+      let textNode = [...el.childNodes].findLast(
+        (n) => n.nodeType === Node.TEXT_NODE,
+      );
+      if (textNode) {
+        textNode.textContent = " " + val;
+      } else {
+        el.appendChild(document.createTextNode(" " + val));
+      }
+    };
+
+    // Helper cho các element thường (không có SVG)
     const set = (sel, val) => {
       const el = this.querySelector(sel);
       if (el) el.textContent = val;
     };
 
-    // ── Nav links ─────────────────────────────────────────────────────────────
-    set(".home .nav-link", this._t("nav.home"));
-    set(".delivery .nav-link", this._t("nav.delivery"));
-    set(".history .nav-link", this._t("nav.history"));
-    set(".management .nav-link", this._t("nav.management"));
-    set(".user .nav-link", this._t("nav.user"));
-    set(".translations .nav-link", this._t("nav.translations"));
+    // ── Nav links — dùng setLinkText để giữ SVG ───────────────────
+    setLinkText(".home .nav-link", this._t("nav.home"));
+    setLinkText(".delivery .nav-link", this._t("nav.delivery"));
+    setLinkText(".history .nav-link", this._t("nav.history"));
+    setLinkText(".management .nav-link", this._t("nav.management"));
+    setLinkText(".translations .nav-link", this._t("nav.translations"));
+    setLinkText(".user .nav-link", this._t("nav.user"));
+    setLinkText(".change-password .nav-link", this._t("nav.changePassword"));
 
-    // Change-password link có SVG bên trong — chỉ update text node
-    const cpLink = this.querySelector(".change-password .nav-link");
-    if (cpLink) {
-      const textNode = [...cpLink.childNodes].find(
-        (n) => n.nodeType === Node.TEXT_NODE && n.textContent.trim(),
-      );
-      if (textNode) textNode.textContent = " " + this._t("nav.changePassword");
-    }
-
-    // ── Modal header ──────────────────────────────────────────────────────────
+    // ── Modal (không có SVG, dùng set bình thường) ─────────────────
     set(".cp-header-title", this._t("changePasswordModal.title"));
-
-    // ── Info section labels ───────────────────────────────────────────────────
     set(
       ".cp-lbl-username",
       this._t("changePasswordModal.infoSection.username"),
@@ -430,8 +460,6 @@ class AppHeader extends HTMLElement {
       this._t("changePasswordModal.infoSection.fullName"),
     );
     set(".cp-lbl-role", this._t("changePasswordModal.infoSection.role"));
-
-    // ── Form labels ───────────────────────────────────────────────────────────
     set(".cp-form-title", this._t("changePasswordModal.formSection.title"));
     set(
       ".cp-lbl-newpass",
@@ -443,7 +471,6 @@ class AppHeader extends HTMLElement {
     );
     set("#cpBtnText", this._t("changePasswordModal.formSection.submitButton"));
 
-    // ── Input placeholders ────────────────────────────────────────────────────
     const newPassEl = this.querySelector("#cpNewPass");
     if (newPassEl)
       newPassEl.placeholder = this._t(
