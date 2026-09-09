@@ -2,6 +2,8 @@ import * as XLSX from "./xlsx.js";
 import { formatDate } from "../js/utils.js";
 import I18n from "/i18n.js";
 import Modal from "./modal.js";
+import PalletQueue from "./palletQueue.js";
+import PalletExport from "./palletExport.js";
 
 const gridBtn = document.getElementById("gridBtn");
 const listBtn = document.getElementById("listBtn");
@@ -13,6 +15,7 @@ const importBtn = document.querySelector(".btnImport");
 const excelInput = document.getElementById("excelInput");
 const cbbFactory = document.querySelector(".factory");
 const errorSound = document.getElementById("errorSound");
+const viewPalletBtn = document.getElementById("viewPalletBtn");
 
 let data = [];
 let user = null;
@@ -940,6 +943,16 @@ searchInput.addEventListener("keydown", async (e) => {
       return;
     }
 
+    // push box vừa scan thành công vào pallet queue
+    PalletQueue.addScannedBox({
+      qr: qrValue,
+      partron_code: delivery.partron_code,
+      quantity: qrData.quantity,
+      mobis_code: qrData.mobiscode,
+      model_name: delivery.model_name,
+      factory: factorySelected,
+    });
+
     searchInput.value = "";
     await getAll();
   } catch (error) {
@@ -961,11 +974,38 @@ cbbFactory.addEventListener("change", async () => {
   await getAll();
 });
 
+viewPalletBtn.addEventListener("click", () => {
+  PalletExport.openPalletModal();
+});
+
+cbbFactory.addEventListener("change", async () => {
+  const newFactory = cbbFactory.value.toLowerCase();
+
+  const queue = PalletQueue.getQueue();
+  if (queue && queue.items.length > 0 && newFactory !== factorySelected) {
+    const confirmed = await Modal.showConfirm({
+      type: "warning",
+      title: t("modal.title.warning"),
+      message: t("pallet.alerts.switchFactoryWarning"),
+      yesLabel: t("modal.yesButton"),
+      noLabel: t("modal.noButton"),
+    });
+    if (!confirmed) {
+      cbbFactory.value = factorySelected.toUpperCase();
+      return;
+    }
+  }
+
+  factorySelected = newFactory;
+  await getAll();
+});
+
 // ─── Bootstrap ────────────────────────────────────────────────────────────────
 async function bootstrap() {
   await I18n.init("en");
   t = (key, params) => I18n.t(key, params);
   Modal.init(t);
+  PalletExport.init(t, () => factorySelected);
   cleanupExpiredFirstExportKeys();
 
   user = await getUserProfile();

@@ -752,7 +752,7 @@ router.get("/delivery-history/:factory", async (req, res) => {
     const rows = await conn.query(dataSql, params);
     const data = rows.map(({ days_remaining, ...rest }) => ({
       ...rest,
-      arrive_date: days_remaining,
+      arrive_date: days_remaining === null ? null : Math.max(days_remaining, 0),
     }));
 
     res.json({
@@ -801,7 +801,7 @@ router.get("/delivery/:factory", async (req, res) => {
     const rows = await conn.query(sqlquery, params);
     const result = rows.map(({ days_remaining, ...rest }) => ({
       ...rest,
-      arrive_date: Math.max(days_remaining, 0),
+      arrive_date: days_remaining === null ? null : Math.max(days_remaining, 0),
     }));
     res.json(result);
   } catch (err) {
@@ -809,6 +809,46 @@ router.get("/delivery/:factory", async (req, res) => {
     res
       .status(500)
       .json({ message: "Internal server error", error: err.message });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+// double-check các QR trong pallet queue đã thực sự được lưu trong history chưa
+router.post("/delivery/checkQrHistory", authenticate, async (req, res) => {
+  const { items } = req.body; // [{ qr, factory }, ...]
+  let conn;
+
+  try {
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.json({ foundQrs: [] });
+    }
+
+    conn = await pool.getConnection();
+
+    const itemsByFactory = new Map();
+    for (const item of items) {
+      const key = item.factory === "v0" ? "v0" : "v5";
+      if (!itemsByFactory.has(key)) itemsByFactory.set(key, []);
+      itemsByFactory.get(key).push(item.qr);
+    }
+
+    let foundQrs = [];
+    for (const [factory, qrs] of itemsByFactory) {
+      const tableName =
+        factory === "v0" ? "delivery_history_v0" : "delivery_history_v5";
+      const placeholders = qrs.map(() => "?").join(",");
+      const rows = await conn.query(
+        `SELECT qr FROM ${tableName} WHERE qr IN (${placeholders})`,
+        qrs,
+      );
+      foundQrs = foundQrs.concat(rows.map((r) => r.qr));
+    }
+
+    res.json({ foundQrs });
+  } catch (error) {
+    console.error("Lỗi khi kiểm tra QR history:", error);
+    res.status(500).json({ message: "Có lỗi khi kiểm tra dữ liệu" });
   } finally {
     if (conn) conn.release();
   }
@@ -822,8 +862,13 @@ router.get("/qr/:factory/:mobiscode/:type", authenticate, async (req, res) => {
     const tableName = factory === "v0" ? "delivery_v0" : "delivery_v5";
 
     const delivery = await conn.query(
-      `SELECT * FROM ${tableName} WHERE mobis_code = ? AND type = ? AND status != 'Complete'
-      ORDER BY ABS(TIMESTAMPDIFF(SECOND, shipment_date, CURDATE())) ASC,CASE WHEN shipping_method = 'SEA' THEN 0 ELSE 1 END LIMIT 1;`,
+      `SELECT d.*, ds.partron_code
+       FROM ${tableName} d
+       LEFT JOIN delivery_spec ds ON ds.mobis_code = d.mobis_code
+       WHERE d.mobis_code = ? AND d.type = ? AND d.status != 'Complete'
+       ORDER BY ABS(TIMESTAMPDIFF(SECOND, d.shipment_date, CURDATE())) ASC,
+                CASE WHEN d.shipping_method = 'SEA' THEN 0 ELSE 1 END
+       LIMIT 1;`,
       [mobiscode, type],
     );
 
