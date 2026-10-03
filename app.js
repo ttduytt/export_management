@@ -6,27 +6,25 @@ import apiRouter from "./routes/api.js";
 import router from "./routes/index.js";
 import { fileURLToPath } from "url";
 import cookieParser from "cookie-parser";
-import { Server } from "socket.io";
-import http from "node:http";
+import https from "node:https";
+import fs from "node:fs";
 
 const app = express();
-const server = http.createServer(app);
-const io = new Server(server, {
-  /* options */
-});
 
-// cấu hình socket
-io.on("connection", (socket) => {
-  socket.on("joinRoom", (factory) => {
-    socket.join(factory);
-  });
+// Đọc chứng chỉ tự cấp (SSL)
+const pfxPath = path.join(process.cwd(), 'cert.pfx');
 
-  // Lắng nghe sự kiện cập nhật đơn hàng thành công và phát lại cho các client trong phòng tương ứng
-  socket.on("deliveryUpdated", (data) => {
-    socket.to(data.factory).emit("getDeliveryUpdate", data.factory);
-    socket.to("v4").emit("getDeliveryUpdate", data.factory);
-  });
-});
+let serverOptions = {};
+try {
+  serverOptions = {
+    pfx: fs.readFileSync(pfxPath),
+    passphrase: 'password'
+  };
+} catch (error) {
+  console.warn("⚠️ Không tìm thấy cert.pfx. Hãy tạo bằng script PowerShell.");
+}
+
+const server = https.createServer(serverOptions, app);
 
 // Cấu hình __dirname vì trong ESM không có sẵn
 const __filename = fileURLToPath(import.meta.url);
@@ -50,7 +48,7 @@ app.use("/", router);
 // Chạy server
 const PORT = process.env.PORT || 8001;
 server.listen(PORT, "0.0.0.0", () => {
-  console.log(`✅ Server is running on http://localhost:${PORT}`);
+  console.log(`✅ Server is running on https://localhost:${PORT} (HTTPS)`);
 });
 
 export default server;

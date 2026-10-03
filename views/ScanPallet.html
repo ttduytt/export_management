@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/images/logoweb.jpg" type="image/x-icon">
+    <script src="/js/exceljs.min.js"></script>
+    <script type="module" src="/js/main.js"></script>
+    <script type="module" src="/js/header.js"></script>
+    <title>Scan Pallet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #040818;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .all {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* ─── Top Bar ─────────────────────────────────────────────────── */
+        .top-action-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 24px;
+            background: #3b4689;
+            border-radius: 12px;
+            margin: 10px;
+            flex-shrink: 0;
+        }
+
+        .btn-action {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            color: white;
+            transition: all 0.2s;
+        }
+
+        .btn-save {
+            background: #3b82f6;
+        }
+
+        .btn-save:hover {
+            background: #2563eb;
+        }
+
+        .btn-action:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .scan-input-container {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .scan-input {
+            width: 100%;
+            height: 36px;
+            padding-left: 20px;
+            padding-right: 20px;
+            background: #505c9a;
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .scan-input:focus {
+            background: #5a68a5;
+        }
+
+        .scan-input::placeholder {
+            color: #b0b4d4;
+        }
+
+        /* ─── Main Content Split ──────────────────────────────────────── */
+        .main-content {
+            display: flex;
+            flex: 1;
+            padding: 6px 10px 10px 10px;
+            gap: 20px;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        .panel {
+            background: #0f172a;
+            border-radius: 12px;
+            border: 1px solid #1e293b;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        .left-panel {
+            flex: 1;
+        }
+
+        .right-panel {
+            width: 480px;
+            flex-shrink: 0;
+        }
+
+        .panel-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #1e293b;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #1e293b;
+        }
+
+        .panel-title {
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-title svg {
+            color: #38bdf8;
+        }
+
+        .panel-stats {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 13px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .active-pallet-badge {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .expand-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #cbd5e1;
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .expand-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        /* ─── Table List ──────────────────────────────────────────────── */
+        .table-container {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        .scan-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            color: #e2e8f0;
+        }
+
+        .scan-table th {
+            position: sticky;
+            top: 0;
+            background: #1e2235;
+            padding: 5px 8px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #fff;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.25);
+            border-right: 1px solid rgba(255, 255, 255, 0.25);
+            z-index: 10;
+            text-align: center;
+        }
+
+        .scan-table th:last-child {
+            border-right: none;
+        }
+
+        .scan-table td {
+            padding: 5px 8px;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+            border-right: 1px solid rgba(255, 255, 255, 0.25);
+            color: #e3e2e9;
+            text-align: center;
+        }
+
+        .scan-table td:last-child {
+            border-right: none;
+        }
+
+        .scan-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .qr-code-cell {
+            color: #38bdf8;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .part-number-cell {
+            font-weight: 600;
+        }
+
+        .just-scanned-badge {
+            background: #0284c7;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 8px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        /* ─── Live Label Preview ──────────────────────────────────────── */
+        .preview-container {
+            flex: 1;
+            padding: 0;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+        }
+
+        .shipping-label {
+            background: white;
+            color: black;
+            width: 100%;
+            max-width: none;
+            height: 100%;
+            border: none;
+            font-family: Arial, sans-serif;
+            position: relative;
+        }
+
+        .sl-wrapper {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .sl-header {
+            text-align: center;
+            font-weight: 800;
+            font-size: 16px;
+            padding: 8px;
+            border-bottom: 2px solid black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sl-pallet-no {
+            font-weight: 900;
+            font-size: 20px;
+            padding: 8px 16px;
+            border-bottom: 2px solid black;
+            display: flex;
+            align-items: center;
+        }
+
+        .sl-row {
+            display: flex;
+            border-bottom: 2px solid black;
+        }
+
+        .sl-key {
+            width: 90px;
+            padding: 8px 12px;
+            font-weight: 800;
+            font-size: 11px;
+            border-right: 2px solid black;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .sl-value {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 11px;
+            line-height: 1.3;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .sl-value strong {
+            font-size: 12px;
+        }
+
+        .sl-erp-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .sl-erp-table td {
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            border-bottom: 1px solid black;
+        }
+
+        .sl-erp-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .sl-erp-qty {
+            text-align: right;
+        }
+
+        .sl-totals {
+            display: flex;
+            flex-direction: column;
+            border-bottom: 2px solid black;
+        }
+
+        .sl-total-row {
+            display: flex;
+            border-bottom: 1px solid black;
+        }
+
+        .sl-total-row:last-child {
+            border-bottom: none;
+        }
+
+        .sl-total-key {
+            width: 90px;
+            padding: 8px 12px;
+            font-weight: 800;
+            font-size: 11px;
+            border-right: 2px solid black;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .sl-total-val {
+            flex: 1;
+            padding: 8px 12px;
+            font-weight: 800;
+            font-size: 14px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sl-footer {
+            padding: 10px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .sl-made-in {
+            font-weight: 900;
+            font-size: 18px;
+            margin-bottom: 0;
+        }
+
+        .sl-barcode-placeholder {
+            display: none;
+        }
+
+        .sl-barcode-text {
+            font-family: monospace;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 80px;
+            font-weight: 900;
+            color: rgba(0, 0, 0, 0.05);
+            pointer-events: none;
+            white-space: nowrap;
+            z-index: 0;
+        }
+
+        /* ─── Responsive ──────────────────────────────────────────────── */
+        @media (max-width: 1024px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .right-panel {
+                width: 100%;
+                height: 400px;
+            }
+        }
+
+        /* ─── Light Theme Overrides ───────────────────────────────────── */
+        body.light-theme {
+            background-color: #f0f4f8;
+            color: #1e293b;
+        }
+
+        body.light-theme .top-action-bar {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+        }
+
+        body.light-theme .scan-input {
+            background: #f1f5f9;
+            color: #1e293b;
+            border: 1px solid #cbd5e1;
+        }
+
+        body.light-theme .scan-input:focus {
+            background: #ffffff;
+            border-color: #3b82f6;
+        }
+
+        body.light-theme .scan-input::placeholder {
+            color: #94a3b8;
+        }
+
+        body.light-theme .panel {
+            background: #ffffff;
+            border-color: #cbd5e1;
+        }
+
+        body.light-theme .panel-header {
+            background: #1a5276;
+            border-bottom: 1px solid #cbd5e1;
+        }
+
+        body.light-theme .panel-title {
+            color: white;
+        }
+
+        body.light-theme .scan-table th {
+            background: white;
+            color: black;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.45);
+            border-right: 1px solid rgba(0, 0, 0, 0.15);
+        }
+
+        body.light-theme .scan-table td {
+            color: #334155;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+            border-right: 1px solid rgba(0, 0, 0, 0.15);
+        }
+
+        body.light-theme .scan-table tr:hover {
+            background: #e8f4fd;
+        }
+
+        body.light-theme .table-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        body.light-theme .table-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+        }
+
+        body.light-theme .preview-container {
+            background: #e2e8f0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="all">
+        <app-header active="scanpallet"></app-header>
+
+        <!-- Top Action Bar -->
+        <div class="top-action-bar">
+            <div class="scan-input-container">
+                <input type="text" class="scan-input" id="qrInput" autocomplete="off" placeholder="Scan QR code..." autofocus>
+            </div>
+            <button class="btn-action btn-save" id="endPalletBtn" disabled>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                SAVE
+            </button>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Panel: Scanned List -->
+            <div class="panel left-panel">
+                <div class="table-container">
+                    <table class="scan-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;" id="th-scan-stt">STT</th>
+                                <th id="th-scan-qr">QR CODE</th>
+                                <th id="th-scan-mobis">MOBIS CODE</th>
+                                <th id="th-scan-type">MODEL TYPE</th>
+                                <th id="th-scan-partron">PARTRON CODE</th>
+                                <th id="th-scan-name">MODEL NAME</th>
+                                <th id="th-scan-user">EVENT USER</th>
+                                <th style="text-align: right;" id="th-scan-time">THỜI GIAN QUÉT</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scanTableBody">
+                            <!-- Rows will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Right Panel: Live Preview -->
+            <div class="panel right-panel">
+                <div class="preview-container">
+                    <div class="shipping-label" id="shippingLabel">
+                        <div class="sl-wrapper">
+                            <div class="sl-header">SHIPPING LABEL</div>
+                            <div class="sl-pallet-no">PALLET NO.</div>
+
+                            <div class="sl-row">
+                                <div class="sl-key">SHIP FROM</div>
+                                <div class="sl-value">
+                                    <strong>Patron VINA</strong><br>
+                                    Lot 11, Khai Quang Industrial Zone, Vinh Phuc Ward, Phu Tho Province, Vietnam
+                                </div>
+                            </div>
+
+                            <div class="sl-row">
+                                <div class="sl-key">SHIP TO</div>
+                                <div class="sl-value">
+                                    <strong>PARTRON CO.,LTD</strong><br>
+                                    22, Samsung 1-ro 2-gil,, Hwaseong-si, Gyeonggi-do, Korea
+                                </div>
+                            </div>
+
+                            <div class="sl-row" style="padding: 0; flex: 1;">
+                                <div class="sl-key" style="border-right: 2px solid black;">ERP CODE</div>
+                                <div style="flex: 1; display: flex; flex-direction: column;">
+                                    <table class="sl-erp-table" id="lblErpTable" style="height: 100%;">
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="sl-totals">
+                                <div class="sl-total-row">
+                                    <div class="sl-total-key">TOTAL QTY</div>
+                                    <div class="sl-total-val"><span id="lblTotalQty">0</span> EA</div>
+                                </div>
+                                <div class="sl-total-row">
+                                    <div class="sl-total-key">TOTAL BOX</div>
+                                    <div class="sl-total-val"><span id="lblTotalBox">0</span> BOX</div>
+                                </div>
+                            </div>
+
+                            <div class="sl-footer">
+                                <div class="sl-made-in">MADE IN VIET NAM</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script type="module" src="/js/scanpallet.js"></script>
+    </div>
+</body>
+
+</html>

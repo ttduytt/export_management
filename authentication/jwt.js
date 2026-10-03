@@ -52,9 +52,11 @@ export function verifyRefreshToken(token) {
 }
 
 export async function createAccessTokenFromRefresh(refreshToken) {
-  const result = 
-  
-  verifyRefreshToken(refreshToken);
+  const result = verifyRefreshToken(refreshToken);
+
+  if (!result.valid) {
+    return { success: false, message: "Invalid refresh token" };
+  }
 
   const [rows] = await pool.query(
     "SELECT COUNT(*) AS total FROM list_token WHERE jti = ?",
@@ -63,10 +65,6 @@ export async function createAccessTokenFromRefresh(refreshToken) {
   const isUsed = rows.total > 0;
 
   if (!isUsed) {
-    return { success: false, message: "Invalid refresh token" };
-  }
-
-  if (!result.valid) {
     return { success: false, message: "Invalid refresh token" };
   }
 

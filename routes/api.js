@@ -6,7 +6,7 @@ import {
   generateToken,
   createAccessTokenFromRefresh,
 } from "../authentication/jwt.js";
-import { authenticate } from "../authentication/middleware.js";
+import { authenticate, getRedirectUrlForRole } from "../authentication/middleware.js";
 
 // user
 router.get("/users", authenticate, async (req, res) => {
@@ -814,45 +814,6 @@ router.get("/delivery/:factory", async (req, res) => {
   }
 });
 
-// double-check các QR trong pallet queue đã thực sự được lưu trong history chưa
-router.post("/delivery/checkQrHistory", authenticate, async (req, res) => {
-  const { items } = req.body; // [{ qr, factory }, ...]
-  let conn;
-
-  try {
-    if (!Array.isArray(items) || items.length === 0) {
-      return res.json({ foundQrs: [] });
-    }
-
-    conn = await pool.getConnection();
-
-    const itemsByFactory = new Map();
-    for (const item of items) {
-      const key = item.factory === "v0" ? "v0" : "v5";
-      if (!itemsByFactory.has(key)) itemsByFactory.set(key, []);
-      itemsByFactory.get(key).push(item.qr);
-    }
-
-    let foundQrs = [];
-    for (const [factory, qrs] of itemsByFactory) {
-      const tableName =
-        factory === "v0" ? "delivery_history_v0" : "delivery_history_v5";
-      const placeholders = qrs.map(() => "?").join(",");
-      const rows = await conn.query(
-        `SELECT qr FROM ${tableName} WHERE qr IN (${placeholders})`,
-        qrs,
-      );
-      foundQrs = foundQrs.concat(rows.map((r) => r.qr));
-    }
-
-    res.json({ foundQrs });
-  } catch (error) {
-    console.error("Lỗi khi kiểm tra QR history:", error);
-    res.status(500).json({ message: "Có lỗi khi kiểm tra dữ liệu" });
-  } finally {
-    if (conn) conn.release();
-  }
-});
 
 router.get("/qr/:factory/:mobiscode/:type", authenticate, async (req, res) => {
   const conn = await pool.getConnection();
@@ -1336,6 +1297,91 @@ router.get("/qr/getvalue", authenticate, async (req, res) => {
   }
 });
 
+// ─── Delivery Spec: lookup by mobis_code ───────────────────────────────────
+router.get("/delivery-spec/by-mobis/:mobiscode", authenticate, async (req, res) => {
+  const mobiscode = req.params.mobiscode;
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    const rows = await conn.query(
+      "SELECT model_type, partron_code, model_name FROM delivery_spec WHERE mobis_code = ? LIMIT 1",
+      [mobiscode],
+    );
+    if (rows.length > 0) {
+      res.json(rows[0]);
+    } else {
+      res.json(null);
+    }
+  } catch (error) {
+    console.error("Error looking up delivery_spec:", error);
+    res.status(500).json({ message: "Internal server error" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+// ─── History Pallet: Check QR exist ────────────────────────────────────────
+router.get("/history-pallet/check", authenticate, async (req, res) => {
+  const qr = req.query.qr;
+  if (!qr) {
+    return res.status(400).json({ exists: false, message: "Missing qr parameter" });
+  }
+
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    const rows = await conn.query(
+      "SELECT id FROM history_pallet WHERE qr = ? LIMIT 1",
+      [qr],
+    );
+    res.json({ exists: rows.length > 0 });
+  } catch (error) {
+    console.error("Error checking history_pallet QR:", error);
+    res.status(500).json({ exists: false, message: "Internal server error" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+// ─── History Pallet: Save pallet items ─────────────────────────────────────
+router.post("/history-pallet/save", authenticate, async (req, res) => {
+  const { items, event_user } = req.body;
+
+  if (!Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ success: false, message: "Danh sách QR rỗng" });
+  }
+
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    await conn.beginTransaction();
+
+    for (const item of items) {
+      await conn.query(
+        `INSERT INTO history_pallet (qr, mobis_code, model_type, partron_code, model_name, event_user)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [
+          item.qr,
+          item.mobis_code || "",
+          item.model_type || "",
+          item.partron_code || "",
+          item.model_name || "",
+          event_user || "Unknown",
+        ],
+      );
+    }
+
+    await conn.commit();
+    res.json({ success: true, message: `Đã lưu ${items.length} QR vào history_pallet` });
+  } catch (error) {
+    if (conn) await conn.rollback();
+    console.error("Error saving history_pallet:", error);
+    res.status(500).json({ success: false, message: "Lưu thất bại: " + error.message });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
 // login
 router.post("/api/login", async (req, res) => {
   const { username, password, isSavePass } = req.body;
@@ -1425,6 +1471,8 @@ router.post("/api/login", async (req, res) => {
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 ngày
     });
 
+    const redirectUrl = await getRedirectUrlForRole(user.role);
+
     res.json({
       success: true,
       username: user.user_name,
@@ -1433,6 +1481,7 @@ router.post("/api/login", async (req, res) => {
       accessToken: dataAccessToken.token,
       expiredAt: dataAccessToken.expiredAt,
       message: "Login successful",
+      redirectUrl
     });
   } catch (err) {
     console.error("DB error:", err);
@@ -1772,5 +1821,197 @@ async function revokeTokenByUserId(user_id, conn) {
 async function revokeTokenByJti(jti) {
   await pool.query("DELETE FROM list_token WHERE jti = ?", [jti]);
 }
+
+// ─── ROLE & MENU MANAGEMENT APIs ──────────────────────────────────────────────
+
+// Lấy danh sách Roles
+router.get("/roles", authenticate, async (req, res) => {
+  if (req.user?.role !== "ADMIN") {
+    return res.status(403).json({ message: "Bạn không có quyền thực hiện thao tác này" });
+  }
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    const rows = await conn.query("SELECT * FROM roles");
+    res.json({ success: true, data: rows });
+  } catch (err) {
+    console.error("Error fetching roles:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+// Thêm Role mới
+router.post("/roles", authenticate, async (req, res) => {
+  if (req.user?.role !== "ADMIN") {
+    return res.status(403).json({ message: "Bạn không có quyền thực hiện thao tác này" });
+  }
+  let conn;
+  const { role_name } = req.body;
+  if (!role_name) {
+    return res.status(400).json({ success: false, message: "Tên role không được để trống" });
+  }
+  try {
+    conn = await pool.getConnection();
+    const existing = await conn.query("SELECT * FROM roles WHERE role_name = ?", [role_name.toUpperCase()]);
+    if (existing.length > 0) {
+      return res.status(409).json({ success: false, message: "Role này đã tồn tại" });
+    }
+    await conn.query("INSERT INTO roles (role_name) VALUES (?)", [role_name.toUpperCase()]);
+    res.json({ success: true, message: "Thêm Role thành công" });
+  } catch (err) {
+    console.error("Error creating role:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+// Xoá Role
+router.delete("/roles/:role_name", authenticate, async (req, res) => {
+  if (req.user?.role !== "ADMIN") {
+    return res.status(403).json({ message: "Bạn không có quyền thực hiện thao tác này" });
+  }
+  let conn;
+  const roleName = req.params.role_name;
+  if (["ADMIN", "MANAGER", "USER"].includes(roleName)) {
+    return res.status(400).json({ success: false, message: "Không thể xóa Role mặc định" });
+  }
+  try {
+    conn = await pool.getConnection();
+    await conn.query("DELETE FROM roles WHERE role_name = ?", [roleName]);
+    res.json({ success: true, message: "Xóa Role thành công" });
+  } catch (err) {
+    console.error("Error deleting role:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+// Sửa Role
+router.put("/roles/:role_name", authenticate, async (req, res) => {
+  if (req.user?.role !== "ADMIN") {
+    return res.status(403).json({ message: "Bạn không có quyền thực hiện thao tác này" });
+  }
+  let conn;
+  const oldRoleName = req.params.role_name;
+  const { role_name } = req.body;
+  if (["ADMIN", "MANAGER", "USER"].includes(oldRoleName)) {
+    return res.status(400).json({ success: false, message: "Không thể đổi tên Role mặc định" });
+  }
+  if (!role_name) {
+    return res.status(400).json({ success: false, message: "Tên role không được để trống" });
+  }
+  try {
+    conn = await pool.getConnection();
+    if (role_name.toUpperCase() !== oldRoleName.toUpperCase()) {
+      const existing = await conn.query("SELECT * FROM roles WHERE role_name = ?", [role_name.toUpperCase()]);
+      if (existing.length > 0) {
+        return res.status(409).json({ success: false, message: "Tên Role này đã được sử dụng" });
+      }
+    }
+    await conn.query("UPDATE roles SET role_name = ? WHERE role_name = ?", [role_name.toUpperCase(), oldRoleName]);
+    res.json({ success: true, message: "Cập nhật Role thành công" });
+  } catch (err) {
+    console.error("Error updating role:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+// Lấy danh sách Menus
+router.get("/menus", authenticate, async (req, res) => {
+  if (req.user?.role !== "ADMIN") {
+    return res.status(403).json({ message: "Bạn không có quyền thực hiện thao tác này" });
+  }
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    const rows = await conn.query("SELECT * FROM menus");
+    res.json({ success: true, data: rows });
+  } catch (err) {
+    console.error("Error fetching menus:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+// Lấy danh sách Menus được gán cho 1 Role
+router.get("/roles/:role_name/menus", authenticate, async (req, res) => {
+  if (req.user?.role !== "ADMIN") {
+    return res.status(403).json({ message: "Bạn không có quyền thực hiện thao tác này" });
+  }
+  let conn;
+  const roleName = req.params.role_name;
+  try {
+    conn = await pool.getConnection();
+    const rows = await conn.query("SELECT menu_code FROM role_menu_permissions WHERE role_name = ?", [roleName]);
+    const menus = rows.map(r => r.menu_code);
+    res.json({ success: true, data: menus });
+  } catch (err) {
+    console.error("Error fetching role menus:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+// Cập nhật danh sách Menus cho 1 Role
+router.post("/roles/:role_name/menus", authenticate, async (req, res) => {
+  if (req.user?.role !== "ADMIN") {
+    return res.status(403).json({ message: "Bạn không có quyền thực hiện thao tác này" });
+  }
+  let conn;
+  const roleName = req.params.role_name;
+  const { menus } = req.body; // array of menu_code
+  try {
+    conn = await pool.getConnection();
+    await conn.beginTransaction();
+    // Xóa quyền cũ
+    await conn.query("DELETE FROM role_menu_permissions WHERE role_name = ?", [roleName]);
+    // Thêm quyền mới
+    if (menus && menus.length > 0) {
+      const values = menus.map(m => [roleName, m]);
+      // Dùng cú pháp INSERT nhiều dòng (lưu ý: mariadb driver hỗ trợ bulk insert qua batch)
+      await conn.batch("INSERT INTO role_menu_permissions (role_name, menu_code) VALUES (?, ?)", values);
+    }
+    await conn.commit();
+    res.json({ success: true, message: "Cập nhật quyền thành công" });
+  } catch (err) {
+    if (conn) await conn.rollback();
+    console.error("Error updating role menus:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+// API Lấy danh sách menu cho user hiện tại (Dùng cho giao diện)
+router.get("/my-menus", authenticate, async (req, res) => {
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    const roleName = req.user.role;
+    let menus = [];
+    if (roleName === "ADMIN") {
+       // ADMIN có thể thấy hết
+       const rows = await conn.query("SELECT menu_code FROM menus");
+       menus = rows.map(r => r.menu_code);
+    } else {
+       const rows = await conn.query("SELECT menu_code FROM role_menu_permissions WHERE role_name = ?", [roleName]);
+       menus = rows.map(r => r.menu_code);
+    }
+    res.json({ success: true, data: menus });
+  } catch (err) {
+    console.error("Error fetching my-menus:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
 
 export default router;

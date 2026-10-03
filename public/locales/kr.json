@@ -7,7 +7,8 @@
     "management": "관리",
     "user": "사용자",
     "changePassword": "비밀번호 변경",
-    "logout": "로그아웃"
+    "logout": "로그아웃",
+    "scanPallet": "스캔 파렛트"
   },
   "welcome": {
     "title": "ACM 완제품 배송 시스템에 오신 것을 환영합니다",
@@ -226,7 +227,7 @@
   "usernamePlaceholder": "사용자명 입력",
   "password": "비밀번호",
   "passwordPlaceholder": "비밀번호 입력",
-  "savePassword": "비밀번호 저장?",
+  "savePassword": "로그인 상태 유지?",
   "submit": "로그인",
   "forgotText": "비밀번호를 잊으셨나요?",
   "forgotLink": "여기서 재설정!",

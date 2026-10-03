@@ -83,6 +83,12 @@ const NAV_HTML = /* html */ `
           Delivery
         </a>
       </li>
+      <li class="scanpallet">
+        <a href="/scanpallet" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>
+          Scan Pallet
+        </a>
+      </li>
       <li class="history">
         <a href="/deliveryHistory" class="nav-link">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
@@ -105,6 +111,18 @@ const NAV_HTML = /* html */ `
         <a href="/user" class="nav-link">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           User
+        </a>
+      </li>
+      <li class="roles">
+        <a href="/roles" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Role Management
+        </a>
+      </li>
+      <li class="role-menus">
+        <a href="/role-menus" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"></path><path d="M4 12h16"></path><path d="M4 18h16"></path><circle cx="8" cy="12" r="2"></circle></svg>
+          Menu Permissions
         </a>
       </li>
       <li class="change-password">
@@ -223,10 +241,13 @@ class AppHeader extends HTMLElement {
         const routes = {
           home: "/home",
           delivery: "/delivery",
+          scanpallet: "/scanpallet",
           history: "/deliveryHistory",
           management: "/management",
           user: "/user",
           translations: "/translations",
+          roles: "/roles",
+          "role-menus": "/role-menus",
         };
 
         if (routes[parentClass]) window.location.href = routes[parentClass];
@@ -258,29 +279,53 @@ class AppHeader extends HTMLElement {
     window.location.href = "/";
   }
 
-  _applyRolePermission() {
+  async _applyRolePermission() {
     const user = this._getCurrentUser();
     const role = user?.role; // "ADMIN" | "MANAGER" | "USER" | undefined
 
-    const managementMenu = this.querySelector(".management");
-    const userMenu = this.querySelector(".user");
-    const languageMenu = this.querySelector(".translations");
+    const menuItems = {
+      delivery: this.querySelector(".delivery"),
+      scanpallet: this.querySelector(".scanpallet"),
+      history: this.querySelector(".history"),
+      management: this.querySelector(".management"),
+      translations: this.querySelector(".translations"),
+      user: this.querySelector(".user"),
+      roles: this.querySelector(".roles"),
+      "role-menus": this.querySelector(".role-menus"),
+    };
+
+    // Hide all first to prevent flashing (except home and change-password which are always visible)
+    Object.values(menuItems).forEach(el => {
+      if (el) el.style.display = "none";
+    });
 
     if (role === "ADMIN") {
-      // ADMIN thấy tất cả
+      // ADMIN shows all
+      Object.values(menuItems).forEach(el => {
+        if (el) el.style.display = "";
+      });
       return;
     }
 
-    if (role === "MANAGER") {
-      // MANAGER: chỉ ẩn menu User
-      if (userMenu) userMenu.style.display = "none";
-      return;
+    try {
+      // Fetch allowed menus
+      const res = await fetch("/exportmanagement/my-menus", {
+        headers: { "Content-Type": "application/json" }
+      });
+      const data = await res.json();
+      if (data.success) {
+        const allowedMenus = data.data; // array of menu_code
+        Object.keys(menuItems).forEach(key => {
+          if (menuItems[key]) {
+            if (allowedMenus.includes(key)) {
+              menuItems[key].style.display = "";
+            }
+          }
+        });
+      }
+    } catch (err) {
+      console.error("Failed to load user menus", err);
     }
-
-    // USER
-    if (managementMenu) managementMenu.style.display = "none";
-    if (userMenu) userMenu.style.display = "none";
-    if (languageMenu) languageMenu.style.display = "none";
   }
 
   // ── Change password modal ───────────────────────────────────────────────────
@@ -443,10 +488,13 @@ class AppHeader extends HTMLElement {
     // ── Nav links — dùng setLinkText để giữ SVG ───────────────────
     setLinkText(".home .nav-link", this._t("nav.home"));
     setLinkText(".delivery .nav-link", this._t("nav.delivery"));
+    setLinkText(".scanpallet .nav-link", this._t("nav.scanPallet"));
     setLinkText(".history .nav-link", this._t("nav.history"));
     setLinkText(".management .nav-link", this._t("nav.management"));
     setLinkText(".translations .nav-link", this._t("nav.translations"));
     setLinkText(".user .nav-link", this._t("nav.user"));
+    setLinkText(".roles .nav-link", this._t("nav.roles") || " Role Management");
+    setLinkText(".role-menus .nav-link", this._t("nav.roleMenus") || " Menu Permissions");
     setLinkText(".change-password .nav-link", this._t("nav.changePassword"));
 
     // ── Modal (không có SVG, dùng set bình thường) ─────────────────

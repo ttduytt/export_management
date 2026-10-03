@@ -2,6 +2,8 @@ import * as XLSX from "./xlsx.js";
 import { formatDate } from "../js/utils.js";
 import I18n from "/i18n.js";
 import Modal from "./modal.js";
+import PalletQueue from "./palletQueue.js";
+import PalletExport from "./palletExport.js";
 
 const gridBtn = document.getElementById("gridBtn");
 const listBtn = document.getElementById("listBtn");
@@ -12,9 +14,9 @@ const searchInput = document.querySelector(".searchInput");
 const importBtn = document.querySelector(".btnImport");
 const excelInput = document.getElementById("excelInput");
 const cbbFactory = document.querySelector(".factory");
-import { errorSoundBase64 } from "./audio-data.js";
+const errorSound = document.getElementById("errorSound");
+const viewPalletBtn = document.getElementById("viewPalletBtn");
 
-const errorSound = new Audio(`data:audio/mp3;base64,${errorSoundBase64}`);
 let data = [];
 let user = null;
 let factorySelected = "";
@@ -33,7 +35,7 @@ const columnMapping = {
   "변경 초도품": "firstexport",
 };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// Helper
 function getStatusText(status) {
   if (!status) return "";
   const key = status.toLowerCase();
@@ -86,11 +88,11 @@ function cleanupExpiredFirstExportKeys() {
   }
 }
 
-// ─── Apply language to static DOM elements ────────────────────────────────────
+// ΓöÇΓöÇΓöÇ Apply language to static DOM elements ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 async function applyLang() {
   document.title = t("title");
 
-  // Helper: chỉ cập nhật text node trong link, giữ nguyên SVG icon
+  // Helper: chß╗ë cß║¡p nhß║¡t text node trong link, giß╗» nguy├¬n SVG icon
   const setLinkText = (selector, text) => {
     const el = document.querySelector(selector);
     if (!el) return;
@@ -121,6 +123,8 @@ async function applyLang() {
     (n) => n.nodeType === Node.TEXT_NODE && n.textContent.trim(),
   );
   if (importBtnText) importBtnText.textContent = " " + t("import");
+
+  if (searchInput) searchInput.placeholder = t("scanQR");
 
   const listBtnText = [...listBtn.childNodes].find(
     (n) => n.nodeType === Node.TEXT_NODE && n.textContent.trim(),
@@ -188,7 +192,7 @@ async function applyLang() {
     cpBtnText.textContent = t("changePasswordModal.formSection.submitButton");
 }
 
-// ─── API Operations ───────────────────────────────────────────────────────────
+// ΓöÇΓöÇΓöÇ API Operations ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 async function getUserProfile() {
   const res = await fetch("/exportmanagement/profile", {
     method: "GET",
@@ -356,7 +360,7 @@ async function checkAirFirstExportConflict(items) {
       return { errors: [], errorsConflictSea: [], warnings: [] };
     return await response.json();
   } catch (error) {
-    console.error("Lỗi khi kiểm tra AIR first export conflict:", error);
+    console.error("Lß╗ùi khi kiß╗âm tra AIR first export conflict:", error);
     return { errors: [], errorsConflictSea: [], warnings: [] };
   }
 }
@@ -606,7 +610,7 @@ function renderGrid() {
     .join("");
 }
 
-// ─── Event Listeners ──────────────────────────────────────────────────────────
+// ΓöÇΓöÇΓöÇ Event Listeners ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 gridBtn.addEventListener("click", () => {
   gridBtn.classList.add("active");
   listBtn.classList.remove("active");
@@ -700,7 +704,7 @@ excelInput.addEventListener("change", async () => {
             days: w.days_left,
             daysLabel: t("delivery.alerts.daysLeftLabel"),
           });
-          if (!confirmed) return; // chỉ cần 1 cái không xác nhận -> hủy import
+          if (!confirmed) return; // chß╗ë cß║ºn 1 c├íi kh├┤ng x├íc nhß║¡n -> hß╗ºy import
         }
       }
     }
@@ -730,7 +734,7 @@ async function checkQrExist(factory, qr) {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Lỗi khi gọi API checkQrExist:", error);
+    console.error("Lß╗ùi khi gß╗ìi API checkQrExist:", error);
     return null;
   }
 }
@@ -757,7 +761,7 @@ async function checkFirstExport(mobiscode, factory) {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Lỗi khi kiểm tra firstExport:", error);
+    console.error("Lß╗ùi khi kiß╗âm tra firstExport:", error);
     return { firstExport: false };
   }
 }
@@ -800,7 +804,7 @@ async function updateDelivery(username, factory, delivery, qr) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, factory, delivery, qr }),
     });
-    if (!response.ok) throw new Error(`Lỗi HTTP: ${response.status}`);
+    if (!response.ok) throw new Error(`Lß╗ùi HTTP: ${response.status}`);
     const result = await response.json();
     return result;
   } catch (error) {
@@ -832,7 +836,7 @@ searchInput.addEventListener("keydown", async (e) => {
       return;
     }
 
-    const invalidLength = qrValue.length < 37 || qrValue.length > 48;
+    const invalidLength = qrValue.length < 38 || qrValue.length > 48;
     const validPrefix =
       qrValue.startsWith("R7A8") ||
       qrValue.startsWith("N-") ||
@@ -939,7 +943,15 @@ searchInput.addEventListener("keydown", async (e) => {
       return;
     }
 
-
+    // push box vß╗½a scan th├ánh c├┤ng v├áo pallet queue
+    PalletQueue.addScannedBox({
+      qr: qrValue,
+      partron_code: delivery.partron_code,
+      quantity: qrData.quantity,
+      mobis_code: qrData.mobiscode,
+      model_name: delivery.model_name,
+      factory: factorySelected,
+    });
 
     searchInput.value = "";
     await getAll();
@@ -962,13 +974,38 @@ cbbFactory.addEventListener("change", async () => {
   await getAll();
 });
 
+viewPalletBtn.addEventListener("click", () => {
+  PalletExport.openPalletModal();
+});
 
+cbbFactory.addEventListener("change", async () => {
+  const newFactory = cbbFactory.value.toLowerCase();
 
-// ─── Bootstrap ────────────────────────────────────────────────────────────────
+  const queue = PalletQueue.getQueue();
+  if (queue && queue.items.length > 0 && newFactory !== factorySelected) {
+    const confirmed = await Modal.showConfirm({
+      type: "warning",
+      title: t("modal.title.warning"),
+      message: t("pallet.alerts.switchFactoryWarning"),
+      yesLabel: t("modal.yesButton"),
+      noLabel: t("modal.noButton"),
+    });
+    if (!confirmed) {
+      cbbFactory.value = factorySelected.toUpperCase();
+      return;
+    }
+  }
+
+  factorySelected = newFactory;
+  await getAll();
+});
+
+// ΓöÇΓöÇΓöÇ Bootstrap ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 async function bootstrap() {
   await I18n.init("en");
   t = (key, params) => I18n.t(key, params);
   Modal.init(t);
+  PalletExport.init(t, () => factorySelected);
   cleanupExpiredFirstExportKeys();
 
   user = await getUserProfile();

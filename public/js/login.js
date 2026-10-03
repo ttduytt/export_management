@@ -72,6 +72,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const form = document.querySelector("#loginForm");
   const submitBtn = document.querySelector("#submitBtn");
   const savePassword = document.querySelector("#savePassword");
+  const inputUsername = document.querySelector("input[name='username']");
+
+  const savedUsername = localStorage.getItem("savedUsername");
+  if (savedUsername) {
+    if (inputUsername) inputUsername.value = savedUsername;
+    if (savePassword) savePassword.checked = true;
+  }
 
   const params = new URLSearchParams(window.location.search);
   const msg = params.get("msg");
@@ -99,6 +106,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (data.success) {
         localStorage.setItem("isSavePass", isSavePass);
+        if (isSavePass) {
+          localStorage.setItem("savedUsername", username);
+        } else {
+          localStorage.removeItem("savedUsername");
+        }
         localStorage.setItem("lang", localStorage.getItem("lang") || "en");
         localStorage.setItem(
           "user",
@@ -109,7 +121,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             expiredAt: data.expiredAt,
           }),
         );
-        globalThis.location.href = "/delivery";
+        globalThis.location.href = data.redirectUrl || "/delivery";
       } else {
         alert(data.message || t("login.invalidCredentials"));
       }

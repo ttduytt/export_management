@@ -65,6 +65,32 @@ async function getUserProfile() {
   return (await res.json()).user;
 }
 
+// ─── Fetch roles ──────────────────────────────────────────────────────────────
+async function fetchRoles() {
+  try {
+    const res = await fetch("/exportmanagement/roles", {
+      headers: { "Content-Type": "application/json" },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success) {
+        const select = document.getElementById("input-role");
+        if (select) {
+          select.innerHTML = "";
+          data.data.forEach(r => {
+            const opt = document.createElement("option");
+            opt.value = r.role_name;
+            opt.textContent = r.role_name;
+            select.appendChild(opt);
+          });
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Error fetching roles", err);
+  }
+}
+
 // ─── Fetch departments ────────────────────────────────────────────────────────
 async function fetchDepartments() {
   try {
@@ -563,6 +589,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (header?.setUser) header.setUser(user);
 
     await fetchDepartments();
+    await fetchRoles();
     await fetchAndRenderUsers();
   } catch (err) {
     console.error("Initialization error:", err);

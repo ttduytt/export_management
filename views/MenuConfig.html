@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="/images/logoweb.jpg" type="image/x-icon" />
+  <script type="module" src="/js/header.js"></script>
+  <script type="module" src="/js/role_menus.js"></script>
+  <title>Delivery Management – Menu Configuration</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #090f27;
+      color: #e2e8f0;
+      line-height: 1.5;
+    }
+
+    .page-root {
+      display: flex;
+      gap: 16px;
+      padding: 16px;
+      height: calc(100dvh - 86px);
+      overflow: hidden;
+    }
+
+    .panel {
+      background: #070c21;
+      border: 1px solid #30363D;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      display: flex;
+      background: #3b4689;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-bottom: 1px solid #30363D;
+      flex-shrink: 0;
+    }
+
+    .panel-header-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: white;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+    }
+
+    /* LEFT: Table panel */
+    .table-panel {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .table-scroll {
+      flex: 1;
+      overflow-x: auto;
+      overflow-y: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    thead th {
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      color: white;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      background: #3b4689;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.4);
+      border-right: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    thead th:last-child {
+      border-right: none;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+      cursor: pointer;
+      transition: background .12s;
+    }
+
+    tbody tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    tbody tr.active {
+      background: rgba(59, 70, 137, .42);
+    }
+
+    tbody td {
+      padding: 10px 14px;
+      color: white;
+      vertical-align: middle;
+      border-right: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    tbody td:last-child {
+      border-right: none;
+    }
+
+    .td-empty {
+      color: #475569;
+      font-size: 13px;
+      padding: 48px;
+      text-align: center;
+    }
+
+    .badge-role {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(168, 85, 247, .2);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, .3);
+    }
+
+    /* RIGHT: Editor panel */
+    .editor-wrapper {
+      flex-shrink: 0;
+      width: 0;
+      height: 100%;
+      opacity: 0;
+      overflow: hidden;
+      pointer-events: none;
+      transition: width .42s cubic-bezier(.4, 0, .2, 1), opacity .32s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    .editor-wrapper.open {
+      width: 420px;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .editor-inner {
+      width: 420px;
+      height: 100%;
+      background: #161B22;
+      border: 1px solid #30363D;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .editor-body {
+      background: #090f27;
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .field-row {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .field-label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+    }
+
+    /* Checkbox list */
+    .menu-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #0d1520;
+      padding: 10px 14px;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+
+    .menu-item:hover {
+      background: rgba(255, 255, 255, .05);
+    }
+
+    .menu-item:has(input[type="checkbox"]:checked) {
+      background: rgba(59, 130, 246, 0.35);
+      border-color: rgba(59, 130, 246, 0.7);
+    }
+
+    .menu-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .menu-item-label {
+      font-size: 14px;
+      color: #e2e8f0;
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .error-banner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(239, 68, 68, .1);
+      border: 1px solid rgba(239, 68, 68, .3);
+      border-radius: 8px;
+      font-size: 12px;
+      color: #f87171;
+    }
+
+    .error-banner.hidden {
+      display: none;
+    }
+
+    .editor-actions {
+      padding: 12px 16px;
+      background-color: #070c21;
+      border-top: 1px solid #30363D;
+      flex-shrink: 0;
+    }
+
+    .actions-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: background .18s, opacity .18s;
+    }
+
+    .btn:disabled {
+      opacity: .3;
+      cursor: not-allowed;
+    }
+
+    .btn-save {
+      background: #2563eb;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, .25);
+    }
+
+    .btn-save:hover:not(:disabled) {
+      background: #3b82f6;
+    }
+
+    /* Light theme overrides */
+    body.light-theme {
+      background: #f0f4f8;
+      color: #1e293b;
+    }
+
+    body.light-theme .panel {
+      background: #ffffff;
+      border-color: #cbd5e1;
+    }
+
+    body.light-theme .panel-header {
+      background: #1a5276;
+    }
+
+    body.light-theme thead th {
+      background: white;
+      color: black;
+      border-bottom: 2px solid rgba(0, 0, 0, 0.45);
+      border-right: 1px solid rgba(0, 0, 0, 0.15);
+    }
+
+    body.light-theme thead th:last-child {
+      border-right: none;
+    }
+
+    body.light-theme tbody tr {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+    }
+
+    body.light-theme tbody tr:hover {
+      background: #e8f4fd;
+    }
+
+    body.light-theme tbody tr.active {
+      background: rgba(59, 130, 246, .1);
+    }
+
+    body.light-theme tbody td {
+      color: #334155;
+      border-right: 1px solid rgba(0, 0, 0, 0.15);
+    }
+
+    body.light-theme tbody td:last-child {
+      border-right: none;
+    }
+
+    body.light-theme .editor-inner {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    body.light-theme .editor-body {
+      background: #f1f5f9;
+    }
+
+    body.light-theme .menu-item {
+      background: #ffffff;
+      border-color: #cbd5e1;
+    }
+
+    body.light-theme .menu-item:hover {
+      background: rgba(0, 0, 0, .05);
+    }
+
+    body.light-theme .menu-item:has(input[type="checkbox"]:checked) {
+      background: rgba(59, 130, 246, 0.25);
+      border-color: rgba(59, 130, 246, 0.6);
+    }
+
+    body.light-theme .menu-item-label {
+      color: #334155;
+    }
+
+    body.light-theme .editor-actions {
+      background-color: #f1f5f9;
+      border-top-color: #e2e8f0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <app-header active="role-menus"></app-header>
+
+  <div class="page-root">
+    <!-- LEFT: Roles List -->
+    <div class="panel table-panel">
+      <div class="panel-header">
+        <span class="panel-header-title">Select a Role</span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 50%; text-align: left;">No.</th>
+              <th style="width: 50%; text-align: left;">Role Name</th>
+            </tr>
+          </thead>
+          <tbody id="roleTableBody">
+            <tr>
+              <td colspan="3" class="td-empty">Loading…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- RIGHT: Menu Config -->
+    <div class="editor-wrapper open" id="editorWrapper">
+      <div class="editor-inner">
+
+        <div class="panel-header">
+          <span class="panel-header-title">Menu Permissions</span>
+        </div>
+
+        <div class="editor-body">
+          <div class="field-row">
+            <div class="menu-list" id="menu-list-container">
+              <!-- Checkboxes dynamically added here -->
+            </div>
+          </div>
+
+          <div class="error-banner hidden" id="errorBanner">
+            <span>⚠</span> <span id="errorBannerText"></span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="editor-actions">
+          <div class="actions-row">
+            <button class="btn btn-save" id="btn-save-menus" disabled>Save Permissions</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</body>
+
+</html>
