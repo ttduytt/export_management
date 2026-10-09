@@ -465,6 +465,7 @@ async function saveNewModel(row) {
         mobis_code: mobisCode,
         partron_code: partronCode,
         model_name: modelName,
+        event_user: JSON.parse(localStorage.getItem("user")).username,
       }),
     });
     if (res.ok) {
