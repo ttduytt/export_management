@@ -220,20 +220,20 @@
     "confirmLogout": "Are you sure you want to logout?"
   },
   "login": {
-  "username": "Username",
-  "usernamePlaceholder": "Enter username",
-  "password": "Password",
-  "passwordPlaceholder": "Enter password",
-  "savePassword": "Remember me?",
-  "submit": "Submit",
-  "forgotText": "Forgot your password?",
-  "forgotLink": "Reset it here!",
-  "forgotAlert": "Please contact IT to retrieve your password!",
-  "noPermission": "You do not have permission to access this page",
-  "invalidToken": "Session expired. Please login again!",
-  "emptyFields": "Please enter your username and password!",
-  "wrongCredentials": "Incorrect username or password!",
-  "connectionError": "Server connection error!"
+    "username": "Username",
+    "usernamePlaceholder": "Enter username",
+    "password": "Password",
+    "passwordPlaceholder": "Enter password",
+    "savePassword": "Remember me?",
+    "submit": "Submit",
+    "forgotText": "Forgot your password?",
+    "forgotLink": "Reset it here!",
+    "forgotAlert": "Please contact IT to retrieve your password!",
+    "noPermission": "You do not have permission to access this page",
+    "invalidToken": "Session expired. Please login again!",
+    "emptyFields": "Please enter your username and password!",
+    "wrongCredentials": "Incorrect username or password!",
+    "connectionError": "Server connection error!"
   },
   "statusText": {
     "run": "Run",
@@ -256,7 +256,15 @@
       "invalidValue": "Error at row {row}, column \"{column}\": Invalid value: \"{value}\"",
       "qtyExceedsTarget": "Row {row} quantity cannot be greater than target quantity",
       "notificationTitle": "Notification",
-      "seaNotificationMessage": "Mobis code: {mobiscode}\nArrive days remaining: {days}"
+      "seaNotificationMessage": "Mobis code: {mobiscode}\nArrive days remaining: {days}",
+      "firstExportTitle": "First Export",
+      "modifiedFirstExportTitle": "Modified First Export",
+      "daysLeftLabel": "Days Remaining",
+      "shippingMethodLabel": "Shipping Method",
+      "airNotArrivedWarningTitle": "First-export SEA batch has not arrived yet. Do you confirm this AIR shipment has been approved?",
+      "airNotArrivedErrorTitle": "Initial SEA shipment has not arrived. You must mark 'V' in the First Export column for this AIR shipment!",
+      "autoFirstExportNoticeTitle": "First Export Notification",
+      "autoFirstExportNoticeMessage": "Mobis code(s) {mobiscodes} are first export and have been automatically marked as First Export."
     }
   }
 }

@@ -222,20 +222,20 @@
     "confirmLogout": "Bạn có chắc chắn muốn đăng xuất không?"
   },
   "login": {
-  "username": "Tên đăng nhập",
-  "usernamePlaceholder": "Nhập tên đăng nhập",
-  "password": "Mật khẩu",
-  "passwordPlaceholder": "Nhập mật khẩu",
-  "savePassword": "Ghi nhớ đăng nhập?",
-  "submit": "Đăng nhập",
-  "forgotText": "Quên mật khẩu?",
-  "forgotLink": "Đặt lại tại đây!",
-  "forgotAlert": "Vui lòng liên hệ IT để lấy lại mật khẩu!",
-  "noPermission": "Bạn không có quyền truy cập trang này",
-  "invalidToken": "Phiên đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại!",
-  "emptyFields": "Vui lòng nhập tên đăng nhập và mật khẩu!",
-  "wrongCredentials": "Tên đăng nhập hoặc mật khẩu không đúng!",
-  "connectionError": "Lỗi kết nối server!"
+    "username": "Tên đăng nhập",
+    "usernamePlaceholder": "Nhập tên đăng nhập",
+    "password": "Mật khẩu",
+    "passwordPlaceholder": "Nhập mật khẩu",
+    "savePassword": "Ghi nhớ đăng nhập?",
+    "submit": "Đăng nhập",
+    "forgotText": "Quên mật khẩu?",
+    "forgotLink": "Đặt lại tại đây!",
+    "forgotAlert": "Vui lòng liên hệ IT để lấy lại mật khẩu!",
+    "noPermission": "Bạn không có quyền truy cập trang này",
+    "invalidToken": "Phiên đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại!",
+    "emptyFields": "Vui lòng nhập tên đăng nhập và mật khẩu!",
+    "wrongCredentials": "Tên đăng nhập hoặc mật khẩu không đúng!",
+    "connectionError": "Lỗi kết nối server!"
   },
   "statusText": {
     "run": "Đang chạy",
@@ -258,7 +258,15 @@
       "invalidValue": "Lỗi tại dòng {row}, cột \"{column}\": Giá trị không hợp lệ: \"{value}\"",
       "qtyExceedsTarget": "Dòng {row} Quantity không được lớn hơn Target Quantity",
       "notificationTitle": "Thông báo",
-      "seaNotificationMessage": "Mobis code: {mobiscode}\nSố ngày đến nơi còn lại: {days}"
+      "seaNotificationMessage": "Mobis code: {mobiscode}\nSố ngày đến nơi còn lại: {days}",
+      "firstExportTitle": "Hàng xuất lần đầu",
+      "modifiedFirstExportTitle": "Hàng thay đổi xuất lần đầu",
+      "daysLeftLabel": "Số ngày đến nơi còn lại",
+      "shippingMethodLabel": "Phương thức vận chuyển",
+      "airNotArrivedWarningTitle": "Hàng SEA xuất lần đầu chưa cập cảng. Bạn có xác nhận đơn hàng AIR này đã được phê duyệt xuất không?",
+      "airNotArrivedErrorTitle": "Hàng SEA xuất lần đầu chưa cập cảng. Bạn phải tích 'V' vào cột First Export cho đơn hàng AIR này!",
+      "autoFirstExportNoticeTitle": "Thông báo hàng xuất lần đầu",
+      "autoFirstExportNoticeMessage": "Mã Mobis {mobiscodes} là hàng xuất lần đầu và đã được hệ thống tự động đánh dấu First Export."
     }
   }
 }

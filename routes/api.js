@@ -894,6 +894,207 @@ router.get(
   },
 );
 
+router.get(
+  "/delivery/checkScanAlert/:factory/:mobiscode/:modelId",
+  authenticate,
+  async (req, res) => {
+    let conn;
+    const { factory, mobiscode, modelId } = req.params;
+
+    try {
+      conn = await pool.getConnection();
+      const deliveryTable =
+        factory === "v0" ? "delivery_v0" : "delivery_v5";
+
+      // 1. Lấy thông tin đơn hàng hiện tại đang quét
+      const currentDeliveryRows = await conn.query(
+        `SELECT * FROM ${deliveryTable} WHERE model_id = ? LIMIT 1`,
+        [modelId],
+      );
+      if (currentDeliveryRows.length === 0) {
+        return res.json({ shouldAlert: false });
+      }
+      const currentDelivery = currentDeliveryRows[0];
+      const currentMethod = currentDelivery.shipping_method?.toUpperCase();
+
+      // 2. Phân biệt: Mã mới tinh (chưa từng có đơn nào hoàn thành hoặc cập cảng trong quá khứ) hay Mã cũ
+      const pastArrivedRows = await conn.query(
+        `SELECT model_id FROM ${deliveryTable}
+         WHERE mobis_code = ?
+           AND model_id != ?
+           AND (
+             status = 'Complete'
+             OR (UPPER(shipping_method) = 'SEA' AND arrive_date IS NOT NULL AND arrive_date < CURDATE())
+           )
+         LIMIT 1`,
+        [mobiscode, modelId],
+      );
+      const isInitialFirstExport = pastArrivedRows.length === 0;
+      const alertTitleType = isInitialFirstExport ? "first_export" : "modified_first_export";
+
+      // TRƯỜNG HỢP 1: ĐƠN HÀNG ĐẦU TIÊN CỦA MÃ MỚI TINH (Hàng xuất lần đầu)
+      if (isInitialFirstExport) {
+        // Kiểm tra xem có đơn hàng nào của mã này có thời gian xuất hoặc tạo TRƯỚC đơn này không
+        const earlierDeliveries = await conn.query(
+          `SELECT model_id FROM ${deliveryTable}
+           WHERE mobis_code = ?
+             AND model_id != ?
+             AND (
+               shipment_date < ?
+               OR (shipment_date = ? AND COALESCE(create_at, '1970-01-01') < COALESCE(?, '1970-01-01'))
+               OR (shipment_date = ? AND COALESCE(create_at, '1970-01-01') = COALESCE(?, '1970-01-01') AND model_id < ?)
+             )
+           LIMIT 1`,
+          [
+            mobiscode,
+            modelId,
+            currentDelivery.shipment_date,
+            currentDelivery.shipment_date,
+            currentDelivery.create_at,
+            currentDelivery.shipment_date,
+            currentDelivery.create_at,
+            modelId,
+          ],
+        );
+
+        if (earlierDeliveries.length === 0) {
+          if (currentDelivery.first_export !== 1) {
+            await conn.query(
+              `UPDATE ${deliveryTable} SET first_export = 1 WHERE model_id = ?`,
+              [modelId],
+            );
+          }
+
+          if (currentMethod === "SEA") {
+            const seaDaysRows = await conn.query(
+              `SELECT DATEDIFF(arrive_date, CURDATE()) AS days_left FROM ${deliveryTable} WHERE model_id = ?`,
+              [modelId],
+            );
+            const daysLeft =
+              seaDaysRows.length > 0 && seaDaysRows[0].days_left !== null
+                ? Number(seaDaysRows[0].days_left)
+                : 20;
+
+            return res.json({
+              shouldAlert: true,
+              alertType: "first_export",
+              shippingMethod: "SEA",
+              days: daysLeft,
+            });
+          } else {
+            return res.json({
+              shouldAlert: true,
+              alertType: "first_export",
+              shippingMethod: "AIR",
+              days: "AIR",
+            });
+          }
+        }
+      }
+
+      // TRƯỜNG HỢP 2: ĐƠN HÀNG ĐẦU TIÊN CỦA ĐỢT THAY ĐỔI (Hàng thay đổi xuất lần đầu)
+      // Mã cũ có tích V (first_export = 1), và trước đơn này chưa có đơn first_export = 1 nào khác chưa cập cảng/chưa hoàn thành
+      if (!isInitialFirstExport && currentDelivery.first_export === 1) {
+        const priorPendingFirstExports = await conn.query(
+          `SELECT model_id FROM ${deliveryTable}
+           WHERE mobis_code = ?
+             AND model_id != ?
+             AND first_export = 1
+             AND (
+               (UPPER(shipping_method) = 'SEA' AND arrive_date >= CURDATE() AND (shipment_date < ? OR (shipment_date = ? AND COALESCE(create_at, '1970-01-01') < COALESCE(?, '1970-01-01'))))
+               OR (status != 'Complete' AND (shipment_date < ? OR (shipment_date = ? AND COALESCE(create_at, '1970-01-01') < COALESCE(?, '1970-01-01'))))
+             )
+           LIMIT 1`,
+          [
+            mobiscode,
+            modelId,
+            currentDelivery.shipment_date,
+            currentDelivery.shipment_date,
+            currentDelivery.create_at,
+            currentDelivery.shipment_date,
+            currentDelivery.shipment_date,
+            currentDelivery.create_at,
+          ],
+        );
+
+        if (priorPendingFirstExports.length === 0) {
+          if (currentMethod === "SEA") {
+            const seaDaysRows = await conn.query(
+              `SELECT DATEDIFF(arrive_date, CURDATE()) AS days_left FROM ${deliveryTable} WHERE model_id = ?`,
+              [modelId],
+            );
+            const daysLeft =
+              seaDaysRows.length > 0 && seaDaysRows[0].days_left !== null
+                ? Number(seaDaysRows[0].days_left)
+                : 20;
+
+            return res.json({
+              shouldAlert: true,
+              alertType: "modified_first_export",
+              shippingMethod: "SEA",
+              days: daysLeft,
+            });
+          } else {
+            return res.json({
+              shouldAlert: true,
+              alertType: "modified_first_export",
+              shippingMethod: "AIR",
+              days: "AIR",
+            });
+          }
+        }
+      }
+
+      // TRƯỜNG HỢP 3: ĐƠN AIR XUẤT TRONG KHI CÓ LÔ SEA (first_export = 1) CHƯA CẬP CẢNG
+      if (currentMethod === "AIR") {
+        const seaUnarrivedRows = await conn.query(
+          `SELECT model_id, shipment_date, arrive_date,
+                  DATEDIFF(arrive_date, CURDATE()) AS days_left
+           FROM ${deliveryTable}
+           WHERE mobis_code = ?
+             AND model_id != ?
+             AND UPPER(shipping_method) = 'SEA'
+             AND first_export = 1
+             AND arrive_date >= CURDATE()
+           ORDER BY shipment_date DESC, arrive_date DESC
+           LIMIT 1`,
+          [mobiscode, modelId],
+        );
+
+        if (seaUnarrivedRows.length > 0) {
+          const targetSea = seaUnarrivedRows[0];
+          const daysLeft = Number(targetSea.days_left);
+
+          if (currentDelivery.first_export !== 1) {
+            await conn.query(
+              `UPDATE ${deliveryTable} SET first_export = 1 WHERE model_id = ?`,
+              [modelId],
+            );
+          }
+
+          return res.json({
+            shouldAlert: true,
+            alertType: alertTitleType,
+            shippingMethod: "AIR",
+            days: daysLeft,
+            seaShipmentDate: targetSea.shipment_date,
+          });
+        }
+      }
+
+      // Các trường hợp khác: Không báo
+      return res.json({ shouldAlert: false });
+    } catch (error) {
+      console.error("Error in checkScanAlert:", error);
+      res
+        .status(500)
+        .json({ shouldAlert: false, message: "Internal server error" });
+    } finally {
+      if (conn) conn.release();
+    }
+  },
+);
+
 router.delete("/delivery", authenticate, async (req, res) => {
   if (!["ADMIN", "MANAGER"].includes(req.user?.role)) {
     return res.status(403).json({
@@ -946,6 +1147,9 @@ router.post("/delivery/import", authenticate, async (req, res) => {
   try {
     conn = await pool.getConnection();
     await conn.beginTransaction(); // khởi tạo transaction
+
+    const newMobisHandledInBatch = new Set();
+    const autoMarkedNewMobiscodes = new Set();
 
     for (const [index, delivery] of deliveries.entries()) {
       const factory = delivery.factory.toLowerCase();
@@ -1023,8 +1227,47 @@ router.post("/delivery/import", authenticate, async (req, res) => {
               .split("T")[0]
           : null;
 
-      const isFirstExport =
-        String(delivery.firstexport).trim().toUpperCase() === "V" ? 1 : 0;
+      // Kiểm tra xem mã Mobis này đã từng có trong bảng delivery chưa
+      const isMobisAlreadyInDelivery = await conn.query(
+        `SELECT COUNT(*) AS count FROM ${tableDelivereyName} WHERE mobis_code = ?`,
+        [delivery.mobiscode],
+      );
+
+      let isFirstExport = 0;
+      const isBrandNewMobis =
+        Number(isMobisAlreadyInDelivery[0].count) === 0 &&
+        !newMobisHandledInBatch.has(delivery.mobiscode);
+
+      if (isBrandNewMobis) {
+        // Hàng xuất lần đầu của Mobis mới tinh: tự động gán là first export
+        isFirstExport = 1;
+        newMobisHandledInBatch.add(delivery.mobiscode);
+
+        const isTickedV =
+          String(delivery.firstexport ?? "").trim().toUpperCase() === "V";
+        if (!isTickedV) {
+          autoMarkedNewMobiscodes.add(delivery.mobiscode);
+        }
+      } else {
+        // Nếu là đơn AIR và mã này đang có lô SEA lần đầu chưa cập cảng, tự động gán first_export = 1
+        const hasPendingSeaFirstExport = await conn.query(
+          `SELECT 1 FROM ${tableDelivereyName}
+           WHERE mobis_code = ? AND shipping_method = 'SEA' AND first_export = 1 AND arrive_date >= ?
+           LIMIT 1`,
+          [delivery.mobiscode, delivery.shipmentdate],
+        );
+
+        if (
+          delivery.shippingmethod?.toUpperCase() === "AIR" &&
+          hasPendingSeaFirstExport.length > 0
+        ) {
+          isFirstExport = 1;
+        } else {
+          // Mã đã từng xuất hoặc đã xử lý đơn đầu trong batch: lấy theo dấu 'V'
+          isFirstExport =
+            String(delivery.firstexport).trim().toUpperCase() === "V" ? 1 : 0;
+        }
+      }
 
       // Thêm vào bảng delivery
       const deliverySql = `
@@ -1053,7 +1296,10 @@ router.post("/delivery/import", authenticate, async (req, res) => {
     }
 
     await conn.commit();
-    res.status(201).json({ message: "Import delivery thành công!" });
+    res.status(201).json({
+      message: "Import delivery thành công!",
+      autoFirstExports: Array.from(autoMarkedNewMobiscodes),
+    });
   } catch (error) {
     if (conn) await conn.rollback(); // rollback nếu bất kỳ dòng nào lỗi
     console.error("Error inserting deliveries:", error);
@@ -1143,19 +1389,6 @@ async function checkFactoryAirConflict(conn, tableName, factoryItems) {
         new Date(sea.arrive_date) > new Date(latest.arrive_date) ? sea : latest,
       );
 
-      // MỚI: nếu đã từng xuất AIR first_export trong khoảng shipment_date -> arrive_date
-      // của farthestSea rồi thì bỏ qua, coi như không lỗi
-      const hasAirFirstExportInRange = airFirstExportRows.some(
-        (air) =>
-          air.mobis_code === item.mobiscode &&
-          new Date(air.shipment_date) >= new Date(farthestSea.shipment_date) &&
-          new Date(air.shipment_date) <= new Date(farthestSea.arrive_date),
-      );
-
-      if (hasAirFirstExportInRange) {
-        continue;
-      }
-
       const conflict = {
         mobiscode: item.mobiscode,
         air_shipment_date: item.shipmentdate,
@@ -1164,10 +1397,12 @@ async function checkFactoryAirConflict(conn, tableName, factoryItems) {
         days_left: farthestSea.days_left,
       };
 
-      if (isMarkedV) {
-        warnings.push(conflict);
-      } else {
+      if (!isMarkedV) {
+        // Chưa tích 'V': Báo lỗi chặn không cho import
         errorsConflictSea.push(conflict);
+      } else {
+        // Đã tích 'V': Bật modal xác nhận hỏi đã phê duyệt chưa
+        warnings.push(conflict);
       }
     }
   }

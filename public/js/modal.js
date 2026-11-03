@@ -327,6 +327,7 @@ const Modal = (() => {
       daysLabel = "",
       confirmLabel = _t ? _t("modal.confirmButton") : "Xác nhận",
       type = "warning",
+      daysColor,
       onClose,
     } = options;
 
@@ -334,6 +335,10 @@ const Modal = (() => {
 
     const theme = THEME[type] || THEME.warning;
     const icon = ICONS[type] || ICONS.warning;
+
+    const isAir = String(days).trim().toUpperCase() === "AIR";
+    const daysTextColor = isAir ? "#0ea5e9" : (daysColor || "#c0392b");
+    const daysFontSize = isAir ? "4.5em" : "6em";
 
     const backdrop = document.createElement("div");
     backdrop.className = "mn-backdrop";
@@ -362,7 +367,7 @@ const Modal = (() => {
           </div>
           <div class="mn-sea-divider"></div>
           <div class="mn-sea-right">
-            <div class="mn-sea-days-number">${days}</div>
+            <div class="mn-sea-days-number" style="color: ${daysTextColor}; font-size: ${daysFontSize};">${days}</div>
           </div>
         </div>
         <div class="mn-sea-footer">

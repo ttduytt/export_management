@@ -71,7 +71,7 @@ function getExpiry(key) {
 function cleanupExpiredFirstExportKeys() {
   for (let i = localStorage.length - 1; i >= 0; i--) {
     const key = localStorage.key(i);
-    if (!key || !key.startsWith(FIRST_EXPORT_PREFIX)) continue;
+    if (!key || (!key.startsWith(FIRST_EXPORT_PREFIX) && !key.startsWith("shown_alert_"))) continue;
     try {
       const item = JSON.parse(localStorage.getItem(key));
       const remaining = item.expiry - Date.now();
@@ -377,13 +377,24 @@ async function addDeliveryAndHistory(rows) {
       });
       return;
     }
-    Modal.show({
-      type: "success",
-      title: t("modal.title.success"),
-      message: result.message,
-      autoClose: true,
-      duration: 2500,
-    });
+    if (result.autoFirstExports && result.autoFirstExports.length > 0) {
+      Modal.show({
+        type: "info",
+        title: t("delivery.alerts.autoFirstExportNoticeTitle"),
+        message: t("delivery.alerts.autoFirstExportNoticeMessage", {
+          mobiscodes: result.autoFirstExports.join(", "),
+        }),
+        showClose: true,
+      });
+    } else {
+      Modal.show({
+        type: "success",
+        title: t("modal.title.success"),
+        message: result.message,
+        autoClose: true,
+        duration: 2500,
+      });
+    }
     await getAll();
   } catch (err) {
     Modal.show({
@@ -748,6 +759,19 @@ async function findDelivery(qrData) {
   }
 }
 
+async function checkScanAlert(factory, mobiscode, modelId) {
+  try {
+    const response = await fetch(
+      `/exportmanagement/delivery/checkScanAlert/${factory}/${mobiscode}/${encodeURIComponent(modelId)}`,
+    );
+    if (!response.ok) return { shouldAlert: false };
+    return await response.json();
+  } catch (error) {
+    console.error("Lỗi khi kiểm tra checkScanAlert:", error);
+    return { shouldAlert: false };
+  }
+}
+
 async function checkFirstExport(mobiscode, factory) {
   try {
     const response = await fetch(
@@ -876,27 +900,44 @@ searchInput.addEventListener("keydown", async (e) => {
       return;
     }
 
-    const isFirstExport = await checkFirstExport(
-      qrData.mobiscode,
+    // Kiểm tra cảnh báo xuất hàng (Hàng xuất lần đầu & Hàng thay đổi xuất lần đầu)
+    const scanAlert = await checkScanAlert(
       factorySelected,
+      qrData.mobiscode,
+      delivery.model_id,
     );
 
-    if (
-      isFirstExport.firstExport &&
-      isFirstExport.seaData?.arrive_date &&
-      delivery.shipping_method === "AIR"
-    ) {
-      const storageKey = `${FIRST_EXPORT_PREFIX}${qrData.mobiscode}_${isFirstExport.seaData.shipment_date}`;
+    if (scanAlert && scanAlert.shouldAlert) {
+      // Cập nhật trạng thái first_export cho đơn nếu là hàng xuất lần đầu
+      if (scanAlert.alertType === "first_export") {
+        delivery.first_export = 1;
+      }
+
+      // Cơ chế ghi nhớ theo model_id (chỉ hiển thị ở thùng đầu tiên của đơn hàng)
+      const storageKey = `shown_alert_${delivery.model_id}`;
       const alreadyShown = getExpiry(storageKey);
 
       if (!alreadyShown) {
-        const daysLeft = Number(isFirstExport.seaData.arrive_date);
         setExpiry(storageKey, "1", FIRST_EXPORT_TTL);
+
+        // Xác định tiêu đề thông báo:
+        // - "first_export": Hàng xuất lần đầu (mã Mobis mới)
+        // - "modified_first_export": Hàng thay đổi xuất lần đầu (mã Mobis cũ có tích V)
+        const modalTitle =
+          scanAlert.alertType === "modified_first_export"
+            ? t("delivery.alerts.modifiedFirstExportTitle")
+            : t("delivery.alerts.firstExportTitle");
+
+        const isAir = String(scanAlert.days).trim().toUpperCase() === "AIR";
+        const daysLabel = isAir
+          ? t("delivery.alerts.shippingMethodLabel")
+          : t("delivery.alerts.daysLeftLabel");
+
         Modal.showSeaAlert({
-          title: t("delivery.alerts.notificationTitle"),
+          title: modalTitle,
           mobiscode: qrData.mobiscode,
-          days: daysLeft,
-          daysLabel: t("delivery.alerts.daysLeftLabel"),
+          days: scanAlert.days,
+          daysLabel: daysLabel,
           onClose: () => searchInput?.focus(),
         });
       }

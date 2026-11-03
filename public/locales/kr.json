@@ -223,20 +223,20 @@
     "confirmLogout": "정말 로그아웃 하시겠습니까?"
   },
   "login": {
-  "username": "사용자명",
-  "usernamePlaceholder": "사용자명 입력",
-  "password": "비밀번호",
-  "passwordPlaceholder": "비밀번호 입력",
-  "savePassword": "로그인 상태 유지?",
-  "submit": "로그인",
-  "forgotText": "비밀번호를 잊으셨나요?",
-  "forgotLink": "여기서 재설정!",
-  "forgotAlert": "IT 담당자에게 문의하여 비밀번호를 재설정하세요!",
-  "noPermission": "이 페이지에 접근 권한이 없습니다",
-  "invalidToken": "세션이 만료되었습니다. 다시 로그인해 주세요!",
-  "emptyFields": "사용자명과 비밀번호를 입력해 주세요!",
-  "wrongCredentials": "사용자명 또는 비밀번호가 올바르지 않습니다!",
-  "connectionError": "서버 연결 오류!"
+    "username": "사용자명",
+    "usernamePlaceholder": "사용자명 입력",
+    "password": "비밀번호",
+    "passwordPlaceholder": "비밀번호 입력",
+    "savePassword": "로그인 상태 유지?",
+    "submit": "로그인",
+    "forgotText": "비밀번호를 잊으셨나요?",
+    "forgotLink": "여기서 재설정!",
+    "forgotAlert": "IT 담당자에게 문의하여 비밀번호를 재설정하세요!",
+    "noPermission": "이 페이지에 접근 권한이 없습니다",
+    "invalidToken": "세션이 만료되었습니다. 다시 로그인해 주세요!",
+    "emptyFields": "사용자명과 비밀번호를 입력해 주세요!",
+    "wrongCredentials": "사용자명 또는 비밀번호가 올바르지 않습니다!",
+    "connectionError": "서버 연결 오류!"
   },
   "statusText": {
     "run": "진행 중",
@@ -259,7 +259,15 @@
       "invalidValue": "{row}행의 \"{column}\" 열 오류: 유효하지 않은 값: \"{value}\"",
       "qtyExceedsTarget": "{row}행의 Quantity는 Target Quantity보다 클 수 없습니다",
       "notificationTitle": "알림",
-      "seaNotificationMessage": "Mobis code: {mobiscode}\n남은 일수: {days}일"
+      "seaNotificationMessage": "Mobis code: {mobiscode}\n남은 일수: {days}일",
+      "firstExportTitle": "초도품 출하",
+      "modifiedFirstExportTitle": "변경 초도품 출하",
+      "daysLeftLabel": "남은 일수",
+      "shippingMethodLabel": "운송 방식",
+      "airNotArrivedWarningTitle": "해상 초도품이 아직 입항하지 않았습니다. 이 항공 출하가 승인되었는지 확인하시겠습니까?",
+      "airNotArrivedErrorTitle": "초도 해상 출하품이 아직 도착하지 않았습니다. 이 항공 출하 건의 First Export 열에 'V'를 표시해야 합니다!",
+      "autoFirstExportNoticeTitle": "초도품 출하 알림",
+      "autoFirstExportNoticeMessage": "Mobis 코드 {mobiscodes}는 초도 출하품이며 First Export로 자동 표시되었습니다."
     }
   }
 }
