@@ -25,26 +25,6 @@ function makeSpecRow(spec, index) {
 
 // ─── Apply language to static DOM elements ────────────────────────────────────
 async function applyLang() {
-  document.getElementById("lbl-total-in-day").textContent = t(
-    "admin.stats.totalInDay",
-  );
-  document.getElementById("lbl-performance").textContent = t(
-    "admin.stats.performance",
-  );
-
-  document.getElementById("lbl-chart-monthly-title").textContent = t(
-    "admin.charts.monthlyPerformance.title",
-  );
-  document.getElementById("lbl-chart-monthly-sub").textContent = t(
-    "admin.charts.monthlyPerformance.subtitle",
-  );
-  document.getElementById("lbl-chart-status-title").textContent = t(
-    "admin.charts.shipmentStatus.title",
-  );
-  document.getElementById("lbl-chart-status-sub").textContent = t(
-    "admin.charts.shipmentStatus.subtitle",
-  );
-
   document.getElementById("th-model-spec").textContent = t(
     "admin.modelSpec.title",
   );
@@ -84,6 +64,11 @@ async function applyLang() {
   document.getElementById("th-del-stt").textContent = t(
     "admin.delivery.table.stt",
   );
+  const delModelTypeEl = document.getElementById("th-del-modelType");
+  if (delModelTypeEl) {
+    delModelTypeEl.textContent =
+      t("admin.modelSpec.table.modelType") || "Model Type";
+  }
   document.getElementById("th-del-mobisCode").textContent = t(
     "admin.delivery.table.mobisCode",
   );
@@ -121,199 +106,6 @@ async function getUserProfile() {
   });
   const data = await res.json();
   return data.user;
-}
-
-// ─── Overview & Charts ────────────────────────────────────────────────────────
-async function initOverview(user) {
-  const factory = user.factory || "V4";
-  if (
-    !document.getElementById("monthlyChart") ||
-    !document.getElementById("orderChart")
-  )
-    return;
-
-  const overviewRes = await fetch(
-    `/exportmanagement/api/getoverview?factory=${factory}`,
-    { headers: { "Content-Type": "application/json" } },
-  );
-  const overviewData = await overviewRes.json();
-  document.getElementById("totalInDay").textContent =
-    overviewData.totalExport || "0";
-  document.getElementById("performance").textContent =
-    overviewData.performanceInDay
-      ? Math.round(overviewData.performanceInDay) + "%"
-      : "0%";
-
-  const monthlyRes = await fetch(
-    `/exportmanagement/api/getmonthlyperformance?factory=${factory}`,
-    { headers: { "Content-Type": "application/json" } },
-  );
-  const monthlyData = await monthlyRes.json();
-
-  Highcharts.chart("monthlyChart", {
-    accessibility: { enabled: false },
-    chart: { type: "spline", backgroundColor: "transparent", height: 300 },
-    responsive: {
-      rules: [
-        {
-          condition: { maxWidth: 500 },
-          chartOptions: { chart: { height: 300 } },
-        },
-      ],
-    },
-    title: { text: null },
-    xAxis: {
-      categories: monthlyData.months,
-      labels: { style: { color: "#ffffff" } },
-    },
-    yAxis: {
-      title: {
-        text: t("admin.charts.monthlyPerformance.yAxisLabel"),
-        style: { color: "#ffffff" },
-      },
-      labels: { style: { color: "#ffffff" } },
-      gridLineColor: "rgba(255,255,255,0.1)",
-    },
-    legend: { enabled: false },
-    series: [
-      {
-        name: t("admin.charts.monthlyPerformance.seriesName"),
-        data: monthlyData.totals,
-        color: "#007FFF",
-        lineWidth: 3,
-      },
-    ],
-    credits: { enabled: false },
-  });
-
-  const statusRes = await fetch(
-    `/exportmanagement/api/getstatuscount?factory=${factory}`,
-    { headers: { "Content-Type": "application/json" } },
-  );
-  const statusData = await statusRes.json();
-
-  Highcharts.chart("orderChart", {
-    accessibility: { enabled: false },
-    chart: { type: "pie", backgroundColor: "transparent" },
-    responsive: {
-      rules: [
-        {
-          condition: { maxWidth: 500 },
-          chartOptions: { chart: { height: 300 } },
-        },
-      ],
-    },
-    title: { text: null },
-    plotOptions: {
-      series: {
-        dataLabels: [
-          {
-            enabled: true,
-            distance: 20,
-            format: "{point.name}",
-            style: { fontSize: "0.7em", color: "white", textOutline: "none" },
-          },
-          {
-            enabled: true,
-            distance: -15,
-            format: "{point.percentage:.0f}%",
-            style: { fontSize: "0.7em", color: "white", textOutline: "none" },
-          },
-        ],
-      },
-      pie: {
-        innerSize: "60%",
-        dataLabels: { enabled: false },
-        showInLegend: true,
-      },
-    },
-    legend: {
-      align: "center",
-      verticalAlign: "bottom",
-      itemStyle: { color: "#ffffff" },
-    },
-    series: [
-      {
-        name: t("admin.charts.shipmentStatus.seriesName"),
-        data: [
-          {
-            name: t("admin.charts.shipmentStatus.complete"),
-            y: statusData.completed || 0,
-            color: "#10b981",
-          },
-          {
-            name: t("admin.charts.shipmentStatus.inProgress"),
-            y: statusData.inProgress || 0,
-            color: "#f59e0b",
-          },
-        ],
-      },
-    ],
-    credits: { enabled: false },
-  });
-}
-
-function rerenderCharts() {
-  Highcharts.chart("monthlyChart", {
-    chart: { type: "line", backgroundColor: "transparent", height: 250 },
-    title: { text: null },
-    xAxis: {
-      categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-      labels: { style: { color: "#ffffff" } },
-    },
-    yAxis: {
-      title: {
-        text: t("admin.charts.monthlyPerformance.yAxisLabel"),
-        style: { color: "#ffffff" },
-      },
-      labels: { style: { color: "#ffffff" } },
-      gridLineColor: "rgba(255,255,255,0.1)",
-    },
-    legend: { enabled: false },
-    series: [
-      {
-        name: t("admin.charts.monthlyPerformance.seriesName"),
-        data: [0, 0, 0, 0, 0, 0],
-        color: "#007FFF",
-        lineWidth: 3,
-      },
-    ],
-    credits: { enabled: false },
-  });
-  Highcharts.chart("orderChart", {
-    chart: { type: "pie", backgroundColor: "transparent", height: 250 },
-    title: { text: null },
-    plotOptions: {
-      pie: {
-        innerSize: "60%",
-        dataLabels: { enabled: false },
-        showInLegend: true,
-      },
-    },
-    legend: {
-      align: "center",
-      verticalAlign: "bottom",
-      itemStyle: { color: "#ffffff" },
-    },
-    series: [
-      {
-        name: t("admin.charts.shipmentStatus.seriesName"),
-        data: [
-          {
-            name: t("admin.charts.shipmentStatus.complete"),
-            y: 0,
-            color: "#10b981",
-          },
-          {
-            name: t("admin.charts.shipmentStatus.inProgress"),
-            y: 0,
-            color: "#f59e0b",
-          },
-        ],
-      },
-    ],
-    credits: { enabled: false },
-  });
 }
 
 // ─── Model Spec ───────────────────────────────────────────────────────────────
@@ -704,6 +496,7 @@ async function initDelivery() {
     row.className = "grid-tr";
     row.innerHTML = `
       <div class="grid-td del-col-stt">${i + 1}</div>
+      <div class="grid-td del-col-modeltype col-left model-type">${d.model_type || ""}</div>
       <div class="grid-td del-col-mobis col-left mobis-code">${d.mobis_code || ""}</div>
       <div class="grid-td del-col-name col-left model-name">${d.model_name || ""}</div>
       <div class="grid-td del-col-type">${d.type || ""}</div>
@@ -744,9 +537,10 @@ async function initDelivery() {
   function applyFilters() {
     const filter = searchInput.value.trim().toLowerCase();
     tbody.querySelectorAll(".grid-tr").forEach((row) => {
-      // Search trên: model-id, mobis-code, model-name
+      // Search trên: model-id, model-type, mobis-code, model-name
       const searchCells = [
         row.querySelector(".model-id"),
+        row.querySelector(".model-type"),
         row.querySelector(".mobis-code"),
         row.querySelector(".model-name"),
       ];
@@ -835,16 +629,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const header = document.querySelector("app-header");
     if (header?.setUser) header.setUser(user);
 
-    document.getElementById("welcome").textContent =
-      user.role === "MANAGER"
-        ? t("admin.welcomeManager", { name: user.username || "Admin" })
-        : t("admin.welcomeUser");
-
-    await initOverview(user);
     await initSpecModel();
     await initDelivery();
   } catch (err) {
     console.error("Initialization error:", err);
-    rerenderCharts();
   }
 });

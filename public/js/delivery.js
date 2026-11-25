@@ -133,18 +133,19 @@ async function applyLang() {
   if (gridBtnText) gridBtnText.textContent = " " + t("grid");
 
   const headerDivs = document.querySelectorAll("#tableHeader > div");
-  if (headerDivs.length >= 11) {
+  if (headerDivs.length >= 12) {
     headerDivs[0].textContent = t("admin.delivery.table.stt");
-    headerDivs[1].textContent = t("admin.delivery.table.mobisCode");
-    headerDivs[2].textContent = t("admin.delivery.table.modelName");
-    headerDivs[3].textContent = t("admin.delivery.table.type");
-    headerDivs[4].textContent = t("admin.delivery.table.status");
-    headerDivs[5].textContent = t("admin.delivery.table.target");
-    headerDivs[6].textContent = t("admin.delivery.table.quantity");
-    headerDivs[7].textContent = t("admin.delivery.table.shippingDate");
-    headerDivs[8].textContent = t("admin.delivery.table.shippingMethod");
-    headerDivs[9].textContent = t("admin.delivery.table.firstExport");
-    headerDivs[10].textContent = t("admin.delivery.table.arriveDate");
+    headerDivs[1].textContent = t("admin.modelSpec.table.modelType") || "MODEL TYPE";
+    headerDivs[2].textContent = t("admin.delivery.table.mobisCode");
+    headerDivs[3].textContent = t("admin.delivery.table.modelName");
+    headerDivs[4].textContent = t("admin.delivery.table.type");
+    headerDivs[5].textContent = t("admin.delivery.table.status");
+    headerDivs[6].textContent = t("admin.delivery.table.target");
+    headerDivs[7].textContent = t("admin.delivery.table.quantity");
+    headerDivs[8].textContent = t("admin.delivery.table.shippingDate");
+    headerDivs[9].textContent = t("admin.delivery.table.shippingMethod");
+    headerDivs[10].textContent = t("admin.delivery.table.firstExport");
+    headerDivs[11].textContent = t("admin.delivery.table.arriveDate");
   }
 
   const cpHeader = document.querySelector(".cp-header h2");
@@ -556,6 +557,7 @@ function renderList() {
     row.className = `table-row ${item.status.toLowerCase() === "run" ? "running" : ""}`;
     row.innerHTML = `
       <div class="col-center">${index + 1}</div>
+      <div class="col-text">${item.model_type || ""}</div>
       <div class="col-text">${item.mobis_code}</div>
       <div class="col-text">${item.model_name}</div>
       <div class="col-center">${item.type}</div>
@@ -601,7 +603,8 @@ function renderGrid() {
       <div class="card ${item.status === "Run" ? "running" : ""}">
         <div class="card-header"><strong>${item.model_name}</strong></div>
         <div class="card-body">
-          <div><strong>${t("admin.delivery.table.mobisCode")}:</strong> ${item.mobis_code}</div>l
+          <div><strong>${t("admin.modelSpec.table.modelType")}:</strong> ${item.model_type || ""}</div>
+          <div><strong>${t("admin.delivery.table.mobisCode")}:</strong> ${item.mobis_code}</div>
           <div><strong>${t("admin.delivery.table.type")}:</strong> ${item.type}</div>
           <div><strong>${t("admin.delivery.table.target")}:</strong> ${item.target}</div>
           <div><strong>${t("admin.delivery.table.quantity")}:</strong> ${item.quantity}</div>

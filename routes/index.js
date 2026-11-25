@@ -17,6 +17,15 @@ router.get("/", checkRememberLogin, (req, res) => {
   res.sendFile(path.join(__dirname, "../views/Login.html"));
 });
 
+router.get("/dashboard", authenticate, (req, res, next) => {
+  if (["ADMIN", "MANAGER"].includes(req.user?.role)) {
+    return res.sendFile(path.join(__dirname, "../views/Dashboard.html"));
+  }
+  return checkMenuAccess("dashboard")(req, res, () => {
+    res.sendFile(path.join(__dirname, "../views/Dashboard.html"));
+  });
+});
+
 router.get("/delivery", authenticate, checkMenuAccess("delivery"), (req, res) => {
   res.sendFile(path.join(__dirname, "../views/Delivery.html"));
 });

@@ -785,18 +785,21 @@ router.get("/delivery/:factory", async (req, res) => {
 
     const tableName = factory === "v0" ? "delivery_v0" : "delivery_v5";
 
-    sqlquery = `SELECT *, DATEDIFF(arrive_date, CURDATE()) AS days_remaining FROM ${tableName} WHERE 1=1`;
+    sqlquery = `SELECT d.*, ds.model_type, DATEDIFF(d.arrive_date, CURDATE()) AS days_remaining
+      FROM ${tableName} d
+      LEFT JOIN delivery_spec ds ON ds.mobis_code = d.mobis_code
+      WHERE 1=1`;
 
     if (startDate) {
-      sqlquery += ` AND shipment_date >= ?`;
+      sqlquery += ` AND d.shipment_date >= ?`;
       params.push(startDate);
     }
     if (endDate) {
-      sqlquery += ` AND shipment_date <= ?`;
+      sqlquery += ` AND d.shipment_date <= ?`;
       params.push(endDate);
     }
 
-    sqlquery += ` ORDER BY create_at DESC LIMIT 100`;
+    sqlquery += ` ORDER BY d.create_at DESC LIMIT 100`;
 
     const rows = await conn.query(sqlquery, params);
     const result = rows.map(({ days_remaining, ...rest }) => ({
@@ -1786,11 +1789,11 @@ router.get("/api/getoverview", authenticate, async (req, res) => {
         AND DATE(create_at) = CURDATE()
     `);
       const totalExport = Number(totalExportRowsV0[0].total);
-      const performanceInDay =
-        ((Number(performanceRowsV0[0].completed) || 0) / (totalExport || 1)) *
-        100;
+      const completedToday = Number(performanceRowsV0[0].completed) || 0;
+      const performanceInDay = (completedToday / (totalExport || 1)) * 100;
       res.json({
         totalExport,
+        completedToday,
         performanceInDay,
       });
     } else if (factory == "V5") {
@@ -1806,10 +1809,11 @@ router.get("/api/getoverview", authenticate, async (req, res) => {
         AND DATE(create_at) = CURDATE()
     `);
       const totalExport = Number(totalExportRowsV5[0].total);
-      const performanceInDay =
-        (Number(performanceRowsV5[0].completed) / (totalExport || 1)) * 100;
+      const completedToday = Number(performanceRowsV5[0].completed) || 0;
+      const performanceInDay = (completedToday / (totalExport || 1)) * 100;
       res.json({
         totalExport,
+        completedToday,
         performanceInDay,
       });
     } else {
@@ -1837,13 +1841,13 @@ router.get("/api/getoverview", authenticate, async (req, res) => {
     `);
       const totalExport =
         Number(totalExportRowsV0[0].total) + Number(totalExportRowsV5[0].total);
-      const performanceInDay =
-        ((Number(performanceRowsV0[0].completed) +
-          Number(performanceRowsV5[0].completed) || 0) /
-          (totalExport || 1)) *
-        100;
+      const completedToday =
+        (Number(performanceRowsV0[0].completed) || 0) +
+        (Number(performanceRowsV5[0].completed) || 0);
+      const performanceInDay = (completedToday / (totalExport || 1)) * 100;
       res.json({
         totalExport,
+        completedToday,
         performanceInDay,
       });
     }
@@ -1941,6 +1945,7 @@ router.get("/api/getstatuscount", authenticate, async (req, res) => {
             COUNT(*) AS count
         FROM (
             SELECT status FROM delivery_v0
+            WHERE DATE(create_at) = CURDATE()
         ) AS combined
         GROUP BY status
         ORDER BY status;
@@ -1967,6 +1972,7 @@ router.get("/api/getstatuscount", authenticate, async (req, res) => {
               COUNT(*) AS count
           FROM (
               SELECT status FROM delivery_v5
+              WHERE DATE(create_at) = CURDATE()
           ) AS combined
           GROUP BY status
           ORDER BY status;
@@ -1993,8 +1999,10 @@ router.get("/api/getstatuscount", authenticate, async (req, res) => {
               COUNT(*) AS count
           FROM (
               SELECT status FROM delivery_v0
+              WHERE DATE(create_at) = CURDATE()
               UNION ALL
               SELECT status FROM delivery_v5
+              WHERE DATE(create_at) = CURDATE()
           ) AS combined
           GROUP BY status
           ORDER BY status;
@@ -2016,6 +2024,52 @@ router.get("/api/getstatuscount", authenticate, async (req, res) => {
     }
   } catch (err) {
     console.error("DB error:", err);
+    res.status(500).json({ error: "Database error: " + err.message });
+  }
+});
+
+router.get("/api/gettopmodels", authenticate, async (req, res) => {
+  if (!["ADMIN", "MANAGER"].includes(req.user?.role)) {
+    return res.status(403).json({
+      message: "Bạn không có quyền thực hiện thao tác này",
+    });
+  }
+  try {
+    const rows = await pool.query(`
+      SELECT 
+        combined.mobis_code,
+        COALESCE(ds.model_type, '') AS model_type,
+        COALESCE(ds.model_name, MAX(combined.model_name)) AS model_name,
+        SUM(combined.quantity) AS total_exported
+      FROM (
+        SELECT mobis_code, model_name, quantity, create_at
+        FROM delivery_v0
+        WHERE YEAR(create_at) = YEAR(CURDATE())
+          AND MONTH(create_at) = MONTH(CURDATE())
+          AND quantity > 0
+        UNION ALL
+        SELECT mobis_code, model_name, quantity, create_at
+        FROM delivery_v5
+        WHERE YEAR(create_at) = YEAR(CURDATE())
+          AND MONTH(create_at) = MONTH(CURDATE())
+          AND quantity > 0
+      ) AS combined
+      LEFT JOIN delivery_spec ds ON ds.mobis_code = combined.mobis_code
+      GROUP BY combined.mobis_code, ds.model_type, ds.model_name
+      ORDER BY total_exported DESC
+      LIMIT 10
+    `);
+
+    const result = rows.map((r) => ({
+      mobis_code: r.mobis_code,
+      model_type: r.model_type,
+      model_name: r.model_name,
+      total_exported: Number(r.total_exported),
+    }));
+
+    res.json(result);
+  } catch (err) {
+    console.error("DB error in gettopmodels:", err);
     res.status(500).json({ error: "Database error: " + err.message });
   }
 });

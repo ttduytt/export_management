@@ -5,7 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="/images/logoweb.jpg" type="image/x-icon">
-  <script src="/js/highcharts.js"></script>
   <script type="module" src="/js/header.js"></script>
   <script type="module" src="/js/management.js"></script>
   <title>Delivery Management - Management Dashboard</title>
@@ -538,6 +537,11 @@
       min-width: 0;
     }
 
+    .del-col-modeltype {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
     .del-col-mobis {
       flex: 1 1 0;
       min-width: 0;
@@ -849,51 +853,6 @@
 
   <div class="all">
     <div class="container">
-      <!-- Hàng 1: Overview & Charts -->
-      <div class="top-row">
-        <div class="welcome-card">
-          <div class="welcome-left">
-            <div class="welcome-text">
-              <h2 id="welcome">Welcome back, Admin!</h2>
-              <div class="stats">
-                <div>
-                  <strong id="totalInDay"></strong>
-                  <span id="lbl-total-in-day">Total in day</span>
-                </div>
-                <div class="divider"></div>
-                <div>
-                  <strong id="performance"></strong>
-                  <span id="lbl-performance">Performance</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="welcome-right">
-            <img src="/images/admin.svg" alt="user" />
-          </div>
-        </div>
-        <div class="chart-row">
-          <div class="chart-card">
-            <div class="chart-header">
-              <h3 id="lbl-chart-monthly-title"></h3>
-              <p id="lbl-chart-monthly-sub"></p>
-            </div>
-            <div class="chart-container">
-              <div id="monthlyChart"></div>
-            </div>
-          </div>
-          <div class="chart-card">
-            <div class="chart-header">
-              <h3 id="lbl-chart-status-title"></h3>
-              <p id="lbl-chart-status-sub"></p>
-            </div>
-            <div class="chart-container">
-              <div id="orderChart"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Hàng 2: Model Spec -->
       <div class="bottom-row">
         <div class="grid-table-wrap">
@@ -972,6 +931,7 @@
         <div class="grid-thead">
           <div class="grid-row">
             <div class="grid-th del-col-stt" id="th-del-stt">STT</div>
+            <div class="grid-th del-col-modeltype" id="th-del-modelType">Model Type</div>
             <div class="grid-th del-col-mobis" id="th-del-mobisCode">Mobis Code</div>
             <div class="grid-th del-col-name" id="th-del-modelName">Model Name</div>
             <div class="grid-th del-col-type" id="th-del-type">Type</div>

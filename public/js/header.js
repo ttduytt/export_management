@@ -77,6 +77,12 @@ const NAV_HTML = /* html */ `
       <span><img style="width:120px" src="/images/logo.png" alt=""/></span>
     </div>
     <ul class="nav-menu" id="navMenu">
+      <li class="dashboard">
+        <a href="/dashboard" class="nav-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+          Dashboard
+        </a>
+      </li>
       <li class="delivery">
         <a href="/delivery" class="nav-link">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></svg>
@@ -240,6 +246,7 @@ class AppHeader extends HTMLElement {
 
         const routes = {
           home: "/home",
+          dashboard: "/dashboard",
           delivery: "/delivery",
           scanpallet: "/scanpallet",
           history: "/deliveryHistory",
@@ -284,6 +291,7 @@ class AppHeader extends HTMLElement {
     const role = user?.role; // "ADMIN" | "MANAGER" | "USER" | undefined
 
     const menuItems = {
+      dashboard: this.querySelector(".dashboard"),
       delivery: this.querySelector(".delivery"),
       scanpallet: this.querySelector(".scanpallet"),
       history: this.querySelector(".history"),
@@ -317,7 +325,10 @@ class AppHeader extends HTMLElement {
         const allowedMenus = data.data; // array of menu_code
         Object.keys(menuItems).forEach(key => {
           if (menuItems[key]) {
-            if (allowedMenus.includes(key)) {
+            if (
+              allowedMenus.includes(key) ||
+              (key === "dashboard" && (role === "MANAGER" || allowedMenus.includes("management")))
+            ) {
               menuItems[key].style.display = "";
             }
           }
@@ -487,6 +498,7 @@ class AppHeader extends HTMLElement {
 
     // ── Nav links — dùng setLinkText để giữ SVG ───────────────────
     setLinkText(".home .nav-link", this._t("nav.home"));
+    setLinkText(".dashboard .nav-link", this._t("nav.dashboard") === "nav.dashboard" ? "Dashboard" : this._t("nav.dashboard"));
     setLinkText(".delivery .nav-link", this._t("nav.delivery"));
     setLinkText(".scanpallet .nav-link", this._t("nav.scanPallet"));
     setLinkText(".history .nav-link", this._t("nav.history"));
