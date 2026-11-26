@@ -1535,6 +1535,23 @@ router.get("/qr/getvalue", authenticate, async (req, res) => {
   }
 });
 
+// ─── Delivery Spec: list all mobis_code ──────────────────────────────────────
+router.get("/delivery-spec/mobis-codes", authenticate, async (req, res) => {
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    const rows = await conn.query(
+      "SELECT DISTINCT mobis_code FROM delivery_spec WHERE mobis_code IS NOT NULL AND mobis_code != '' ORDER BY CHAR_LENGTH(mobis_code) DESC",
+    );
+    res.json(rows.map((r) => r.mobis_code));
+  } catch (error) {
+    console.error("Error fetching mobis_codes:", error);
+    res.status(500).json({ message: "Internal server error" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
 // ─── Delivery Spec: lookup by mobis_code ───────────────────────────────────
 router.get("/delivery-spec/by-mobis/:mobiscode", authenticate, async (req, res) => {
   const mobiscode = req.params.mobiscode;

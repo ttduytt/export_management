@@ -71,7 +71,11 @@ function getExpiry(key) {
 function cleanupExpiredFirstExportKeys() {
   for (let i = localStorage.length - 1; i >= 0; i--) {
     const key = localStorage.key(i);
-    if (!key || (!key.startsWith(FIRST_EXPORT_PREFIX) && !key.startsWith("shown_alert_"))) continue;
+    if (
+      !key ||
+      (!key.startsWith(FIRST_EXPORT_PREFIX) && !key.startsWith("shown_alert_"))
+    )
+      continue;
     try {
       const item = JSON.parse(localStorage.getItem(key));
       const remaining = item.expiry - Date.now();
@@ -135,7 +139,8 @@ async function applyLang() {
   const headerDivs = document.querySelectorAll("#tableHeader > div");
   if (headerDivs.length >= 12) {
     headerDivs[0].textContent = t("admin.delivery.table.stt");
-    headerDivs[1].textContent = t("admin.modelSpec.table.modelType") || "MODEL TYPE";
+    headerDivs[1].textContent =
+      t("admin.modelSpec.table.modelType") || "MODEL TYPE";
     headerDivs[2].textContent = t("admin.delivery.table.mobisCode");
     headerDivs[3].textContent = t("admin.delivery.table.modelName");
     headerDivs[4].textContent = t("admin.delivery.table.type");
@@ -202,7 +207,7 @@ async function getUserProfile() {
 function playErrorSound() {
   if (errorSound) {
     errorSound.currentTime = 0;
-    errorSound.play().catch(() => { });
+    errorSound.play().catch(() => {});
   }
 }
 
@@ -547,9 +552,9 @@ function renderList() {
       : "";
     const arriveDate =
       item.first_export == 1 &&
-        item.arrive_date !== null &&
-        item.arrive_date !== undefined &&
-        item.arrive_date !== ""
+      item.arrive_date !== null &&
+      item.arrive_date !== undefined &&
+      item.arrive_date !== ""
         ? `${item.arrive_date}`
         : "";
 
@@ -593,9 +598,9 @@ function renderGrid() {
         : "";
       const arriveDate =
         item.first_export == 1 &&
-          item.arrive_date !== null &&
-          item.arrive_date !== undefined &&
-          item.arrive_date !== ""
+        item.arrive_date !== null &&
+        item.arrive_date !== undefined &&
+        item.arrive_date !== ""
           ? `${item.arrive_date}`
           : "";
 
@@ -789,35 +794,56 @@ async function checkFirstExport(mobiscode, factory) {
   }
 }
 
-function getQrData(qr) {
+let specMobisCodes = [];
+
+async function loadSpecMobisCodes(forceRefresh = false) {
+  if (specMobisCodes.length > 0 && !forceRefresh) return specMobisCodes;
+  const res = await fetch("/exportmanagement/delivery-spec/mobis-codes");
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const list = await res.json();
+  specMobisCodes = Array.isArray(list)
+    ? list.filter(Boolean).sort((a, b) => b.length - a.length)
+    : [];
+  return specMobisCodes;
+}
+
+function extractQrByMobisCodes(qr, mobisCodes) {
+  const qrNoDashUpper = qr.replace(/-/g, "").toUpperCase();
   const parts = qr.split("-");
-  switch (parts.length) {
-    case 7: {
-      if (!Number(parts[3])) throw new Error(t("delivery.alerts.invalidQr"));
-      return { mobiscode: parts[2], quantity: parts[3], type: parts[4] };
+
+  for (const mobisCode of mobisCodes) {
+    const targetUpper = mobisCode.replace(/-/g, "").toUpperCase();
+    if (!qrNoDashUpper.includes(targetUpper)) continue;
+
+    for (let i = 0; i < parts.length; i++) {
+      let combined = "";
+      for (let j = i; j < parts.length; j++) {
+        combined += parts[j];
+        if (combined.length > targetUpper.length) break;
+        if (combined.toUpperCase() === targetUpper) {
+          const quantity = parts[j + 1];
+          const type = parts[j + 2];
+          if (Number(quantity) > 0 && type) {
+            return { mobiscode: mobisCode, quantity, type };
+          }
+        }
+      }
     }
-    case 8: {
-      if (!Number(parts[4])) throw new Error(t("delivery.alerts.invalidQr"));
-      return {
-        mobiscode: parts[2] + parts[3],
-        quantity: parts[4],
-        type: parts[5],
-      };
-    }
-    case 9: {
-      if (!Number(parts[5])) throw new Error(t("delivery.alerts.invalidQr"));
-      const startsWithNumber = /^\d/.test(parts[2]);
-      return {
-        mobiscode: startsWithNumber
-          ? parts[2] + parts[3] + parts[4]
-          : parts[3] + parts[4],
-        quantity: parts[5],
-        type: parts[6],
-      };
-    }
-    default:
-      throw new Error(t("delivery.alerts.invalidQr"));
   }
+  return null;
+}
+
+async function getQrData(qr) {
+  let codes = await loadSpecMobisCodes();
+  let parsed = extractQrByMobisCodes(qr, codes);
+  if (!parsed) {
+    codes = await loadSpecMobisCodes(true);
+    parsed = extractQrByMobisCodes(qr, codes);
+  }
+  if (!parsed) {
+    throw new Error(t("delivery.alerts.invalidQr"));
+  }
+  return parsed;
 }
 
 async function updateDelivery(username, factory, delivery, qr) {
@@ -864,9 +890,8 @@ searchInput.addEventListener("keydown", async (e) => {
       qrValue.startsWith("R7A8") ||
       qrValue.startsWith("N-") ||
       qrValue.startsWith("NQ5");
-    const validDash = qrValue.slice(-5, -4) === "-";
 
-    if (invalidLength || !validPrefix || !validDash) {
+    if (invalidLength || !validPrefix) {
       playErrorSound();
       Modal.show({
         type: "error",
@@ -877,7 +902,7 @@ searchInput.addEventListener("keydown", async (e) => {
       return;
     }
 
-    const qrData = getQrData(qrValue);
+    const qrData = await getQrData(qrValue);
 
     const isQrExist = await checkQrExist(factorySelected, qrValue);
     if (isQrExist) {
@@ -983,8 +1008,6 @@ searchInput.addEventListener("keydown", async (e) => {
       return;
     }
 
-
-
     searchInput.value = "";
     await getAll();
   } catch (error) {
@@ -1005,8 +1028,6 @@ cbbFactory.addEventListener("change", async () => {
   factorySelected = cbbFactory.value.toLowerCase();
   await getAll();
 });
-
-
 
 // ─── Bootstrap ────────────────────────────────────────────────────────────────
 async function bootstrap() {
@@ -1029,6 +1050,9 @@ async function bootstrap() {
   factorySelected = cbbFactory.value.toLowerCase();
 
   await applyLang();
+  await loadSpecMobisCodes().catch((err) =>
+    console.error("Failed to preload mobis codes:", err),
+  );
   await getAll();
 }
 
